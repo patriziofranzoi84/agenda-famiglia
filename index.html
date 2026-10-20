@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="it" class="h-full bg-slate-100">
 <head>
     <meta charset="UTF-8">
@@ -471,7 +471,7 @@
                     <div class="flex items-center gap-2">
                         <i data-lucide="shopping-cart" class="w-5 h-5 text-emerald-300"></i>
                         <div>
-                            <h2 class="text-sm sm:text-base font-extrabold leading-tight">Lista della Spesa Condivisa Famiglia</h2>
+                'LISTA DELLA SPESA CONDIVISA FAMIGLIA',
                             <p class="text-[10px] text-emerald-200 font-semibold">Chi ha inserito il prodotto appare a destra come nel calendario</p>
                         </div>
                     </div>
@@ -1338,10 +1338,10 @@
                     <div class="sm:col-span-2">
                         <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-0.5">Visibilità Impegno</label>
                         <select id="formVisibility" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold text-slate-800">
-                            <option value="admins_only" selected>ðŸ”’ Solo Patrizio e Manuela (Predefinito)</option>
-                            <option value="all">ðŸ‘¥ Visibile a tutti i familiari</option>
-                            <option value="assigned_only">ðŸ‘¤ Visibile solo alle persone interessate</option>
-                            <option value="private_patrizio">ðŸ›¡ï¸ Riservato solo a Patrizio</option>
+                            <option value="admins_only" selected>Solo Patrizio e Manuela (Predefinito)</option>
+                            <option value="all">Visibile a tutti i familiari</option>
+                            <option value="assigned_only">Visibile solo alle persone interessate</option>
+                            <option value="private_patrizio">Riservato solo a Patrizio</option>
                         </select>
                     </div>
                 </div>
@@ -3521,7 +3521,7 @@ function ghOpenSetup() {
                                     ${info.date.toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric', month: 'short' })}
                                 </span>
                                 ${isToday ? `<span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-indigo-600 text-white">OGGI</span>` : ''}
-                                ${info.hol ? `<span class="text-[10px] font-bold text-amber-700">ðŸŽ‰ ${escapeHtml(info.hol)}</span>` : ''}
+                                ${info.hol ? `<span class="text-[10px] font-bold text-amber-700 font-semibold">[Festa] ${escapeHtml(info.hol)}</span>` : ""}
                             </div>
                             <button type="button" onclick="openEventModal(null, '${ds}')" class="text-xs font-bold text-indigo-600 hover:underline">+ Aggiungi</button>
                         </div>
@@ -4360,7 +4360,9 @@ function ghOpenSetup() {
             const periodTitle = document.getElementById('currentPeriodTitle');
             if (periodTitle) {
                 if (state.viewMode === 'day') {
-                    periodTitle.textContent = state.singleDayDate.toLocaleDateString('it-IT', { day: 'numeric', month: 'short', year: 'numeric' });
+                    const isToday = toIsoDate(state.singleDayDate) === getTodayIso();
+                    const dayStr = state.singleDayDate.toLocaleDateString('it-IT', { day: 'numeric', month: 'short' });
+                    periodTitle.textContent = isToday ? `Oggi ${dayStr}` : state.singleDayDate.toLocaleDateString('it-IT', { day: 'numeric', month: 'short', year: 'numeric' });
                 } else if (state.viewMode === 'week') {
                     const startStr = state.weekStartDate.toLocaleDateString('it-IT', { day: 'numeric', month: 'short' });
                     const endD = new Date(state.weekStartDate);
@@ -4724,7 +4726,7 @@ function ghOpenSetup() {
                 return;
             }
             const lines = [
-                '🛒 *LISTA DELLA SPESA CONDIVISA FAMIGLIA*',
+                'LISTA DELLA SPESA CONDIVISA FAMIGLIA',
                 '----------------------------------------',
                 ...activeItems.map(it => `• ${it.text} (${it.addedBy || 'Famiglia'})`),
                 '----------------------------------------',
@@ -4741,7 +4743,7 @@ function ghOpenSetup() {
                 return;
             }
             const lines = [
-                'ðŸ›’ LISTA DELLA SPESA CONDIVISA FAMIGLIA',
+                'LISTA DELLA SPESA CONDIVISA FAMIGLIA',
                 '----------------------------------------',
                 ...activeItems.map(it => `  - ${it.text} (${it.addedBy || 'Famiglia'})`),
                 '----------------------------------------',
@@ -6040,8 +6042,8 @@ function ghOpenSetup() {
 
         
 
-        window.formatCalendarShareText = function() {
-            let text = "ðŸ“… *AGENDA FAMILIARE CONDIVISA*\n";
+                window.formatCalendarShareText = function() {
+            let text = "AGENDA FAMILIARE CONDIVISA\n";
             if (state.viewMode === 'day') {
                 const dateStr = toIsoDate(state.singleDayDate);
                 const dayName = state.singleDayDate.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' });
@@ -6052,7 +6054,7 @@ function ghOpenSetup() {
                 } else {
                     evs.forEach(e => {
                         const uNames = (e.users || []).map(uid => (BASE_USERS.find(x => x.id === uid) || {}).name || uid).join(', ');
-                        text += - *\* - \ (\) \\n;
+                        text += `- *${e.time || 'Tutto il giorno'}* - ${e.title} (${uNames})${e.notes ? ' - ' + e.notes : ''}\n`;
                     });
                 }
             } else if (state.viewMode === 'week') {
@@ -6068,10 +6070,10 @@ function ghOpenSetup() {
                     const dayTitle = curr.toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric', month: 'short' });
                     const evs = getEventsForDate(currIso);
                     if (evs.length > 0) {
-                        text += `ðŸ‘‰ *${dayTitle}:*\n`;
+                        text += `*${dayTitle}:*\n`;
                         evs.forEach(e => {
                             const uNames = (e.users || []).map(uid => (BASE_USERS.find(x => x.id === uid) || {}).name || uid).join(', ');
-                        text += - *\* - \ (\) \\n;
+                            text += `  - ${e.time || ''} ${e.title} (${uNames})\n`;
                         });
                         text += "\n";
                     }
@@ -6088,7 +6090,7 @@ function ghOpenSetup() {
                 if (monthEvs.length === 0) text += "Nessun impegno nel mese.\n";
                 else {
                     monthEvs.slice(0, 30).forEach(e => {
-                        text += - *\* - \ (\) \\n;
+                        text += `- ${e.date} [${e.time || ''}] ${e.title}\n`;
                     });
                     if (monthEvs.length > 30) text += `... ed altri ${monthEvs.length - 30} impegni.\n`;
                 }
@@ -6164,6 +6166,98 @@ function ghOpenSetup() {
             }
         };
 
+                // ========================================================
+        // REGOLAZIONE GRANDEZZA CARATTERI E ZOOM PER CELLULARE
+        // ========================================================
+        window.setAppFontScale = function(percent) {
+            percent = Number(percent) || 100;
+            try {
+                localStorage.setItem('agenda_famiglia_font_scale', String(percent));
+            } catch(e) {}
+            applyAppFontScale(percent);
+            showToast(`Grandezza caratteri impostata a ${percent}%!`);
+        };
+
+        function applyAppFontScale(percent) {
+            percent = Number(percent) || 100;
+            const factor = percent / 100;
+            if (document.body) {
+                document.body.style.zoom = factor;
+            }
+            document.documentElement.style.fontSize = (16 * factor) + 'px';
+
+            [50, 75, 85, 100, 115, 125, 150].forEach(p => {
+                const btn = document.getElementById(`btnZoom_${p}`);
+                if (btn) {
+                    if (p === percent) {
+                        btn.className = "py-2 px-0.5 rounded-xl text-center border text-[11px] font-black transition bg-indigo-600 text-white border-indigo-600 shadow-xs ring-2 ring-indigo-400";
+                    } else {
+                        btn.className = "py-2 px-0.5 rounded-xl text-center border text-[11px] font-black transition hover:bg-slate-50 text-slate-700 border-slate-200 bg-white";
+                    }
+                }
+            });
+
+            const lbl = document.getElementById('lblCurrentFontScale');
+            if (lbl) {
+                lbl.textContent = percent === 100 ? '100% (Standard)' : `${percent > 100 ? '+' : ''}${percent - 100}% (${percent}%)`;
+            }
+        }
+
+        function updateHeaderClock() {
+            const now = new Date();
+            const nowHhMm = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            const clockEl = document.getElementById('liveClockText');
+            if (clockEl) clockEl.textContent = nowHhMm;
+            if (state.viewMode === 'day' && toIsoDate(state.singleDayDate) === getTodayIso()) {
+                const periodTitle = document.getElementById('currentPeriodTitle');
+                if (periodTitle) {
+                    const dayStr = state.singleDayDate.toLocaleDateString('it-IT', { day: 'numeric', month: 'short' });
+                    periodTitle.textContent = `Oggi ${dayStr} - ${nowHhMm}`;
+                }
+            }
+            updateTimelineNowIndicator();
+        }
+
+        function updateTimelineNowIndicator() {
+            const now = new Date();
+            const curIso = toIsoDate(now);
+            const isToday = state.viewMode === 'day' && toIsoDate(state.singleDayDate) === curIso;
+            let el = document.getElementById('dayTimelineCurrentTimeIndicator');
+            if (!isToday) {
+                if (el) el.remove();
+                return;
+            }
+            const grid = document.getElementById('dayTimelineGrid');
+            if (!grid) return;
+
+            const curMin = now.getHours() * 60 + now.getMinutes();
+            if (curMin < TIMELINE_START_HOUR * 60 || curMin > TIMELINE_END_HOUR * 60) {
+                if (el) el.remove();
+                return;
+            }
+            const topPx = curMin - (TIMELINE_START_HOUR * 60);
+            const hhMm = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+            if (!el) {
+                el = document.createElement('div');
+                el.id = 'dayTimelineCurrentTimeIndicator';
+                el.className = 'absolute inset-x-0 z-30 pointer-events-none flex items-center';
+                el.innerHTML = `
+                    <div class="w-12 sm:w-14 min-w-[48px] sm:min-w-[56px] flex justify-end pr-1">
+                        <span class="px-1 py-0.5 rounded text-[8.5px] font-black bg-rose-600 text-white shadow-2xs">${hhMm}</span>
+                    </div>
+                    <div class="flex-1 border-t-2 border-rose-500 relative flex items-center">
+                        <span class="w-2.5 h-2.5 rounded-full bg-rose-600 -ml-1.5 shadow-2xs"></span>
+                    </div>
+                `;
+                grid.appendChild(el);
+            }
+            el.style.top = `${topPx}px`;
+            const txt = el.querySelector('span');
+            if (txt) txt.textContent = hhMm;
+        }
+
+        setInterval(updateHeaderClock, 30000);
         function bootApp() {
             renderApp();
             initAuth();
