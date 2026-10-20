@@ -13,7 +13,26 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <!-- Dove sono salvati i dati su GitHub (vedi github-config.js) -->
     <script src="github-config.js"></script>
-    <title>Agenda Familiare Condivisa rev.15</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Agenda Familiare Condivisa rev.16</title>
+    <script>
+        // Applicazione immediata grandezza caratteri salvata per questo dispositivo
+        (function() {
+            try {
+                var saved = localStorage.getItem('agenda_famiglia_font_scale');
+                var p = saved ? Number(saved) : 100;
+                if (p && !isNaN(p) && p !== 100) {
+                    var factor = p / 100;
+                    document.documentElement.style.fontSize = (16 * factor) + 'px';
+                    window.addEventListener('DOMContentLoaded', function() {
+                        if (document.body) document.body.style.zoom = factor;
+                    });
+                }
+            } catch(e) {}
+        })();
+    </script>
 
     <!-- html2canvas per esportazione foto calendario -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -188,7 +207,7 @@
                         </div>
 
                         <!-- Tasto Personalizza Colori -->
-                        <button type="button" onclick="openColorsModal()" title="Personalizza Colori Utenti e AttivitÃ "
+                        <button type="button" onclick="openColorsModal()" title="Personalizza Colori Utenti e Attività"
                                 class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 text-slate-700 text-[11px] font-bold transition">
                             <i data-lucide="palette" class="w-3.5 h-3.5 text-indigo-600"></i>
                             <span class="hidden sm:inline">Colori</span>
@@ -236,7 +255,7 @@
                                     class="p-1 rounded-lg hover:bg-white text-slate-800 active:scale-95 transition">
                                 <i data-lucide="chevron-left" class="w-4 h-4"></i>
                             </button>
-                            <button type="button" onclick="goToToday()" id="currentPeriodTitle" title="Tocca per tornare al 19/10/2026 (Oggi)"
+                            <button type="button" onclick="goToToday()" id="currentPeriodTitle" title="Tocca per tornare a Oggi"
                                     class="text-[11px] sm:text-xs font-black text-slate-900 px-2 truncate max-w-[110px] sm:max-w-[200px] text-center hover:text-indigo-600 transition">
                                 19 ott 2026
                             </button>
@@ -245,10 +264,15 @@
                                 <i data-lucide="chevron-right" class="w-4 h-4"></i>
                             </button>
                         </div>
-                        <button type="button" onclick="goToToday()" title="Torna a Oggi (19 Ottobre 2026)"
+                        <button type="button" onclick="goToToday()" title="Torna a Oggi"
                                 class="px-2 py-1 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 text-[10px] font-extrabold shadow-2xs transition">
                             Oggi
                         </button>
+                        <!-- Orologio orario attuale dinamico -->
+                        <div id="liveClockBadge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-700 text-[11px] font-black shrink-0">
+                            <i data-lucide="clock" class="w-3.5 h-3.5 text-indigo-600"></i>
+                            <span id="liveClockText">--:--</span>
+                        </div>
                     </div>
                 </div>
 
@@ -268,7 +292,7 @@
             <section id="listViewSection" class="hidden flex-1 h-full overflow-y-auto thin-scroll p-1">
                 <div class="max-w-4xl mx-auto space-y-2 pb-10">
                     <div class="flex items-center justify-between gap-2 bg-white px-2.5 py-1.5 rounded-xl border border-slate-200 sticky top-0 z-10 shadow-2xs">
-                        <span class="text-[11px] font-extrabold text-slate-700">Lista Infinita Attività (2 righe)</span>
+                    <span class="text-[11px] font-extrabold text-slate-700">Lista Infinita Attività (2 righe)</span>
                         <div class="flex items-center gap-1.5">
                             <button type="button" onclick="scrollToTodayInList()" class="px-2 py-0.5 rounded-lg text-[11px] font-extrabold bg-indigo-600 text-white">
                                 Vai a Oggi / Ora
@@ -349,7 +373,7 @@
                             <i data-lucide="home" class="w-5 h-5"></i>
                         </div>
                         <div>
-                            <h2 class="text-sm sm:text-base font-black leading-tight">Attività Domestiche & Faccende Casa</h2>
+                        <h2 class="text-sm sm:text-base font-black leading-tight">Attività Domestiche & Faccende Casa</h2>
                             <p class="text-[10px] text-amber-950 font-bold">
                                 Flusso: Tutti → Da fare → Da confermare (con orario) → Confermate
                             </p>
@@ -578,7 +602,7 @@
                 <!-- Filtri Utenza / Stato -->
                 <div class="px-4 py-2 bg-white border-b border-slate-200 flex items-center justify-between gap-2 overflow-x-auto thin-scroll shrink-0">
                     <div class="flex items-center gap-1 min-w-max">
-                        <!-- TASTO DROPDOWN UTENZE (Acqua, Gas, ElettricitÃ , ecc.) -->
+                        <!-- TASTO DROPDOWN UTENZE (Acqua, Gas, Elettricità, ecc.) -->
                         <div class="relative" id="billsUtenzeDropdownWrapper">
                             <button type="button" onclick="toggleDropdown('billsUtenzeDropdownMenu', event)" id="btnToggleBillsUtenzeDropdown"
                                     class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-black border border-sky-300 bg-sky-50 hover:bg-sky-100 text-sky-950 shadow-2xs transition">
@@ -666,7 +690,7 @@
                         <i data-lucide="user" class="w-5 h-5 text-indigo-400"></i>
                         <h2 class="text-sm sm:text-base font-black">Account e Profilo Famiglia</h2>
                     </div>
-                    <span class="text-[10px] font-bold text-slate-400">rev.13</span>
+                    <span class="text-[10px] font-bold text-indigo-400 font-black">rev.16</span>
                 </div>
                 <div class="p-4 space-y-3">
                     <div class="flex items-center justify-between gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200">
@@ -694,6 +718,52 @@
                         <i data-lucide="info" class="w-4 h-4 text-indigo-600 shrink-0"></i>
                         <span>La password di <strong>Patrizio</strong> è <code>Patry</code>. Per gli altri 5 familiari è la <strong>data di nascita</strong> (es. <code>12032019</code>).</span>
                     </div>
+                </div>
+            </div>
+
+                        <!-- Dimensione Caratteri e Schermo (Zoom dedicato per cellulare) -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-2xs p-4 space-y-3">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-xs font-black uppercase text-slate-400 tracking-wider flex items-center gap-1.5">
+                            <i data-lucide="type" class="w-4 h-4 text-indigo-600"></i>
+                            <span>Grandezza Caratteri (Zoom Schermo)</span>
+                        </h3>
+                        <p class="text-[10px] text-slate-500 font-medium mt-0.5">
+                            Regola la grandezza dei testi per questo cellulare (Motorola, Oppo, ecc.). Resta memorizzato solo su questo telefono.
+                        </p>
+                    </div>
+                    <span id="lblCurrentFontScale" class="text-xs font-black px-2 py-0.5 rounded-lg bg-indigo-100 text-indigo-800 shrink-0">100% (Standard)</span>
+                </div>
+                <div class="grid grid-cols-7 gap-1 sm:gap-1.5">
+                    <button type="button" onclick="setAppFontScale(50)" id="btnZoom_50"
+                            class="py-2 px-0.5 rounded-xl text-center border text-[11px] font-black transition hover:bg-slate-50 text-slate-700 border-slate-200 bg-white">
+                        -50%
+                    </button>
+                    <button type="button" onclick="setAppFontScale(75)" id="btnZoom_75"
+                            class="py-2 px-0.5 rounded-xl text-center border text-[11px] font-black transition hover:bg-slate-50 text-slate-700 border-slate-200 bg-white">
+                        -25%
+                    </button>
+                    <button type="button" onclick="setAppFontScale(85)" id="btnZoom_85"
+                            class="py-2 px-0.5 rounded-xl text-center border text-[11px] font-black transition hover:bg-slate-50 text-slate-700 border-slate-200 bg-white">
+                        -15%
+                    </button>
+                    <button type="button" onclick="setAppFontScale(100)" id="btnZoom_100"
+                            class="py-2 px-0.5 rounded-xl text-center border text-[11px] font-black transition bg-indigo-600 text-white border-indigo-600 shadow-xs">
+                        Standard
+                    </button>
+                    <button type="button" onclick="setAppFontScale(115)" id="btnZoom_115"
+                            class="py-2 px-0.5 rounded-xl text-center border text-[11px] font-black transition hover:bg-slate-50 text-slate-700 border-slate-200 bg-white">
+                        +15%
+                    </button>
+                    <button type="button" onclick="setAppFontScale(125)" id="btnZoom_125"
+                            class="py-2 px-0.5 rounded-xl text-center border text-[11px] font-black transition hover:bg-slate-50 text-slate-700 border-slate-200 bg-white">
+                        +25%
+                    </button>
+                    <button type="button" onclick="setAppFontScale(150)" id="btnZoom_150"
+                            class="py-2 px-0.5 rounded-xl text-center border text-[11px] font-black transition hover:bg-slate-50 text-slate-700 border-slate-200 bg-white">
+                        +50%
+                    </button>
                 </div>
             </div>
 
@@ -729,10 +799,10 @@
             <div class="bg-white rounded-2xl border border-slate-200 shadow-2xs p-4 space-y-3">
                 <h3 class="text-xs font-black uppercase text-slate-400 tracking-wider">Gestione Dati & Download</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                    <button type="button" onclick="downloadRev15File()"
+                    <button type="button" onclick="downloadRev16File()"
                             class="flex flex-col items-center justify-center p-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-center transition shadow-2xs">
                         <i data-lucide="download" class="w-5 h-5 mb-1"></i>
-                        <span class="text-xs font-black">Scarica rev.15</span>
+                        <span class="text-xs font-black">Scarica rev.16</span>
                         <span class="text-[9.5px] opacity-80">File HTML completo</span>
                     </button>
 
@@ -751,37 +821,6 @@
                     </button>
                 </div>
                 <input type="file" id="fileImportInput" accept=".json" onchange="importDataJson(event)" class="hidden">
-            </div>
-
-            <!-- Gestione Impegni Demo Calendario -->
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-2xs p-4 space-y-3">
-                <div>
-                    <h3 class="text-xs font-black uppercase text-slate-400 tracking-wider">Gestione Impegni Demo Calendario</h3>
-                    <p class="text-[10px] text-slate-500 font-medium">Scuola Clara ed Emma e Twirling Asia/Emma/Clara rimangono sempre attivi</p>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    <button type="button" onclick="clearDemoEvents()"
-                            class="flex items-center gap-2.5 p-3 rounded-xl border border-rose-200 bg-rose-50/70 hover:bg-rose-100 text-rose-950 text-left transition shadow-2xs group">
-                        <div class="p-2 rounded-xl bg-rose-200 text-rose-800 group-hover:scale-105 transition shrink-0">
-                            <i data-lucide="trash-2" class="w-4 h-4"></i>
-                        </div>
-                        <div>
-                            <div class="text-xs font-black">Annulla Tutti Impegni Demo</div>
-                            <div class="text-[9.5px] text-rose-700">Mantiene Twirling, Scuola e impegni manuali</div>
-                        </div>
-                    </button>
-
-                    <button type="button" onclick="restoreDemoEvents()"
-                            class="flex items-center gap-2.5 p-3 rounded-xl border border-indigo-200 bg-indigo-50/70 hover:bg-indigo-100 text-indigo-950 text-left transition shadow-2xs group">
-                        <div class="p-2 rounded-xl bg-indigo-200 text-indigo-800 group-hover:scale-105 transition shrink-0">
-                            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
-                        </div>
-                        <div>
-                            <div class="text-xs font-black">Ripristina Impegni Demo</div>
-                            <div class="text-[9.5px] text-indigo-700">Reinserisce i demo senza toccare i manuali</div>
-                        </div>
-                    </button>
-                </div>
             </div>
 
             <!-- Gestione Sotto-categorie & Sport (Basket, Nuoto, Lavoro, ecc.) -->
@@ -819,10 +858,10 @@
 
         <!-- Destra: Tasto Download rev.15 -->
         <div class="flex items-center gap-1.5 ml-auto sm:ml-0">
-            <button type="button" onclick="downloadRev15File()"
-                    title="Scarica agenda_famiglia_rev.15.html"
+            <button type="button" onclick="downloadRev16File()"
+                    title="Scarica agenda_famiglia_rev.16.html"
                     class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[10px] font-extrabold bg-indigo-600 hover:bg-indigo-500 text-white transition">
-                <span>rev.15</span>
+                <span>rev.16</span>
                 <i data-lucide="download" class="w-3 h-3"></i>
             </button>
         </div>
@@ -1006,7 +1045,7 @@
 
                 <!-- Colori di sfondo delle Attività -->
                 <div>
-                    <h4 class="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 mb-2">Colori Sfondo Attività (Categorie)</h4>
+                <h4 class="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 mb-2">Colori Sfondo Attività (Categorie)</h4>
                     <div id="customCategoryColorsGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
                 </div>
             </div>
@@ -1433,7 +1472,7 @@
     </div>
 
     <!-- ======================================================== -->
-    <!-- MODALE 9: AGGIUNGI ATTIVITÀ DOMESTICA (CASA) -->
+                    <span>Aggiungi Attività Domestica</span>
     <!-- ======================================================== -->
     <div id="newChoreModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4">
         <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-slate-200 p-4 space-y-3">
@@ -1874,7 +1913,7 @@ function ghOpenSetup() {
         const { doc, setDoc, deleteDoc, onSnapshot, collection, ghConfigured, ghStart, ghHasToken, ghOpenSetup, ghApplyDot } = GH;
 
 
-        const APP_VERSION = 'rev.15';
+        const APP_VERSION = 'rev.16';
 
         // 1. I 6 PROFILI DELLA FAMIGLIA (CON AUTENTICAZIONE PASSWORD O DATA DI NASCITA)
         const BASE_USERS = [
@@ -1925,17 +1964,17 @@ function ghOpenSetup() {
         // 5. ATTIVITÀ DOMESTICHE PREDEFINITE (SEZIONE CASA - ORDINE CRONOLOGICO)
         // FLUSSO: tutti -> da_fare -> da_confermare (con timestamp effettivo) -> confermate
         const DEFAULT_CHORES = [
-            { id: 'chore_1',  title: 'Stendere',         order: 1,  status: 'da_fare',       assignedTo: ['Emma'],   executedBy: '',       executedAt: '',                     confirmedBy: '',         confirmedAt: '' },
-            { id: 'chore_2',  title: 'Ritirare bucato',  order: 2,  status: 'tutti',         assignedTo: [],         executedBy: '',       executedAt: '',                     confirmedBy: '',         confirmedAt: '' },
-            { id: 'chore_3',  title: 'Umido',            order: 3,  status: 'da_confermare', assignedTo: ['Asia'],   executedBy: 'Asia',   executedAt: '19/10/2026 ore 18:30', confirmedBy: '',         confirmedAt: '' },
-            { id: 'chore_4',  title: 'Secco',            order: 4,  status: 'tutti',         assignedTo: [],         executedBy: '',       executedAt: '',                     confirmedBy: '',         confirmedAt: '' },
-            { id: 'chore_5',  title: 'Carta',            order: 5,  status: 'tutti',         assignedTo: [],         executedBy: '',       executedAt: '',                     confirmedBy: '',         confirmedAt: '' },
-            { id: 'chore_6',  title: 'Plastica',         order: 6,  status: 'tutti',         assignedTo: [],         executedBy: '',       executedAt: '',                     confirmedBy: '',         confirmedAt: '' },
-            { id: 'chore_7',  title: 'Vetro',            order: 7,  status: 'confermate',    assignedTo: ['Mattia'], executedBy: 'Mattia', executedAt: '19/10/2026 ore 17:15', confirmedBy: 'Patrizio', confirmedAt: '19/10/2026 ore 17:40' },
-            { id: 'chore_8',  title: 'Olio',             order: 8,  status: 'tutti',         assignedTo: [],         executedBy: '',       executedAt: '',                     confirmedBy: '',         confirmedAt: '' },
-            { id: 'chore_9',  title: 'Bottiglie',        order: 9,  status: 'tutti',         assignedTo: [],         executedBy: '',       executedAt: '',                     confirmedBy: '',         confirmedAt: '' },
-            { id: 'chore_10', title: 'Batterie',         order: 10, status: 'tutti',         assignedTo: [],         executedBy: '',       executedAt: '',                     confirmedBy: '',         confirmedAt: '' },
-            { id: 'chore_11', title: 'Lavastoviglie',    order: 11, status: 'da_fare',       assignedTo: ['Clara'],  executedBy: '',       executedAt: '',                     confirmedBy: '',         confirmedAt: '' }
+            { id: 'chore_1',  title: 'Stendere',         order: 1,  status: 'tutti', assignedTo: [], executedBy: '', executedAt: '', confirmedBy: '', confirmedAt: '' },
+            { id: 'chore_2',  title: 'Ritirare bucato',  order: 2,  status: 'tutti', assignedTo: [], executedBy: '', executedAt: '', confirmedBy: '', confirmedAt: '' },
+            { id: 'chore_3',  title: 'Umido',            order: 3,  status: 'tutti', assignedTo: [], executedBy: '', executedAt: '', confirmedBy: '', confirmedAt: '' },
+            { id: 'chore_4',  title: 'Secco',            order: 4,  status: 'tutti', assignedTo: [], executedBy: '', executedAt: '', confirmedBy: '', confirmedAt: '' },
+            { id: 'chore_5',  title: 'Carta',            order: 5,  status: 'tutti', assignedTo: [], executedBy: '', executedAt: '', confirmedBy: '', confirmedAt: '' },
+            { id: 'chore_6',  title: 'Plastica',         order: 6,  status: 'tutti', assignedTo: [], executedBy: '', executedAt: '', confirmedBy: '', confirmedAt: '' },
+            { id: 'chore_7',  title: 'Vetro',            order: 7,  status: 'tutti', assignedTo: [], executedBy: '', executedAt: '', confirmedBy: '', confirmedAt: '' },
+            { id: 'chore_8',  title: 'Olio',             order: 8,  status: 'tutti', assignedTo: [], executedBy: '', executedAt: '', confirmedBy: '', confirmedAt: '' },
+            { id: 'chore_9',  title: 'Pulizia cucina',   order: 9,  status: 'tutti', assignedTo: [], executedBy: '', executedAt: '', confirmedBy: '', confirmedAt: '' },
+            { id: 'chore_10', title: 'Pavimenti',        order: 10, status: 'tutti', assignedTo: [], executedBy: '', executedAt: '', confirmedBy: '', confirmedAt: '' },
+            { id: 'chore_11', title: 'Lavastoviglie',    order: 11, status: 'tutti', assignedTo: [], executedBy: '', executedAt: '', confirmedBy: '', confirmedAt: '' }
         ];
 
         // 6. CATALOGO PRODOTTI COMUNI USO SPESA (20 VOCI RICHIESTE IN ORDINE ALFABETICO)
@@ -1963,14 +2002,7 @@ function ghOpenSetup() {
         ];
 
         // 7. BOLLETTE ED UTENZE PREDEFINITE (SEZIONE BOLLETTE - GESTIONE PATRIZIO)
-        const DEFAULT_BILLS = [
-            { id: 'bill_1', utilityType: 'Elettricità', provider: 'Enel Energia', amount: 84.50, dueDate: '2026-10-28', notes: 'Bimestre Ago-Set, addebito RID', isPaid: false, paidAt: '' },
-            { id: 'bill_2', utilityType: 'Gas', provider: 'Hera Comm', amount: 62.30, dueDate: '2026-11-05', notes: 'Riscaldamento Isola Vicentina', isPaid: false, paidAt: '' },
-            { id: 'bill_3', utilityType: 'Internet e telefono', provider: 'TIM Fibra', amount: 34.90, dueDate: '2026-11-10', notes: 'Fibra casa + linea fissa', isPaid: false, paidAt: '' },
-            { id: 'bill_4', utilityType: 'Acqua', provider: 'Viacqua', amount: 48.00, dueDate: '2026-11-15', notes: 'Consumo idrico 3° trimestre', isPaid: false, paidAt: '' },
-            { id: 'bill_5', utilityType: 'Consorzio', provider: 'Consorzio di Bonifica', amount: 76.00, dueDate: '2026-11-30', notes: 'Ruolo consortile annuale 2026', isPaid: false, paidAt: '' },
-            { id: 'bill_6', utilityType: 'Altre utenze', provider: 'Comune - TARI', amount: 110.00, dueDate: '2026-12-15', notes: 'Seconda rata Tassa Rifiuti', isPaid: false, paidAt: '' }
-        ];
+        const DEFAULT_BILLS = [];
 
         const DURATION_PRESETS = ['30 min', '45 min', '1 ora', '1h 30m', '2 ore', '3 ore', '4 ore', '5h 30m', 'Tutto il giorno'];
 
@@ -1978,7 +2010,7 @@ function ghOpenSetup() {
             return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
         }
         // Data di riferimento "Oggi": Lunedì 19 Ottobre 2026
-        function getTodayIso() { return '2026-10-19'; }
+        function getTodayIso() { return toIsoDate(new Date()); }
         function getMondayOfWeek(dateObj) {
             const d = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
             const day = d.getDay();
@@ -2116,7 +2148,7 @@ function ghOpenSetup() {
         function loadPersistedSubcategories() {
             let saved = null;
             try {
-                const raw = localStorage.getItem('agenda_famiglia_subcategories_rev15') || localStorage.getItem('agenda_famiglia_subcategories_rev13') || localStorage.getItem('agenda_famiglia_subcategories_rev12') || localStorage.getItem('agenda_famiglia_subcategories_rev11') || localStorage.getItem('agenda_famiglia_subcategories_rev10');
+                const raw = localStorage.getItem('agenda_famiglia_subcategories_rev16') || localStorage.getItem('agenda_famiglia_subcategories_rev13') || localStorage.getItem('agenda_famiglia_subcategories_rev12') || localStorage.getItem('agenda_famiglia_subcategories_rev11') || localStorage.getItem('agenda_famiglia_subcategories_rev10');
                 if (raw) saved = JSON.parse(raw);
             } catch (e) {}
             const merged = JSON.parse(JSON.stringify(DEFAULT_SUBCATEGORIES));
@@ -2135,11 +2167,11 @@ function ghOpenSetup() {
 
         function persistSubcategories() {
             try {
-                localStorage.setItem('agenda_famiglia_subcategories_rev15', JSON.stringify(state.subcategories));
+                localStorage.setItem('agenda_famiglia_subcategories_rev16', JSON.stringify(state.subcategories));
                 localStorage.setItem('agenda_famiglia_subcategories_rev11', JSON.stringify(state.subcategories));
             } catch (e) {}
             if (db && currentUser) {
-                setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_settings_rev15', 'custom_subcategories'), {
+                setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_settings_rev16', 'custom_subcategories'), {
                     subcategories: state.subcategories
                 }).catch(err => console.error(err));
             }
@@ -2147,30 +2179,31 @@ function ghOpenSetup() {
 
         function cleanupAsiaTuesdayTwirling(events) {
             if (!Array.isArray(events)) return events;
-            const tuesdays = ['2026-10-20', '2026-10-27', '2026-11-03', '2026-11-10', '2026-11-17', '2026-11-24'];
-            tuesdays.forEach(dt => {
-                const asiaTwEvents = events.filter(e => e.date === dt && (e.users || []).includes('u3') && (
-                    (e.title || '').toLowerCase().includes('twirling') || (e.subcategory || '').toLowerCase().includes('twirling')
-                ));
-                if (asiaTwEvents.length > 1) {
-                    const idsToRemove = new Set(asiaTwEvents.map(e => e.id));
-                    events = events.filter(e => !idsToRemove.has(e.id));
-                    events.push({
-                        id: `seed_asia_tw_mar_` + dt.replace(/-/g, ''),
-                        title: 'Twirling',
-                        subcategory: 'Twirling',
-                        date: dt,
-                        time: '16:30',
-                        endTime: '20:00',
-                        duration: '3h 30m',
-                        category: 'sportivi',
-                        users: ['u3'],
-                        notes: 'Palestra'
-                    });
-                } else if (asiaTwEvents.length === 1) {
-                    asiaTwEvents[0].time = '16:30';
-                    asiaTwEvents[0].endTime = '20:00';
-                    asiaTwEvents[0].duration = '3h 30m';
+            events.forEach(e => {
+                if ((e.title || '').toLowerCase().includes('twirling') || (e.subcategory || '').toLowerCase().includes('twirling')) {
+                    if ((e.users || []).includes('u3')) {
+                        // Asia
+                        const d = new Date(e.date + 'T12:00:00');
+                        if (d.getDay() === 2) {
+                            e.time = '16:30';
+                            e.endTime = '20:00';
+                            e.duration = '3h 30m';
+                        } else if (d.getDay() === 4) {
+                            e.time = '18:00';
+                            e.endTime = '21:00';
+                            e.duration = '3 ore';
+                        }
+                    } else if ((e.users || []).includes('u5')) {
+                        // Emma
+                        e.time = '18:00';
+                        e.endTime = '19:30';
+                        e.duration = '1h 30m';
+                    } else if ((e.users || []).includes('u6')) {
+                        // Clara
+                        e.time = '18:00';
+                        e.endTime = '19:00';
+                        e.duration = '1 ora';
+                    }
                 }
             });
             return events;
@@ -2178,7 +2211,7 @@ function ghOpenSetup() {
 
         function loadPersistedEvents() {
             try {
-                const raw = localStorage.getItem('agenda_famiglia_events_rev15') || localStorage.getItem('agenda_famiglia_events_rev14') || localStorage.getItem('agenda_famiglia_events_rev13') || localStorage.getItem('agenda_famiglia_events_rev12') || localStorage.getItem('agenda_famiglia_events_rev11') || localStorage.getItem('agenda_famiglia_events_rev10');
+                const raw = localStorage.getItem('agenda_famiglia_events_rev16') || localStorage.getItem('agenda_famiglia_events_rev14') || localStorage.getItem('agenda_famiglia_events_rev13') || localStorage.getItem('agenda_famiglia_events_rev12') || localStorage.getItem('agenda_famiglia_events_rev11') || localStorage.getItem('agenda_famiglia_events_rev10');
                 if (raw) {
                     const parsed = JSON.parse(raw);
                     if (Array.isArray(parsed) && parsed.length > 0) {
@@ -2191,23 +2224,16 @@ function ghOpenSetup() {
 
         function persistEventsLocally() {
             try {
-                localStorage.setItem('agenda_famiglia_events_rev15', JSON.stringify(state.events));
+                localStorage.setItem('agenda_famiglia_events_rev16', JSON.stringify(state.events));
                 localStorage.setItem('agenda_famiglia_events_rev11', JSON.stringify(state.events));
             } catch(e) {}
         }
 
-        const DEFAULT_SHOPPING_ITEMS = [
-            { id: 'shop_1', text: 'Latte fresco', addedBy: 'Manuela', completed: false, createdAt: '2026-10-19T08:00:00' },
-            { id: 'shop_2', text: 'Pasta Barilla n.5', addedBy: 'Patrizio', completed: false, createdAt: '2026-10-19T08:30:00' },
-            { id: 'shop_3', text: 'Mele Golden (Frutta)', addedBy: 'Emma', completed: false, createdAt: '2026-10-19T09:00:00' },
-            { id: 'shop_4', text: 'Detersivo piatti', addedBy: 'Asia', completed: false, createdAt: '2026-10-19T10:15:00' },
-            { id: 'shop_5', text: 'Pizza margherita', addedBy: 'Mattia', completed: false, createdAt: '2026-10-19T11:00:00' },
-            { id: 'shop_6', text: 'Caffè Lavazza', addedBy: 'Patrizio', completed: true, createdAt: '2026-10-18T16:00:00' }
-        ];
+        const DEFAULT_SHOPPING_ITEMS = [];
 
         function loadPersistedShoppingList() {
             try {
-                const raw = localStorage.getItem('agenda_famiglia_shopping_rev15') || localStorage.getItem('agenda_famiglia_shopping_rev13') || localStorage.getItem('agenda_famiglia_shopping_rev12') || localStorage.getItem('agenda_famiglia_shopping_rev11');
+                const raw = localStorage.getItem('agenda_famiglia_shopping_rev16') || localStorage.getItem('agenda_famiglia_shopping_rev13') || localStorage.getItem('agenda_famiglia_shopping_rev12') || localStorage.getItem('agenda_famiglia_shopping_rev11');
                 if (raw) {
                     const parsed = JSON.parse(raw);
                     if (Array.isArray(parsed)) return parsed;
@@ -2218,11 +2244,11 @@ function ghOpenSetup() {
 
         function persistShoppingList() {
             try {
-                localStorage.setItem('agenda_famiglia_shopping_rev15', JSON.stringify(state.shoppingList));
+                localStorage.setItem('agenda_famiglia_shopping_rev16', JSON.stringify(state.shoppingList));
                 localStorage.setItem('agenda_famiglia_shopping_rev11', JSON.stringify(state.shoppingList));
             } catch(e) {}
             if (db && currentUser) {
-                setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_shopping_rev15', 'current_list'), {
+                setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_shopping_rev16', 'current_list'), {
                     items: state.shoppingList,
                     updatedAt: new Date().toISOString()
                 }).catch(err => console.error(err));
@@ -2232,7 +2258,7 @@ function ghOpenSetup() {
 
         function loadPersistedChores() {
             try {
-                const raw = localStorage.getItem('agenda_famiglia_chores_rev15') || localStorage.getItem('agenda_famiglia_chores_rev13') || localStorage.getItem('agenda_famiglia_chores_rev12') || localStorage.getItem('agenda_famiglia_chores_rev11');
+                const raw = localStorage.getItem('agenda_famiglia_chores_rev16') || localStorage.getItem('agenda_famiglia_chores_rev13') || localStorage.getItem('agenda_famiglia_chores_rev12') || localStorage.getItem('agenda_famiglia_chores_rev11');
                 if (raw) {
                     const parsed = JSON.parse(raw);
                     if (Array.isArray(parsed) && parsed.length > 0) return parsed;
@@ -2243,11 +2269,11 @@ function ghOpenSetup() {
 
         function persistChores() {
             try {
-                localStorage.setItem('agenda_famiglia_chores_rev15', JSON.stringify(state.chores));
+                localStorage.setItem('agenda_famiglia_chores_rev16', JSON.stringify(state.chores));
                 localStorage.setItem('agenda_famiglia_chores_rev11', JSON.stringify(state.chores));
             } catch(e) {}
             if (db && currentUser) {
-                setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_chores_rev15', 'current_chores'), {
+                setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_chores_rev16', 'current_chores'), {
                     chores: state.chores,
                     updatedAt: new Date().toISOString()
                 }).catch(err => console.error(err));
@@ -2257,7 +2283,7 @@ function ghOpenSetup() {
 
         function loadPersistedBills() {
             try {
-                const raw = localStorage.getItem('agenda_famiglia_bills_rev15') || localStorage.getItem('agenda_famiglia_bills_rev13') || localStorage.getItem('agenda_famiglia_bills_rev12') || localStorage.getItem('agenda_famiglia_bills_rev11');
+                const raw = localStorage.getItem('agenda_famiglia_bills_rev16') || localStorage.getItem('agenda_famiglia_bills_rev13') || localStorage.getItem('agenda_famiglia_bills_rev12') || localStorage.getItem('agenda_famiglia_bills_rev11');
                 if (raw) {
                     const parsed = JSON.parse(raw);
                     if (Array.isArray(parsed) && parsed.length > 0) return parsed;
@@ -2268,11 +2294,11 @@ function ghOpenSetup() {
 
         function persistBills() {
             try {
-                localStorage.setItem('agenda_famiglia_bills_rev15', JSON.stringify(state.bills));
+                localStorage.setItem('agenda_famiglia_bills_rev16', JSON.stringify(state.bills));
                 localStorage.setItem('agenda_famiglia_bills_rev11', JSON.stringify(state.bills));
             } catch(e) {}
             if (db && currentUser) {
-                setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_bills_rev15', 'current_bills'), {
+                setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_bills_rev16', 'current_bills'), {
                     bills: state.bills,
                     updatedAt: new Date().toISOString()
                 }).catch(err => console.error(err));
@@ -2282,47 +2308,97 @@ function ghOpenSetup() {
 
         // DATI DI PROVA INIZIALI: INCLUDE ESEMPIO DI APPUNTAMENTO DENTRO UN ALTRO (4-8 E 5-7:30) E TWIRLING A SCALINI
         function buildRequestedSeedEvents() {
-            const items = [
-                // Esempio esplicito richiesto dall'utente: appuntamento dalle 16:00 alle 20:00 (dalle 4 alle 8) con all'interno dalle 17:00 alle 19:30 (dalle 5 alle 7:30)
-                { id: 'seed_nested_outer_1910', title: 'Pomeriggio Attività / Studio', subcategory: 'Palestra', patrizioCategory: 'Personali', date: '2026-10-19', time: '16:00', endTime: '20:00', duration: '4 ore', category: 'sportivi', users: ['u3'], notes: 'Fascia globale 16:00 - 20:00' },
-                { id: 'seed_nested_inner_1910', title: 'Allenamento Avanzato', subcategory: 'Twirling', patrizioCategory: 'Personali', date: '2026-10-19', time: '17:00', endTime: '19:30', duration: '2h 30m', category: 'sportivi', users: ['u3', 'u5'], notes: 'Impegno annidato nella fascia 17:00 - 19:30' },
-
-                { id: 'seed_pat_lav_1910', title: 'Lavoro', subcategory: 'Multites', patrizioCategory: 'Multites', date: '2026-10-19', time: '08:30', endTime: '14:00', duration: '5h 30m', category: 'lavorativi', users: ['u1'], notes: 'Uff. Isola' },
-                { id: 'seed_pat_med_2110', title: 'Visita medica', subcategory: 'Controllo', patrizioCategory: 'Personali', date: '2026-10-21', time: '09:00', endTime: '10:00', duration: '1 ora', category: 'medici', users: ['u1'], notes: 'Controllo annuale' },
-                { id: 'seed_pat_fam_clara', title: 'Famiglia', subcategory: 'Famiglia', patrizioCategory: 'Famiglia', patrizioFamilyMember: 'Clara', date: '2026-10-22', time: '16:00', endTime: '16:30', duration: '30 min', category: 'famigliari', users: ['u1'], notes: 'Ritiro Clara da scuola/attività' },
-                { id: 'seed_pat_sopralluogo', title: 'Sopralluogo', subcategory: 'Sopralluogo', patrizioCategory: 'Sopralluogo', date: '2026-10-23', time: '10:00', endTime: '12:00', duration: '2 ore', category: 'lavorativi', users: ['u1'], notes: 'Cantiere Isola' },
-                // Scadenze Auto & Pagamenti
-                { id: 'seed_auto_bollo', title: 'Bollo Auto (Audi)', subcategory: 'Bollo', date: '2026-10-31', time: '09:00', endTime: '09:30', duration: '30 min', category: 'auto', users: ['u1'], notes: 'Scadenza pagamento bollo ACI online' },
-                { id: 'seed_pag_inarcassa', title: 'Scadenza Inarcassa', subcategory: 'Inarcassa', date: '2026-11-30', time: '10:00', endTime: '11:00', duration: '1 ora', category: 'pagamenti', users: ['u1'], notes: 'Contributi previdenziali ingegneri/architetti' },
-                { id: 'seed_auto_revisione', title: 'Revisione Auto Famiglia', subcategory: 'Revisione', date: '2026-12-15', time: '08:30', endTime: '09:30', duration: '1 ora', category: 'auto', users: ['u1', 'u2'], notes: 'Officina autorizzata Monticello C.O.' }
-            ];
-
-            ['2026-10-19', '2026-10-26', '2026-11-02', '2026-11-09'].forEach((dt, i) => {
-                items.push({ id: `seed_man_yoga_${i}`, title: 'Yoga', subcategory: 'Yoga', date: dt, time: '18:00', endTime: '19:00', duration: '1 ora', category: 'sportivi', users: ['u2'], notes: '' });
-            });
-
-            const tuesdays = ['2026-10-20', '2026-10-27', '2026-11-03', '2026-11-10'];
-            const thursdays = ['2026-10-22', '2026-10-29', '2026-11-05', '2026-11-12'];
-
-            // SOVRAPPOSIZIONE A SCALINI TWIRLING: EMMA, CLARA, ASIA
-            tuesdays.forEach((dt, i) => {
-                items.push({ id: `seed_emma_tw_mar_${i}`, title: 'Twirling', subcategory: 'Twirling', date: dt, time: '18:00', endTime: '19:30', duration: '1h 30m', category: 'sportivi', users: ['u5'], notes: 'Palestra Isola' });
-                items.push({ id: `seed_clara_tw_mar_${i}`, title: 'Twirling', subcategory: 'Twirling', date: dt, time: '18:00', endTime: '19:00', duration: '1 ora', category: 'sportivi', users: ['u6'], notes: 'Palestra Isola' });
-                items.push({ id: `seed_asia_tw_mar_${i}`, title: 'Twirling', subcategory: 'Twirling', date: dt, time: '16:30', endTime: '20:00', duration: '3h 30m', category: 'sportivi', users: ['u3'], notes: 'Palestra' });
-            });
-
-            thursdays.forEach((dt, i) => {
-                items.push({ id: `seed_emma_tw_gio_${i}`, title: 'Twirling', subcategory: 'Twirling', date: dt, time: '18:00', endTime: '19:30', duration: '1h 30m', category: 'sportivi', users: ['u5'], notes: 'Palestra Isola' });
-                items.push({ id: `seed_clara_tw_gio_${i}`, title: 'Twirling', subcategory: 'Twirling', date: dt, time: '18:00', endTime: '19:00', duration: '1 ora', category: 'sportivi', users: ['u6'], notes: 'Palestra Isola' });
-                items.push({ id: `seed_asia_tw_gio_${i}`, title: 'Twirling', subcategory: 'Twirling', date: dt, time: '18:00', endTime: '21:00', duration: '3 ore', category: 'sportivi', users: ['u3'], notes: 'Palestra' });
-            });
-
-            items.push(
-                { id: 'seed_extra_mattia_calcio', title: 'Allenamento Calcio', subcategory: 'Calcio', date: '2026-10-21', time: '17:30', endTime: '19:00', duration: '1h 30m', category: 'sportivi', users: ['u4'], notes: 'Campo Sportivo' },
-                { id: 'seed_extra_mattia_dent', title: 'Controllo Dentista', subcategory: 'Dentista', date: '2026-10-23', time: '15:00', endTime: '16:00', duration: '1 ora', category: 'medici', users: ['u4', 'u2'], notes: 'Studio Dentistico' },
-                { id: 'seed_extra_fam_spesa', title: 'Spesa Settimanale', subcategory: 'Spesa', date: '2026-10-24', time: '10:00', endTime: '11:30', duration: '1h 30m', category: 'famigliari', users: ['u1', 'u2'], notes: 'Supermercato' },
-                { id: 'seed_extra_fam_nonni', title: 'Pranzo dai Nonni', subcategory: 'Famiglia', date: '2026-10-25', time: '12:30', endTime: '15:00', duration: '2h 30m', category: 'famigliari', users: ['u1', 'u2', 'u3', 'u4', 'u5', 'u6'], notes: 'Famiglia' }
-            );
+            const items = [];
+            // Genera impegni Twirling richiesti per tutto l'anno sportivo (settembre 2026 - luglio 2027)
+            const startD = new Date(2026, 8, 1);
+            const endD = new Date(2027, 6, 31);
+            for (let d = new Date(startD); d <= endD; d.setDate(d.getDate() + 1)) {
+                const dow = d.getDay();
+                const dt = toIsoDate(d);
+                if (dow === 2) {
+                    // MARTEDI:
+                    // Asia: 16:30-20:00 (Palestra)
+                    items.push({
+                        id: `tw_asia_mar_${dt}`,
+                        title: 'Twirling',
+                        subcategory: 'Twirling',
+                        date: dt,
+                        time: '16:30',
+                        endTime: '20:00',
+                        duration: '3h 30m',
+                        category: 'sportivi',
+                        users: ['u3'],
+                        notes: 'Palestra'
+                    });
+                    // Emma: 18:00-19:30 (Palestra Isola)
+                    items.push({
+                        id: `tw_emma_mar_${dt}`,
+                        title: 'Twirling',
+                        subcategory: 'Twirling',
+                        date: dt,
+                        time: '18:00',
+                        endTime: '19:30',
+                        duration: '1h 30m',
+                        category: 'sportivi',
+                        users: ['u5'],
+                        notes: 'Palestra Isola'
+                    });
+                    // Clara: 18:00-19:00 (Palestra Isola)
+                    items.push({
+                        id: `tw_clara_mar_${dt}`,
+                        title: 'Twirling',
+                        subcategory: 'Twirling',
+                        date: dt,
+                        time: '18:00',
+                        endTime: '19:00',
+                        duration: '1 ora',
+                        category: 'sportivi',
+                        users: ['u6'],
+                        notes: 'Palestra Isola'
+                    });
+                } else if (dow === 4) {
+                    // GIOVEDI:
+                    // Asia: 18:00-21:00 (Palestra)
+                    items.push({
+                        id: `tw_asia_gio_${dt}`,
+                        title: 'Twirling',
+                        subcategory: 'Twirling',
+                        date: dt,
+                        time: '18:00',
+                        endTime: '21:00',
+                        duration: '3 ore',
+                        category: 'sportivi',
+                        users: ['u3'],
+                        notes: 'Palestra'
+                    });
+                    // Emma: 18:00-19:30 (Palestra Isola)
+                    items.push({
+                        id: `tw_emma_gio_${dt}`,
+                        title: 'Twirling',
+                        subcategory: 'Twirling',
+                        date: dt,
+                        time: '18:00',
+                        endTime: '19:30',
+                        duration: '1h 30m',
+                        category: 'sportivi',
+                        users: ['u5'],
+                        notes: 'Palestra Isola'
+                    });
+                    // Clara: 18:00-19:00 (Palestra Isola)
+                    items.push({
+                        id: `tw_clara_gio_${dt}`,
+                        title: 'Twirling',
+                        subcategory: 'Twirling',
+                        date: dt,
+                        time: '18:00',
+                        endTime: '19:00',
+                        duration: '1 ora',
+                        category: 'sportivi',
+                        users: ['u6'],
+                        notes: 'Palestra Isola'
+                    });
+                }
+            }
             return items;
         }
 
@@ -2354,20 +2430,20 @@ function ghOpenSetup() {
             },
             personalColorsByProfile: {},
             versionControl: {
-                approvedVersion: 'rev.15',
+                approvedVersion: 'rev.16',
                 approvedBy: 'Patrizio',
                 approvedAt: ''
             },
             selectedUsers: BASE_USERS.map(u => u.id), // Tutti i 6
             selectedCategories: Object.keys(BASE_CATEGORIES),
-            selectedBillsUtenze: ['Acqua', 'Gas', 'ElettricitÃ ', 'Internet e telefono', 'Consorzio', 'Altre utenze'], // Tutte le 7
+            selectedBillsUtenze: ['Acqua', 'Gas', 'Elettricità', 'Internet e telefono', 'Consorzio', 'Altre utenze'], // Tutte le 7
             showRoutineSchool: false, // NON spuntata di default
             viewMode: 'day', // Apertura di default in vista giornaliera (gg)
             showPast: true,
-            singleDayDate: new Date(2026, 9, 19),
-            weekStartDate: new Date(2026, 9, 19),
-            calendarYear: 2026,
-            calendarMonth: 9,
+            singleDayDate: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()),
+            weekStartDate: getMondayOfWeek(new Date()),
+            calendarYear: new Date().getFullYear(),
+            calendarMonth: new Date().getMonth(),
             popupDate: null,
             timelineZoomHours: 4,
             formCategory: 'sportivi',
@@ -2435,7 +2511,7 @@ function ghOpenSetup() {
             if (!currentUser || !db) return;
 
             // Listener Eventi
-            const eventsCol = collection(db, 'artifacts', appId, 'public', 'data', 'family_events_rev15');
+            const eventsCol = collection(db, 'artifacts', appId, 'public', 'data', 'family_events_rev16');
             onSnapshot(eventsCol, async (snap) => {
                 if (snap.empty) {
                     await seedFirestoreEvents();
@@ -2450,7 +2526,7 @@ function ghOpenSetup() {
             }, (err) => console.error(err));
 
             // Listener Ponti
-            const pontiCol = collection(db, 'artifacts', appId, 'public', 'data', 'family_ponti_rev15');
+            const pontiCol = collection(db, 'artifacts', appId, 'public', 'data', 'family_ponti_rev16');
             onSnapshot(pontiCol, (snap) => {
                 const pList = [];
                 snap.forEach(d => pList.push({ id: d.id, ...d.data() }));
@@ -2460,24 +2536,24 @@ function ghOpenSetup() {
             }, (err) => console.error(err));
 
             // Listener Chores (Attività Casa)
-            const choresCol = collection(db, 'artifacts', appId, 'public', 'data', 'family_chores_rev15');
+            const choresCol = collection(db, 'artifacts', appId, 'public', 'data', 'family_chores_rev16');
             onSnapshot(choresCol, (snap) => {
                 snap.forEach(d => {
                     if (d.id === 'current_chores' && d.data().chores) {
                         state.chores = d.data().chores;
-                        try { localStorage.setItem('agenda_famiglia_chores_rev15', JSON.stringify(state.chores)); } catch(e){}
+                        try { localStorage.setItem('agenda_famiglia_chores_rev16', JSON.stringify(state.chores)); } catch(e){}
                         renderCasaScreen();
                     }
                 });
             }, (err) => console.error(err));
 
             // Listener Bills (Bollette)
-            const billsCol = collection(db, 'artifacts', appId, 'public', 'data', 'family_bills_rev15');
+            const billsCol = collection(db, 'artifacts', appId, 'public', 'data', 'family_bills_rev16');
             onSnapshot(billsCol, (snap) => {
                 snap.forEach(d => {
                     if (d.id === 'current_bills' && d.data().bills) {
                         state.bills = d.data().bills;
-                        try { localStorage.setItem('agenda_famiglia_bills_rev15', JSON.stringify(state.bills)); } catch(e){}
+                        try { localStorage.setItem('agenda_famiglia_bills_rev16', JSON.stringify(state.bills)); } catch(e){}
                         renderBolletteScreen();
                         renderScadenzeScreen();
                     }
@@ -2485,19 +2561,19 @@ function ghOpenSetup() {
             }, (err) => console.error(err));
 
             // Listener Spesa
-            const shopCol = collection(db, 'artifacts', appId, 'public', 'data', 'family_shopping_rev15');
+            const shopCol = collection(db, 'artifacts', appId, 'public', 'data', 'family_shopping_rev16');
             onSnapshot(shopCol, (snap) => {
                 snap.forEach(d => {
                     if (d.id === 'current_list' && d.data().items) {
                         state.shoppingList = d.data().items;
-                        try { localStorage.setItem('agenda_famiglia_shopping_rev15', JSON.stringify(state.shoppingList)); } catch(e){}
+                        try { localStorage.setItem('agenda_famiglia_shopping_rev16', JSON.stringify(state.shoppingList)); } catch(e){}
                         renderShoppingScreen();
                     }
                 });
             }, (err) => console.error(err));
 
             // Listener Configurazione Famiglia
-            const settingsCol = collection(db, 'artifacts', appId, 'public', 'data', 'family_settings_rev15');
+            const settingsCol = collection(db, 'artifacts', appId, 'public', 'data', 'family_settings_rev16');
             onSnapshot(settingsCol, (snap) => {
                 snap.forEach(d => {
                     const data = d.data();
@@ -2525,7 +2601,7 @@ function ghOpenSetup() {
             const items = buildRequestedSeedEvents();
             for (const it of items) {
                 const { id, ...data } = it;
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_events_rev15', id), data);
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_events_rev16', id), data);
             }
         }
 
@@ -2545,11 +2621,11 @@ function ghOpenSetup() {
             const footerStatus = document.getElementById('footerApprovalStatus');
             const btnApprove = document.getElementById('btnPatrizioApprove');
             if (footerStatus) {
-                footerStatus.textContent = state.versionControl.approvedVersion ? `Approvata ${state.versionControl.approvedVersion}` : 'rev.15 Attiva';
+                footerStatus.textContent = state.versionControl.approvedVersion ? `Approvata ${state.versionControl.approvedVersion}` : 'rev.16 Attiva';
             }
             if (btnApprove) {
                 const isPat = state.activeProfileId === 'u1';
-                if (isPat && state.versionControl.approvedVersion !== 'rev.15') {
+                if (isPat && state.versionControl.approvedVersion !== 'rev.16') {
                     btnApprove.classList.remove('hidden');
                 } else {
                     btnApprove.classList.add('hidden');
@@ -2596,7 +2672,7 @@ function ghOpenSetup() {
                                 <span class="w-3 h-3 rounded-full shrink-0 shadow-2xs" style="background-color:${c.borderHex}"></span>
                                 <span class="text-xs font-bold text-slate-800">${escapeHtml(c.label)}</span>
                             </div>
-                            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-md" style="background-color:${c.bgHex}; color:${c.textHex}">AttivitÃ </span>
+                            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-md" style="background-color:${c.bgHex}; color:${c.textHex}">Attività</span>
                         </label>
                     `;
                 }).join('');
@@ -2622,7 +2698,7 @@ function ghOpenSetup() {
                 catsBtnLabel.textContent = (selC === totalC) ? `Cosa: Tutte (${totalC})` : (selC === 0) ? `Cosa: Nessuna` : `Cosa: ${selC}`;
             }
 
-            // Contatori badge compatibilitÃ 
+            // Contatori badge compatibilità
             const uCount = document.getElementById('selectedUsersCount');
             if (uCount) uCount.textContent = state.selectedUsers.length;
             const cCount = document.getElementById('selectedCatsCount');
@@ -2680,7 +2756,7 @@ function ghOpenSetup() {
                                     <span class="font-black text-white tracking-wide">${escapeHtml(u.name)}</span>
                                 </span>
                                 <span class="text-[10px] font-extrabold opacity-95 shrink-0 ml-1.5 bg-black/25 px-1.5 py-0.5 rounded shadow-2xs">
-                                    ${p.time} â†’ ${p.endTime}
+                                    ${p.time}-${p.endTime}
                                 </span>
                             </div>
                         </div>
@@ -2895,7 +2971,7 @@ function ghOpenSetup() {
                                             </span>
                                         </div>
                                         <span class="text-[11px] sm:text-xs font-black bg-white/90 px-2.5 py-0.5 rounded-lg border border-black/10 shadow-2xs">
-                                            ${item.time} â†’ ${item.endTime} (${Math.floor(item.durMin/60)}h ${item.durMin%60 > 0 ? (item.durMin%60 + 'm') : ''})
+                                            ${item.time}-${item.endTime} (${Math.floor(item.durMin/60)}h ${item.durMin%60 > 0 ? (item.durMin%60 + 'm') : ''})
                                         </span>
                                     </div>
                                     ${renderSteppedBandsHtml(item, usersList)}
@@ -3187,7 +3263,7 @@ function ghOpenSetup() {
                         bodyHtml += `
                             <div onclick="openActivityDetailModal(JSON.parse(this.dataset.item))"
                                  data-item="${escapeHtml(JSON.stringify(item))}"
-                                 title="${escapeHtml(item.title)}: ${item.time} - ${item.endTime} (Tocca per ingrandire)"
+                                 title="${escapeHtml(item.title)}: ${item.time}-${item.endTime} (Tocca per ingrandire)"
                                  style="top:${topPx}px; height:${heightPx}px; background-color:${cat.bgHex}; border-color:${cat.borderHex}; color:${cat.textHex};"
                                  class="absolute inset-x-1 rounded-xl border-2 shadow-xs p-1 overflow-hidden flex flex-col justify-between cursor-pointer transition hover:brightness-95 group z-10">
                                 
@@ -3374,7 +3450,7 @@ function ghOpenSetup() {
                                         <span>${escapeHtml(ev.title)}</span>
                                         ${ev.isCompleted ? `<i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i>` : ''}
                                     </div>
-                                    <div class="text-[10px] font-bold opacity-80 truncate">Tutto il giorno ${ev.subcategory || ev.notes ? ` â€¢ ${escapeHtml(ev.subcategory || ev.notes)}` : ''}</div>
+                                    <div class="text-[10px] font-bold opacity-80 truncate">Tutto il giorno ${ev.subcategory || ev.notes ? ` - ${escapeHtml(ev.subcategory || ev.notes)}` : ''}</div>
                                 </div>
                                 <div class="flex items-center gap-1 shrink-0">${uBadges}</div>
                             </div>
@@ -3401,7 +3477,7 @@ function ghOpenSetup() {
                                             </span>
                                         </div>
                                         <span class="text-[11px] sm:text-xs font-black bg-white/90 px-2.5 py-0.5 rounded-lg border border-black/10 shadow-2xs">
-                                            ${item.time} â†’ ${item.endTime} (${Math.floor(item.durMin/60)}h ${item.durMin%60 > 0 ? (item.durMin%60 + 'm') : ''})
+                                            ${item.time}-${item.endTime} (${Math.floor(item.durMin/60)}h ${item.durMin%60 > 0 ? (item.durMin%60 + 'm') : ''})
                                         </span>
                                     </div>
                                     ${renderSteppedBandsHtml(item, usersList)}
@@ -3427,7 +3503,7 @@ function ghOpenSetup() {
                                             ${ev.isCompleted ? `<i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i>` : ''}
                                         </div>
                                         <div class="text-[10px] font-bold opacity-80 truncate">
-                                            ${ev.time || 'Tutto il giorno'}${ev.endTime ? ` - ${ev.endTime}` : ''} â€¢ ${escapeHtml(ev.subcategory || ev.notes || '')}
+                                            ${ev.time || 'Tutto il giorno'}${ev.endTime ? ` - ${ev.endTime}` : ''}${ev.subcategory || ev.notes ? ` - ` : ''}${escapeHtml(ev.subcategory || ev.notes || '')}
                                         </div>
                                     </div>
                                     <div class="flex items-center gap-1 shrink-0">${uBadges}</div>
@@ -3983,7 +4059,7 @@ function ghOpenSetup() {
             // Popola Dropdown Utenze Multi-scelta
             const utenzeList = document.getElementById('billsUtenzeCheckboxList');
             if (utenzeList) {
-                const allUtenze = ['Acqua', 'Gas', 'ElettricitÃ ', 'Internet e telefono', 'Consorzio', 'Altre utenze'];
+                const allUtenze = ['Acqua', 'Gas', 'Elettricità', 'Internet e telefono', 'Consorzio', 'Altre utenze'];
                 state.bills.forEach(b => {
                     const prov = b.provider || b.utilityType;
                     if (prov && !allUtenze.includes(prov)) allUtenze.push(prov);
@@ -4197,7 +4273,7 @@ function ghOpenSetup() {
                                         <span>${escapeHtml(s)}</span>
                                         ${!isDefault ? `
                                             <button type="button" onclick="deleteCustomSubcategory('${c.id}', '${escapeHtml(s)}', event)"
-                                                    title="Elimina ${escapeHtml(s)}" class="hover:text-red-600 font-black ml-0.5">Ã—</button>
+                                                    title="Elimina ${escapeHtml(s)}" class="hover:text-red-600 font-black ml-0.5">&times;</button>
                                         ` : ''}
                                     </span>
                                 `;
@@ -4665,14 +4741,18 @@ function ghOpenSetup() {
                 return;
             }
             const lines = [
-                '🛒 LISTA DELLA SPESA CONDIVISA FAMIGLIA',
+                'ðŸ›’ LISTA DELLA SPESA CONDIVISA FAMIGLIA',
                 '----------------------------------------',
-                ...activeItems.map(it => `• ${it.text} (${it.addedBy || 'Famiglia'})`),
+                ...activeItems.map(it => `  - ${it.text} (${it.addedBy || 'Famiglia'})`),
                 '----------------------------------------',
                 `Aggiornata al ${new Date().toLocaleDateString('it-IT')}`
             ];
             const text = lines.join('\n');
-            window.open(`https://t.me/share/url?text=${encodeURIComponent(text)}`, '_blank');
+            if (typeof openNativeTelegram === 'function') {
+                openNativeTelegram(text);
+            } else {
+                window.open(`https://t.me/share/url?text=${encodeURIComponent(text)}`, '_blank');
+            }
         };
 
         window.copyShoppingListToClipboard = function() {
@@ -4956,10 +5036,11 @@ function ghOpenSetup() {
         };
 
         window.goToToday = function() {
-            state.singleDayDate = new Date(2026, 9, 19);
-            state.weekStartDate = new Date(2026, 9, 19);
-            state.calendarYear = 2026;
-            state.calendarMonth = 9;
+            const now = new Date();
+            state.singleDayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            state.weekStartDate = getMondayOfWeek(now);
+            state.calendarYear = now.getFullYear();
+            state.calendarMonth = now.getMonth();
             renderApp();
             if (state.viewMode === 'list') scrollToTodayInList();
         };
@@ -5051,7 +5132,7 @@ function ghOpenSetup() {
 
         window.toggleAllBillsUtenzeFilter = function(selectAll) {
             if (selectAll) {
-                const allUtenze = ['Acqua', 'Gas', 'ElettricitÃ ', 'Internet e telefono', 'Consorzio', 'Altre utenze'];
+                const allUtenze = ['Acqua', 'Gas', 'Elettricità', 'Internet e telefono', 'Consorzio', 'Altre utenze'];
                 state.bills.forEach(b => {
                     const prov = b.provider || b.utilityType;
                     if (prov && !allUtenze.includes(prov)) allUtenze.push(prov);
@@ -5149,7 +5230,7 @@ function ghOpenSetup() {
                         <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
                             <div>
                                 <span class="text-xs font-bold text-slate-500">Fascia Oraria Complessiva:</span>
-                                <div class="text-sm font-black text-slate-900">${item.time} - ${item.endTime} (${Math.floor(item.durMin/60)}h ${item.durMin%60}m)</div>
+                                <div class="text-sm font-black text-slate-900">${item.time}-${item.endTime} (${Math.floor(item.durMin/60)}h ${item.durMin%60}m)</div>
                             </div>
                             <span class="px-2.5 py-1 rounded-xl text-xs font-black bg-indigo-100 text-indigo-900">
                                 ${item.participants.length} familiari impegnati
@@ -5173,7 +5254,7 @@ function ghOpenSetup() {
                                                 </div>
                                             </div>
                                             <div class="text-right">
-                                                <div class="text-xs font-black text-indigo-700">${p.time} - ${p.endTime}</div>
+                                                <div class="text-xs font-black text-indigo-700">${p.time}-${p.endTime}</div>
                                                 <button type="button" onclick="closeActivityDetailModal(); openEventModal('${p.rawEv.id}')"
                                                         class="text-[10px] font-bold text-slate-400 hover:text-indigo-600 underline">Modifica</button>
                                             </div>
@@ -5430,7 +5511,7 @@ function ghOpenSetup() {
                             <button type="button" onclick="deleteCustomSubcategory('${state.formCategory}', '${escapeHtml(sub)}', event)"
                                     title="Elimina ${escapeHtml(sub)}"
                                     class="px-1.5 py-1 text-xs font-black hover:text-red-600 rounded-r-xl transition">
-                                Ã—
+                                &times;
                             </button>
                         ` : ''}
                     </div>
@@ -5453,7 +5534,7 @@ function ghOpenSetup() {
                 renderFormSubcategories();
                 showToast(`Sotto-categoria "${val}" aggiunta a ${categoryId}!`);
             } else {
-                showToast(`La sotto-categoria "${val}" esiste giÃ .`);
+                showToast(`La sotto-categoria "${val}" esiste già.`);
             }
         };
 
@@ -5552,7 +5633,7 @@ function ghOpenSetup() {
             renderApp();
 
             if (db && currentUser) {
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_events_rev15', id), payload);
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_events_rev16', id), payload);
             }
             showToast("Impegno salvato con successo!");
         };
@@ -5566,7 +5647,7 @@ function ghOpenSetup() {
             renderApp();
 
             if (db && currentUser) {
-                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_events_rev15', id));
+                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_events_rev16', id));
             }
             showToast("Impegno eliminato.");
         };
@@ -5848,31 +5929,31 @@ function ghOpenSetup() {
         // ========================================================
         // 20. DOWNLOAD FILE REV.14 E BACKUP
         // ========================================================
-        window.downloadRev15File = function() {
+        window.downloadRev16File = function() {
             const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
             const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'agenda_famiglia_rev.15.html';
+            a.download = 'agenda_famiglia_rev.16.html';
             document.body.appendChild(a);
             a.click();
             a.remove();
             URL.revokeObjectURL(url);
-            showToast("File agenda_famiglia_rev.15.html scaricato con successo!");
+            showToast("File agenda_famiglia_rev.16.html scaricato con successo!");
         };
-        window.downloadRev14File = window.downloadRev15File;
-        window.downloadRev13File = window.downloadRev15File;
-        window.downloadRev12File = window.downloadRev15File;
+        window.downloadRev15File = window.downloadRev16File;
+        window.downloadRev14File = window.downloadRev16File;
+        window.downloadRev13File = window.downloadRev16File;
 
         window.patrizioConfirmVersion = async function() {
             state.versionControl = {
-                approvedVersion: 'rev.15',
+                approvedVersion: 'rev.16',
                 approvedBy: 'Patrizio',
                 approvedAt: new Date().toISOString()
             };
             renderFooterProfileAndVersion();
-            showToast("rev.15 confermata ufficialmente da Patrizio!");
+            showToast("rev.16 confermata ufficialmente da Patrizio!");
         };
 
         window.exportDataJson = function() {
@@ -5955,38 +6036,9 @@ function ghOpenSetup() {
                 // ========================================================
         // 21. GESTIONE IMPEGNI DEMO & CONDIVISIONE / FOTO CALENDARIO
         // ========================================================
-        window.clearDemoEvents = function() {
-            if (!confirm("Confermi di voler rimuovere tutti gli impegni dimostrativi del calendario? Verranno mantenuti Twirling, Scuola e tutti gli impegni creati a mano.")) return;
+        
 
-            state.events = state.events.filter(e => {
-                // Se creato a mano dall'utente: mantieni SEMPRE
-                if (!e.id.startsWith('seed_')) return true;
-                // Se Twirling: mantieni SEMPRE
-                if (e.id.includes('_tw_') || (e.title || '').toLowerCase().includes('twirling') || (e.subcategory || '').toLowerCase().includes('twirling')) return true;
-                // Se Scuola: mantieni SEMPRE
-                if ((e.title || '').toLowerCase().includes('scuola') || (e.subcategory || '').toLowerCase().includes('scuola')) return true;
-                // Altri impegni demo: rimuovi
-                return false;
-            });
-
-            persistEvents();
-            renderApp();
-            showToast("Impegni demo rimossi (Twirling, Scuola e impegni manuali mantenuti)");
-        };
-
-        window.restoreDemoEvents = function() {
-            const seeds = buildRequestedSeedEvents();
-            let addedCount = 0;
-            seeds.forEach(s => {
-                if (!state.events.some(x => x.id === s.id)) {
-                    state.events.push(s);
-                    addedCount++;
-                }
-            });
-            persistEvents();
-            renderApp();
-            showToast(`Ripristinati ${addedCount} impegni demo (i tuoi impegni manuali sono rimasti intatti)`);
-        };
+        
 
         window.formatCalendarShareText = function() {
             let text = "ðŸ“… *AGENDA FAMILIARE CONDIVISA*\n";
@@ -6000,7 +6052,7 @@ function ghOpenSetup() {
                 } else {
                     evs.forEach(e => {
                         const uNames = (e.users || []).map(uid => (BASE_USERS.find(x => x.id === uid) || {}).name || uid).join(', ');
-                        text += `â€¢ *${e.time || 'Tutto il giorno'}* - ${e.title} (${uNames}) ${e.notes ? 'â€¢ ' + e.notes : ''}\n`;
+                        text += - *\* - \ (\) \\n;
                     });
                 }
             } else if (state.viewMode === 'week') {
@@ -6019,7 +6071,7 @@ function ghOpenSetup() {
                         text += `ðŸ‘‰ *${dayTitle}:*\n`;
                         evs.forEach(e => {
                             const uNames = (e.users || []).map(uid => (BASE_USERS.find(x => x.id === uid) || {}).name || uid).join(', ');
-                            text += `  â€¢ ${e.time || ''} ${e.title} (${uNames})\n`;
+                        text += - *\* - \ (\) \\n;
                         });
                         text += "\n";
                     }
@@ -6036,7 +6088,7 @@ function ghOpenSetup() {
                 if (monthEvs.length === 0) text += "Nessun impegno nel mese.\n";
                 else {
                     monthEvs.slice(0, 30).forEach(e => {
-                        text += `â€¢ ${e.date} [${e.time || ''}] ${e.title}\n`;
+                        text += - *\* - \ (\) \\n;
                     });
                     if (monthEvs.length > 30) text += `... ed altri ${monthEvs.length - 30} impegni.\n`;
                 }
@@ -6051,10 +6103,26 @@ function ghOpenSetup() {
             closeAllDropdowns();
         };
 
+        function openNativeTelegram(text) {
+            const enc = encodeURIComponent(text);
+            const tgAppUrl = `tg://msg?text=${enc}`;
+            const tgWebUrl = `https://t.me/share/url?text=${enc}`;
+            const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+            if (isMobile) {
+                window.location.href = tgAppUrl;
+                setTimeout(() => {
+                    if (document.hasFocus()) {
+                        window.open(tgWebUrl, '_blank');
+                    }
+                }, 1500);
+            } else {
+                window.open(tgWebUrl, '_blank');
+            }
+        }
+
         window.shareCalendarTelegram = function() {
             const text = formatCalendarShareText();
-            const url = `https://t.me/share/url?url=&text=${encodeURIComponent(text)}`;
-            window.open(url, '_blank');
+            openNativeTelegram(text);
             closeAllDropdowns();
         };
 
@@ -6115,6 +6183,48 @@ function ghOpenSetup() {
         } else {
             bootApp();
         }
+    
+        // ========================================================
+        // REGISTRAZIONE SERVICE WORKER E AGGIORNAMENTO AUTOMATICO
+        // ========================================================
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').then(reg => {
+                    console.log('SW rev.16 registrato con successo.');
+                    reg.update();
+                    reg.addEventListener('updatefound', () => {
+                        const newWorker = reg.installing;
+                        if (newWorker) {
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    console.log('Nuova versione rilevata su GitHub, aggiornamento automatico...');
+                                    window.location.reload();
+                                }
+                            });
+                        }
+                    });
+                }).catch(err => console.log('SW reg error:', err));
+            });
+
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                window.location.reload();
+            });
+
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible' && navigator.onLine) {
+                    navigator.serviceWorker.getRegistration().then(reg => {
+                        if (reg) reg.update();
+                    });
+                }
+            });
+        }
+
+        // All'avvio applica lo zoom salvato per questo cellulare
+        window.addEventListener('DOMContentLoaded', () => {
+            const saved = localStorage.getItem('agenda_famiglia_font_scale');
+            if (saved) applyAppFontScale(Number(saved));
+            updateHeaderClock();
+        });
     </script>
 </body>
 </html>
