@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="it" class="h-full bg-slate-100">
 <head>
     <meta charset="UTF-8">
@@ -111,14 +111,7 @@
                     </button>
                 </div>
 
-                <!-- Tasto rapido contestuale "+ Nuovo" sulla destra -->
-                <div class="flex items-center gap-1 shrink-0 ml-auto">
-                    <button type="button" onclick="handleHeaderQuickAdd()" id="headerQuickAddBtn" title="Aggiungi nuovo elemento"
-                            class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-[11px] font-black text-white bg-indigo-600 hover:bg-indigo-700 active:scale-95 shadow-2xs transition">
-                        <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-                        <span id="headerQuickAddLabel">Nuovo</span>
-                    </button>
-                </div>
+                
             </div>
 
             <!-- CONTROLLI CONTESTUALI (FILTRI CHI, COSA E VISTE CALENDARIO) -->
@@ -324,10 +317,7 @@
                                 class="px-2.5 py-1 rounded-lg text-[11px] font-extrabold bg-indigo-50 text-indigo-700 border border-indigo-200">
                             Zoom 3-5h
                         </button>
-                        <button type="button" onclick="openEventModal(null, toIsoDate(state.singleDayDate), '18:00')"
-                                class="px-2.5 py-1 rounded-lg text-[11px] font-extrabold bg-indigo-600 text-white">
-                            + Aggiungi
-                        </button>
+                        
                     </div>
                 </div>
 
@@ -771,6 +761,16 @@
             <div class="bg-white rounded-2xl border border-slate-200 shadow-2xs p-4 space-y-3">
                 <h3 class="text-xs font-black uppercase text-slate-400 tracking-wider">Impostazioni & Personalizzazioni</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <button type="button" onclick="testLockscreenNotification()"
+                            class="flex items-center gap-3 p-3 rounded-xl border border-amber-300 bg-amber-50/70 hover:bg-amber-100/80 text-left transition group">
+                        <div class="p-2 bg-amber-500 text-white rounded-lg group-hover:scale-105 transition">
+                            <i data-lucide="bell-ring" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-black text-amber-950">Prova Suoneria & Notifica Schermo Spento</div>
+                            <div class="text-[10px] text-amber-800">Suona e invia notifica di test dopo 5 secondi</div>
+                        </div>
+                    </button>
                     <button type="button" onclick="openColorsModal()"
                             class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:border-indigo-400 hover:bg-indigo-50/30 text-left transition group">
                         <div class="p-2 rounded-xl bg-indigo-100 text-indigo-700 group-hover:scale-105 transition">
@@ -1165,6 +1165,90 @@
     <!-- ======================================================== -->
     <!-- MODALE 7: CREA / MODIFICA APPUNTAMENTO (STILE GOOGLE CALENDAR) -->
     <!-- ======================================================== -->
+        <!-- MODAL RIEPILOGO EVENTO (SOLA LETTURA) CON TASTI MODIFICA, DUPLICA, ELIMINA -->
+    <div id="eventSummaryModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white w-full max-w-lg rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92dvh] animate-in slide-in-from-bottom-4 duration-200">
+            <!-- Header con chip colore categoria -->
+            <div id="summaryHeaderBar" class="px-4 py-3 bg-slate-900 text-white flex items-center justify-between shrink-0 shadow-xs">
+                <div class="flex items-center gap-2 min-w-0">
+                    <span id="summaryCategoryBadge" class="px-2.5 py-0.5 rounded-lg text-xs font-black uppercase tracking-wider shrink-0 bg-indigo-600 text-white">Categoria</span>
+                    <span id="summarySubcategoryBadge" class="text-xs font-bold text-slate-300 truncate"></span>
+                </div>
+                <button type="button" onclick="closeEventSummaryModal()" class="p-1 rounded-lg text-slate-300 hover:text-white transition">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Corpo Riepilogo in sola lettura -->
+            <div class="p-4 sm:p-5 overflow-y-auto thin-scroll space-y-3.5 text-xs sm:text-sm">
+                <!-- Titolo -->
+                <div>
+                    <h3 id="summaryTitle" class="text-lg sm:text-xl font-black text-slate-900 leading-tight">Titolo Evento</h3>
+                </div>
+
+                <!-- Chi riguarda -->
+                <div class="space-y-1">
+                    <span class="text-[10px] font-black uppercase tracking-wider text-slate-400">Chi riguarda</span>
+                    <div id="summaryUsersList" class="flex flex-wrap items-center gap-1.5"></div>
+                </div>
+
+                <!-- Data, Orario e Durata tra parentesi -->
+                <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+                    <div class="flex items-center gap-2 text-slate-700">
+                        <i data-lucide="calendar" class="w-4 h-4 text-indigo-600 shrink-0"></i>
+                        <span id="summaryDateStr" class="font-bold">LunedÃ¬ 20 Ottobre 2026</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-slate-900">
+                        <i data-lucide="clock" class="w-4 h-4 text-indigo-600 shrink-0"></i>
+                        <span id="summaryTimeAndDuration" class="font-black text-sm">18:00 - 19:30 (1h 30m)</span>
+                    </div>
+                    <div id="summaryRecurrenceRow" class="hidden flex items-center gap-2 text-indigo-700 text-xs font-bold pt-1 border-t border-slate-200">
+                        <i data-lucide="repeat" class="w-3.5 h-3.5 text-indigo-600 shrink-0"></i>
+                        <span id="summaryRecurrenceText">Ripetizione settimanale</span>
+                    </div>
+                </div>
+
+                <!-- Notifica / Promemoria / Suoneria -->
+                <div id="summaryNotificationBox" class="p-2.5 rounded-xl bg-amber-50 border border-amber-200 flex items-center gap-2 text-amber-900 font-bold text-xs">
+                    <i data-lucide="bell" class="w-4 h-4 text-amber-600 shrink-0"></i>
+                    <span id="summaryNotificationText">Notifica 15 minuti prima</span>
+                </div>
+
+                <!-- Luogo / Indirizzo (se presente) -->
+                <div id="summaryPlaceBox" class="hidden p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-start gap-2 text-slate-800 text-xs">
+                    <i data-lucide="map-pin" class="w-4 h-4 text-slate-500 shrink-0 mt-0.5"></i>
+                    <span id="summaryPlaceText" class="font-bold"></span>
+                </div>
+
+                <!-- Note (se presenti) -->
+                <div id="summaryNotesBox" class="hidden p-2.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                    <span class="text-[10px] font-black uppercase tracking-wider text-slate-400">Note</span>
+                    <p id="summaryNotesText" class="text-xs font-semibold text-slate-700 whitespace-pre-line"></p>
+                </div>
+            </div>
+
+            <!-- Footer Azioni: Modifica, Duplica, Elimina -->
+            <div class="p-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-2 shrink-0">
+                <button type="button" id="btnSummaryDelete" onclick="deleteEventFromSummary()"
+                        class="px-3 py-2 rounded-xl text-rose-600 hover:bg-rose-100 font-black text-xs transition flex items-center gap-1.5">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    <span>Elimina</span>
+                </button>
+                <div class="flex items-center gap-2">
+                    <button type="button" id="btnSummaryDuplicate" onclick="duplicateEventFromSummary()"
+                            class="px-3.5 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 text-slate-800 font-bold text-xs shadow-2xs transition flex items-center gap-1.5">
+                        <i data-lucide="copy" class="w-4 h-4 text-slate-600"></i>
+                        <span>Duplica</span>
+                    </button>
+                    <button type="button" id="btnSummaryEdit" onclick="editEventFromSummary()"
+                            class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs shadow-md shadow-indigo-600/30 transition flex items-center gap-1.5">
+                        <i data-lucide="edit-3" class="w-4 h-4"></i>
+                        <span>Modifica</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div id="eventModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
         <div class="bg-white w-full max-w-2xl rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-200 max-h-[94dvh] flex flex-col overflow-hidden animate-in slide-in-from-bottom-6 sm:slide-in-from-bottom-2 duration-200">
             <!-- Header Modal -->
@@ -1188,80 +1272,87 @@
                            class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-sm font-bold focus:outline-indigo-500 shadow-2xs">
                 </div>
 
-                <!-- 2. CHI RIGUARDA (PERSONE INTERESSATE) -->
-                <div>
+                <!-- 2. CHI RIGUARDA (COMPATTO A COMPARSA, DEFAULT ACCOUNT ATTIVO) -->
+                <div class="relative">
                     <div class="flex items-center justify-between mb-1">
                         <label class="text-[11px] font-extrabold uppercase text-slate-600">Chi riguarda? *</label>
-                        <button type="button" onclick="toggleSelectAllUsersInForm()" class="text-xs font-extrabold text-indigo-600 px-2 py-0.5 rounded bg-indigo-50">Tutti (6)</button>
+                        <button type="button" onclick="toggleFormUsersDropdown(event)" class="text-xs font-bold text-indigo-600 hover:underline">
+                            Seleziona familiari â–¾
+                        </button>
                     </div>
-                    <div id="formUsersGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-1.5"></div>
+                    <!-- Barra riassuntiva cliccabile per aprire l'elenco -->
+                    <div onclick="toggleFormUsersDropdown(event)" id="formUsersSummaryBar"
+                         class="w-full p-2 rounded-xl border border-slate-300 bg-white cursor-pointer flex items-center justify-between gap-1 shadow-2xs hover:border-indigo-400 transition">
+                        <div id="formUsersSelectedBadges" class="flex flex-wrap items-center gap-1"></div>
+                        <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 shrink-0"></i>
+                    </div>
+                    <!-- Dropdown a comparsa -->
+                    <div id="formUsersDropdown" class="hidden mt-1 p-2.5 bg-white rounded-2xl border border-slate-200 shadow-xl space-y-2 z-30">
+                        <div class="flex items-center justify-between pb-1 border-b border-slate-100">
+                            <span class="text-[10px] font-black uppercase text-slate-400">Componenti Famiglia</span>
+                            <button type="button" onclick="toggleSelectAllUsersInForm()" class="text-xs font-black text-indigo-600 px-2 py-0.5 rounded bg-indigo-50">Seleziona Tutti</button>
+                        </div>
+                        <div id="formUsersGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-1.5"></div>
+                    </div>
                     <p id="formUsersError" class="hidden text-xs font-bold text-rose-600 mt-1">Seleziona almeno un componente.</p>
                 </div>
 
-                <!-- 3. CATEGORIA -->
-                <div>
-                    <label class="block text-[11px] font-extrabold uppercase text-slate-600 mb-1">Categoria *</label>
-                    <div id="formCategoriesGrid" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-1.5"></div>
-                </div>
-
-                <!-- 4. CATEGORIE PERSONALI PATRIZIO (A-Z) E FAMILIARE INTERESSATO -->
-                <div id="patrizioPersonalSection" class="p-2.5 rounded-2xl border border-blue-200 bg-blue-50/70 space-y-2">
-                    <div class="flex items-center justify-between">
-                        <label class="text-[11px] font-extrabold uppercase text-blue-950 flex items-center gap-1.5">
-                            <i data-lucide="user-check" class="w-3.5 h-3.5 text-blue-600"></i>
-                            <span>Categorie Personali Patrizio (A-Z): <strong id="patrizioCatSelectedLabel" class="text-blue-700 font-black">Nessuna</strong></span>
-                        </label>
-                        <span class="text-[10px] font-bold text-blue-600 bg-blue-100 px-2 py-0.5 rounded-md">Riservato Patrizio</span>
-                    </div>
-
-                    <!-- Pills A-Z -->
-                    <div id="patrizioCategoriesList" class="flex flex-wrap gap-1.5 items-center"></div>
-
-                    <!-- Selettore Familiare interessato -->
-                    <div id="patrizioFamilyMemberBox" class="hidden pt-1.5 border-t border-blue-200 flex items-center justify-between gap-2">
-                        <span class="text-[10.5px] font-extrabold text-blue-950">Quale familiare è interessato?</span>
-                        <select id="formPatrizioFamilyMember" class="px-2.5 py-1 rounded-xl border border-blue-300 bg-white text-xs font-bold text-blue-950">
-                            <option value="Tutta la famiglia" selected>Tutta la famiglia</option>
-                            <option value="Manuela">Manuela</option>
-                            <option value="Asia">Asia</option>
-                            <option value="Mattia">Mattia</option>
-                            <option value="Emma">Emma</option>
-                            <option value="Clara">Clara</option>
-                        </select>
-                    </div>
-
-                    <p class="text-[10px] text-blue-800 leading-tight">
-                        * Le categorie personali di Patrizio appaiono a lui per esteso; gli altri componenti vedono l'impegno sotto Patrizio ma senza l'etichetta privata nel calendario globale. Cliccando sopra ne vedono i dettagli.
-                    </p>
-                </div>
-
-                <!-- 5. SOTTO-CATEGORIE GENERALI (MULTITES, SICUREZZA, UFF. ISOLA, SPORT, ECC.) -->
-                <div id="formSubcategoriesSection" class="p-2.5 rounded-2xl border border-indigo-200 bg-indigo-50/70 space-y-2">
-                    <div class="flex items-center justify-between">
-                        <label class="text-[11px] font-extrabold uppercase text-indigo-950 flex items-center gap-1.5">
-                            <i data-lucide="tag" class="w-3.5 h-3.5 text-indigo-600"></i>
-                            <span>Sotto-categoria: <strong id="formSubcategoryCatLabel" class="text-indigo-600 font-black">Lavorativi</strong></span>
-                        </label>
-                        <span class="text-[10px] font-bold text-slate-400">Opzionale</span>
-                    </div>
-
-                    <!-- Elenco pills sottocategorie -->
-                    <div id="formSubcategoriesList" class="flex flex-wrap gap-1.5 items-center"></div>
-
-                    <!-- Aggiunta nuova sottocategoria al volo con persistenza automatica -->
-                    <div class="flex items-center gap-1.5 pt-1.5 border-t border-indigo-100">
-                        <input type="text" id="formNewSubcategoryInput" placeholder="Aggiungi nuova sottocategoria..."
-                               class="flex-1 px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-semibold focus:outline-indigo-500 shadow-2xs"
-                               onkeydown="if(event.key==='Enter'){event.preventDefault();addNewCustomSubcategory();}">
-                        <button type="button" onclick="addNewCustomSubcategory()"
-                                class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-extrabold shadow-2xs transition shrink-0">
-                            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-                            <span>Aggiungi</span>
+                <!-- 3. CATEGORIA (COMPATTA A COMPARSA CON SCELTA RAPIDA E AGGIUNTA) -->
+                <div class="relative">
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="text-[11px] font-extrabold uppercase text-slate-600">Categoria *</label>
+                        <button type="button" onclick="toggleFormCategoryDropdown(event)" class="text-xs font-bold text-indigo-600 hover:underline">
+                            Cambia categoria â–¾
                         </button>
                     </div>
+                    <!-- Barra riassunto categoria attiva -->
+                    <div onclick="toggleFormCategoryDropdown(event)" id="formCategorySummaryBar"
+                         class="w-full p-2 rounded-xl border border-slate-300 bg-white cursor-pointer flex items-center justify-between gap-2 shadow-2xs hover:border-indigo-400 transition">
+                        <div class="flex items-center gap-2 truncate">
+                            <span id="formCategoryBadgeDot" class="w-3.5 h-3.5 rounded-full shrink-0 bg-indigo-600"></span>
+                            <span id="formCategorySelectedLabel" class="font-black text-xs uppercase text-slate-800 truncate">Sportivi</span>
+                        </div>
+                        <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 shrink-0"></i>
+                    </div>
+
+                    <!-- Dropdown categorie a comparsa -->
+                    <div id="formCategoryDropdown" class="hidden mt-1 p-2.5 bg-white rounded-2xl border border-slate-200 shadow-xl space-y-2 z-30">
+                        <div class="text-[10px] font-black uppercase text-slate-400 pb-1 border-b border-slate-100">Seleziona Categoria</div>
+                        <div id="formCategoriesGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-1.5"></div>
+
+                        <!-- Categorie Personali Patrizio (sezione rapida) -->
+                        <div id="patrizioPersonalSection" class="p-2 rounded-xl border border-blue-200 bg-blue-50/70 space-y-1.5 mt-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[10px] font-black uppercase text-blue-950 flex items-center gap-1">
+                                    <i data-lucide="user-check" class="w-3 h-3 text-blue-600"></i>
+                                    <span>Personali Patrizio (A-Z)</span>
+                                </span>
+                                <span id="patrizioCatSelectedLabel" class="text-[10px] text-blue-700 font-bold">Nessuna</span>
+                            </div>
+                            <div id="patrizioCategoriesList" class="flex flex-wrap gap-1 items-center"></div>
+                        </div>
+
+                        <!-- Sottocategorie categoria attiva -->
+                        <div id="formSubcategoriesSection" class="p-2 rounded-xl border border-indigo-200 bg-indigo-50/70 space-y-1.5 mt-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[10px] font-black uppercase text-indigo-950 flex items-center gap-1">
+                                    <i data-lucide="tag" class="w-3 h-3 text-indigo-600"></i>
+                                    <span>Sottocategoria: <strong id="formSubcategoryCatLabel" class="text-indigo-600">Sportivi</strong></span>
+                                </span>
+                            </div>
+                            <div id="formSubcategoriesList" class="flex flex-wrap gap-1 items-center"></div>
+                            <div class="flex items-center gap-1 pt-1">
+                                <input type="text" id="formNewSubcategoryInput" placeholder="Aggiungi sottocategoria..."
+                                       class="flex-1 px-2 py-1 rounded-lg border border-slate-300 bg-white text-xs font-semibold"
+                                       onkeydown="if(event.key==='Enter'){event.preventDefault();addNewCustomSubcategory();}">
+                                <button type="button" onclick="addNewCustomSubcategory()"
+                                        class="px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-bold text-xs shrink-0">+ Aggiungi</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- 6. DATA, ORARI, DURATA E RIPETIZIONE -->
+                <!-- 4. DATA, ORARI E DURATA CON CALCOLO AUTOMATICO ORA FINE -->
                 <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 space-y-2.5">
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
                         <div>
@@ -1270,21 +1361,32 @@
                         </div>
                         <div>
                             <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-0.5">Ora Inizio</label>
-                            <input type="time" id="formTime" onchange="onTimeOrEndTimeChange()" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold">
+                            <input type="time" id="formTime" onchange="onFormStartTimeChange()" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-0.5">Ora Fine</label>
-                            <input type="time" id="formEndTime" onchange="onTimeOrEndTimeChange()" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold">
+                            <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-0.5">Ora Fine (automatica)</label>
+                            <input type="time" id="formEndTime" onchange="onFormEndTimeChange()" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold">
                         </div>
                     </div>
 
+                    <!-- Tasti rapidi Durata -->
                     <div>
                         <div class="flex items-center justify-between mb-1">
-                            <label class="text-[10px] font-extrabold uppercase text-slate-500">Durata *</label>
-                            <span id="calculatedDurationHint" class="text-[11px] font-bold text-indigo-600"></span>
+                            <label class="text-[10px] font-extrabold uppercase text-slate-500">Durata Impegno</label>
+                            <span id="calculatedDurationHint" class="text-[11px] font-black text-indigo-600"></span>
                         </div>
-                        <div class="grid grid-cols-3 sm:grid-cols-5 gap-1" id="durationQuickButtons"></div>
-                        <input type="text" id="formDuration" placeholder="Es. 1h 30m, 1 ora..." class="mt-1.5 w-full px-3 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold">
+                        <div class="flex flex-wrap gap-1" id="durationQuickButtons"></div>
+
+                        <!-- Casella durata personalizzata: ore e minuti -->
+                        <div class="flex items-center gap-1.5 mt-2 pt-1.5 border-t border-slate-200 text-xs">
+                            <span class="text-[10.5px] font-bold text-slate-500">Personalizzata:</span>
+                            <input type="number" id="formCustomHours" min="0" max="23" placeholder="0" class="w-12 px-2 py-1 rounded-lg border border-slate-300 bg-white text-center font-bold">
+                            <span class="text-[11px] font-bold text-slate-600">ore</span>
+                            <input type="number" id="formCustomMinutes" min="0" max="59" step="5" placeholder="30" class="w-12 px-2 py-1 rounded-lg border border-slate-300 bg-white text-center font-bold">
+                            <span class="text-[11px] font-bold text-slate-600">min</span>
+                            <button type="button" onclick="applyCustomDurationInputs()" class="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[11px] shadow-2xs transition">Applica</button>
+                        </div>
+                        <input type="hidden" id="formDuration">
                     </div>
 
                     <!-- Ripetizione appuntamento -->
@@ -1301,24 +1403,16 @@
                     </div>
                 </div>
 
-                <!-- 7. LUOGO CON INDIRIZZO E SUGGERIMENTI -->
-                <div>
-                    <label class="block text-[11px] font-extrabold uppercase text-slate-600 mb-1">Luogo / Indirizzo</label>
-                    <div class="relative">
-                        <input type="text" id="formPlace" placeholder="Es. Palestra Comunale, Via Roma 12, Ufficio..."
-                               oninput="onPlaceInput(this.value)"
-                               class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs font-bold focus:outline-indigo-500 shadow-2xs">
-                        <div id="placeSuggestionsDropdown" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-20 max-h-40 overflow-y-auto divide-y divide-slate-100"></div>
-                    </div>
-                </div>
-
-                <!-- 8. NOTIFICHE, TIMER PERSONALI SIMILI AD ALEXA E VISIBILITÀ -->
+                <!-- 5. NOTIFICA, TIMER CON SUONERIA E VISIBILITÃ€ -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-2xl border border-slate-200">
                     <div>
                         <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-0.5">Anticipo Notifica</label>
                         <select id="formNotificationAdvance" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold text-slate-800">
                             <option value="none">Nessuna notifica</option>
+                            <option value="5m">5 minuti prima</option>
+                            <option value="10m">10 minuti prima</option>
                             <option value="15m" selected>15 minuti prima</option>
+                            <option value="20m">20 minuti prima</option>
                             <option value="30m">30 minuti prima</option>
                             <option value="1h">1 ora prima</option>
                             <option value="2h">2 ore prima</option>
@@ -1327,65 +1421,49 @@
                     </div>
 
                     <div>
-                        <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-0.5">Timer / Promemoria Personale (Alexa-style)</label>
+                        <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-0.5">Timer / Suoneria Avviso</label>
                         <select id="formPersonalTimer" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold text-slate-800">
-                            <option value="none">Nessun timer personale</option>
-                            <option value="for_me">Solo a me (non notificare gli altri)</option>
-                            <option value="sound_timer">Suona timer vocale/acustico sul dispositivo</option>
+                            <option value="sound_timer" selected>Suona avviso acustico + notifica</option>
+                            <option value="for_me">Solo notifica silenziosa</option>
+                            <option value="none">Nessun suono</option>
                         </select>
                     </div>
 
                     <div class="sm:col-span-2">
-                        <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-0.5">Visibilità Impegno</label>
+                        <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-0.5">VisibilitÃ  Impegno</label>
                         <select id="formVisibility" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold text-slate-800">
-                            <option value="admins_only" selected>Solo Patrizio e Manuela (Predefinito)</option>
-                            <option value="all">Visibile a tutti i familiari</option>
+                            <option value="all" selected>Visibile a tutti i familiari</option>
+                            <option value="admins_only">Solo Patrizio e Manuela</option>
                             <option value="assigned_only">Visibile solo alle persone interessate</option>
                             <option value="private_patrizio">Riservato solo a Patrizio</option>
                         </select>
                     </div>
                 </div>
 
-                <!-- 9. NOTE -->
-                <div>
-                    <label class="block text-[11px] font-extrabold uppercase text-slate-600 mb-1">Eventuali Note</label>
-                    <textarea id="formNotes" rows="2" placeholder="Dettagli, cose da portare, contatti..."
-                              class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs font-semibold focus:outline-indigo-500 shadow-2xs"></textarea>
-                </div>
-
-                <!-- 10. ALLEGATI (FOTO DIRETTE O DA GALLERIA E PDF) -->
-                <div>
-                    <label class="block text-[11px] font-extrabold uppercase text-slate-600 mb-1">Eventuali Allegati (Foto da fotocamera / galleria o PDF)</label>
-                    <div class="flex items-center gap-2">
-                        <label class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-xs font-bold text-slate-700 transition">
-                            <i data-lucide="camera" class="w-4 h-4 text-indigo-600"></i>
-                            <span>Scatta Foto / Carica</span>
-                            <input type="file" id="formAttachmentInput" accept="image/*,application/pdf" capture="environment" class="hidden" onchange="handleAttachmentUpload(event)">
-                        </label>
-                        <span id="formAttachmentFileName" class="text-xs text-slate-500 truncate max-w-xs">Nessun allegato inserito</span>
+                <!-- 6. LUOGO E NOTE (OPZIONALI) -->
+                <div class="space-y-2">
+                    <div>
+                        <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-0.5">Luogo / Indirizzo</label>
+                        <input type="text" id="formPlace" placeholder="Es. Palestra Comunale, Via Roma 12..."
+                               class="w-full px-3 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold focus:outline-indigo-500 shadow-2xs">
                     </div>
-                    <div id="formAttachmentPreview" class="mt-2 hidden"></div>
-                </div>
-
-                <!-- 11. STATO COMPLETAMENTO -->
-                <div class="flex items-center gap-2 pt-1 border-t border-slate-100">
-                    <input type="checkbox" id="formCompleted" class="w-4 h-4 rounded text-indigo-600">
-                    <label for="formCompleted" class="text-xs font-bold text-slate-700 cursor-pointer">
-                        Contrassegna come completato (spunta eseguito)
-                    </label>
+                    <div>
+                        <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-0.5">Eventuali Note</label>
+                        <textarea id="formNotes" rows="2" placeholder="Dettagli, cose da portare..."
+                                  class="w-full px-3 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-semibold focus:outline-indigo-500 shadow-2xs"></textarea>
+                    </div>
                 </div>
 
                 <!-- FOOTER AZIONI EVENTO -->
-                <div class="pt-3 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2 shrink-0">
+                <div class="pt-3 border-t border-slate-200 flex items-center justify-between gap-2 shrink-0">
                     <button type="button" id="btnDeleteEvent" onclick="handleDeleteCurrentEvent()" class="hidden px-3 py-1.5 rounded-xl text-rose-600 font-black hover:bg-rose-50 transition">
                         Elimina
                     </button>
                     <div class="flex items-center gap-2 ml-auto">
                         <button type="button" onclick="closeEventModal()" class="px-4 py-2 rounded-xl font-bold text-slate-600 hover:bg-slate-100">Annulla</button>
-                        <button type="submit" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black shadow-md shadow-indigo-600/30">Salva Impegno</button>
+                        <button type="submit" id="formSubmitBtn" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black shadow-md shadow-indigo-600/30">Salva Impegno</button>
                     </div>
-                </div>
-            </form>
+                </div></form>
         </div>
     </div>
 
@@ -2915,10 +2993,10 @@ function ghOpenSetup() {
         // ========================================================
         // VISTA GIORNALIERA (GG): ORE A SX E RETTANGOLI ANNIDATI PER IMPEGNI DENTRO ALTRI
         // ========================================================
-        const TIMELINE_START_HOUR = 7;
-        const TIMELINE_END_HOUR = 23;
+        const TIMELINE_START_HOUR = 0;
+        const TIMELINE_END_HOUR = 24;
         const TIMELINE_SLOT_HEIGHT = 30; // 30px per mezzora (60px per ora)
-        const TIMELINE_TOTAL_HEIGHT = (TIMELINE_END_HOUR - TIMELINE_START_HOUR) * 60; // 960px
+        const TIMELINE_TOTAL_HEIGHT = (TIMELINE_END_HOUR - TIMELINE_START_HOUR) * 60; // 1440px (mezzanotte a mezzanotte)
 
         function renderSingleDayView() {
             const dateStr = toIsoDate(state.singleDayDate);
@@ -2952,7 +3030,8 @@ function ghOpenSetup() {
                     }
                     const { timedItems } = groupDayEventsForTimeline(evs);
                     let html = '';
-                    timedItems.forEach(item => {
+                    const laidOutWeekItems = computeOverlappingEventLayout(timedItems);
+                laidOutWeekItems.forEach(item => {
                         if (item.isSteppedGroup) {
                             const cat = catsMap[item.category] || catsMap.sportivi;
                             html += `
@@ -3068,21 +3147,26 @@ function ghOpenSetup() {
                 eventTrees.push({ outer: candidate, children });
             }
 
-            eventTrees.forEach(tree => {
-                const outer = tree.outer;
-                const children = tree.children;
+            const laidOutTrees = computeOverlappingEventLayout(eventTrees.map(t => ({ ...t.outer, tree: t })));
+
+            laidOutTrees.forEach(item => {
+                const outer = item.tree.outer;
+                const children = item.tree.children;
                 const topPx = outer.startMin - (TIMELINE_START_HOUR * 60);
                 const heightPx = Math.max(34, outer.durMin);
                 const cat = catsMap[outer.category] || catsMap.famigliari;
                 const outerUsers = (outer.users || []).map(uid => usersList.find(x => x.id === uid) || { name: uid, hex: '#4f46e5' });
+                const col = item.colIndex || 0;
+                const totalCols = item.clusterCols || 1;
+                const posStyle = `top:${topPx}px; height:${heightPx}px; left:calc(${(col / totalCols) * 100}% + 2px); width:calc(${(100 / totalCols)}% - 4px);`;
 
                 if (children.length > 0) {
-                    // Contenitore Esterno con Rettangolo Annidato Interno Poco Più Piccolo
+                    // Contenitore Esterno con Rettangolo Annidato Interno
                     bodyHtml += `
                         <div onclick="openEventModal('${outer.id}')"
                              title="Fascia globale: ${escapeHtml(outer.title)} (${outer.time} - ${outer.endTime || ''})"
-                             style="top:${topPx}px; height:${heightPx}px; background-color:${cat.bgHex}; border-color:${cat.borderHex}; color:${cat.textHex};"
-                             class="absolute inset-x-2 rounded-2xl border-2 shadow-md p-2 overflow-hidden flex flex-col justify-between cursor-pointer transition hover:brightness-95 group z-10">
+                             style="${posStyle} background-color:${cat.bgHex}; border-color:${cat.borderHex}; color:${cat.textHex};"
+                             class="absolute rounded-2xl border-2 shadow-md p-2 overflow-hidden flex flex-col justify-between cursor-pointer transition hover:brightness-95 group z-10">
                             
                             <!-- Testata evento esterno -->
                             <div class="flex items-center justify-between gap-1 leading-tight shrink-0 bg-white/75 px-2 py-1 rounded-xl border border-black/10">
@@ -3126,8 +3210,8 @@ function ghOpenSetup() {
                     bodyHtml += `
                         <div onclick="openEventModal('${outer.id}')"
                              title="${escapeHtml(outer.title)} (${outer.time} - ${outer.endTime || ''})"
-                             style="top:${topPx}px; height:${heightPx}px; background-color:${cat.bgHex}; border-color:${cat.borderHex}; color:${cat.textHex};"
-                             class="absolute inset-x-2 rounded-xl border-2 shadow-2xs p-1.5 overflow-hidden flex flex-col justify-between cursor-pointer transition hover:brightness-95 group z-10">
+                             style="${posStyle} background-color:${cat.bgHex}; border-color:${cat.borderHex}; color:${cat.textHex};"
+                             class="absolute rounded-xl border-2 shadow-2xs p-1.5 overflow-hidden flex flex-col justify-between cursor-pointer transition hover:brightness-95 group z-10">
                             <div class="flex items-center justify-between gap-1 leading-tight">
                                 <span class="text-xs font-black uppercase truncate">${escapeHtml(outer.title)}</span>
                                 <span class="text-[10px] font-bold bg-white/80 px-1 rounded">${outer.time} - ${outer.endTime || ''}</span>
@@ -3142,7 +3226,6 @@ function ghOpenSetup() {
                     `;
                 }
             });
-
             bodyHtml += `</div></div>`;
             grid.innerHTML = bodyHtml;
 
@@ -3235,7 +3318,7 @@ function ghOpenSetup() {
                 const { timedItems } = groupDayEventsForTimeline(wd.dayEvents);
 
                 bodyHtml += `
-                    <div class="flex-1 min-w-[136px] border-r border-slate-200 relative bg-white" style="height:${TIMELINE_TOTAL_HEIGHT}px;">
+                    <div id="weekCol_${wd.dateStr}" class="flex-1 min-w-[136px] border-r border-slate-200 relative bg-white" style="height:${TIMELINE_TOTAL_HEIGHT}px;">
                 `;
 
                 for (let s = 0; s < totalHalfHours; s++) {
@@ -3252,7 +3335,8 @@ function ghOpenSetup() {
                     `;
                 }
 
-                timedItems.forEach(item => {
+                const laidOutWeekItems = computeOverlappingEventLayout(timedItems);
+                laidOutWeekItems.forEach(item => {
                     const topPx = item.startMin - (TIMELINE_START_HOUR * 60);
                     const heightPx = Math.max(26, item.durMin);
 
@@ -3264,8 +3348,8 @@ function ghOpenSetup() {
                             <div onclick="openActivityDetailModal(JSON.parse(this.dataset.item))"
                                  data-item="${escapeHtml(JSON.stringify(item))}"
                                  title="${escapeHtml(item.title)}: ${item.time}-${item.endTime} (Tocca per ingrandire)"
-                                 style="top:${topPx}px; height:${heightPx}px; background-color:${cat.bgHex}; border-color:${cat.borderHex}; color:${cat.textHex};"
-                                 class="absolute inset-x-1 rounded-xl border-2 shadow-xs p-1 overflow-hidden flex flex-col justify-between cursor-pointer transition hover:brightness-95 group z-10">
+                                 style="top:${topPx}px; height:${heightPx}px; left:calc(${((item.colIndex||0)/(item.clusterCols||1))*100}% + 1px); width:calc(${(100/(item.clusterCols||1))}% - 2px); background-color:${cat.bgHex}; border-color:${cat.borderHex}; color:${cat.textHex};"
+                                 class="absolute rounded-xl border-2 shadow-xs p-1 overflow-hidden flex flex-col justify-between cursor-pointer transition hover:brightness-95 group z-10">
                                 
                                 <div class="flex items-center justify-between gap-1 leading-tight shrink-0">
                                     <span class="text-[10px] font-black uppercase truncate">${escapeHtml(item.title)}</span>
@@ -3300,8 +3384,8 @@ function ghOpenSetup() {
                         bodyHtml += `
                             <div onclick="openEventModal('${ev.id}')"
                                  title="${escapeHtml(ev.title)} (${ev.time || ''} - ${ev.endTime || ''})"
-                                 style="top:${topPx}px; height:${heightPx}px; background-color:${cat.bgHex}; border-color:${cat.borderHex}; color:${cat.textHex};"
-                                 class="absolute inset-x-1 rounded-xl border p-1 shadow-2xs overflow-hidden flex flex-col justify-between cursor-pointer transition hover:brightness-95 group z-10">
+                                 style="top:${topPx}px; height:${heightPx}px; left:calc(${((item.colIndex||0)/(item.clusterCols||1))*100}% + 1px); width:calc(${(100/(item.clusterCols||1))}% - 2px); background-color:${cat.bgHex}; border-color:${cat.borderHex}; color:${cat.textHex};"
+                                 class="absolute rounded-xl border p-1 shadow-2xs overflow-hidden flex flex-col justify-between cursor-pointer transition hover:brightness-95 group z-10">
                                 <div class="flex items-center justify-between gap-1 leading-tight">
                                     <span class="text-[10px] font-black uppercase truncate">${escapeHtml(ev.title)}</span>
                                     <span class="text-[8.5px] font-bold bg-white/80 px-1 rounded">${ev.time}</span>
@@ -3458,7 +3542,62 @@ function ghOpenSetup() {
                     });
 
                     // Timed items: 2 columns when multiple items, Stepped Groups span full width
-                    timedItems.forEach(item => {
+                                        const hasOverlaps = timedItems.length > 1 && timedItems.some((itA, idxA) =>
+                        timedItems.some((itB, idxB) => idxA !== idxB && itA.startMin < (itB.startMin + itB.durMin) && itB.startMin < (itA.startMin + itA.durMin))
+                    );
+
+                    if (hasOverlaps) {
+                        const minStart = Math.min(...timedItems.map(it => it.startMin));
+                        const maxEnd = Math.max(...timedItems.map(it => it.startMin + it.durMin));
+                        const spanMin = Math.max(90, maxEnd - minStart);
+                        const scaleHeight = Math.max(140, Math.min(320, spanMin * 1.3));
+                        const pxPerMin = scaleHeight / spanMin;
+                        const laidOut = computeOverlappingEventLayout(timedItems);
+
+                        itemsHtml += `
+                            <div class="col-span-full bg-slate-50 border border-slate-200 rounded-2xl p-2.5 relative flex items-stretch gap-2 overflow-hidden shadow-2xs" style="height:${scaleHeight + 20}px;">
+                                <!-- Scala orari a sinistra -->
+                                <div class="w-12 border-r border-slate-200 pr-1.5 flex flex-col justify-between text-[9.5px] font-black text-slate-500 shrink-0 select-none">
+                                    <span>${String(Math.floor(minStart/60)).padStart(2,'0')}:${String(minStart%60).padStart(2,'0')}</span>
+                                    <span>${String(Math.floor((minStart+spanMin/2)/60)).padStart(2,'0')}:${String(Math.floor((minStart+spanMin/2)%60)).padStart(2,'0')}</span>
+                                    <span>${String(Math.floor(maxEnd/60)).padStart(2,'0')}:${String(maxEnd%60).padStart(2,'0')}</span>
+                                </div>
+                                <!-- Area barre verticali affiancate -->
+                                <div class="flex-1 relative overflow-hidden h-full">
+                                    ${laidOut.map(item => {
+                                        const topPx = (item.startMin - minStart) * pxPerMin;
+                                        const heightPx = Math.max(34, item.durMin * pxPerMin);
+                                        const totalCols = item.clusterCols || 1;
+                                        const col = item.colIndex || 0;
+                                        const leftPct = (col / totalCols) * 100;
+                                        const widthPct = 100 / totalCols;
+                                        const ev = item.ev || (item.isSteppedGroup ? item.events[0] : null);
+                                        const cat = catsMap[item.category] || catsMap.sportivi;
+                                        const evId = item.isSteppedGroup ? item.events[0].id : (ev ? ev.id : '');
+                                        const uBadges = (item.isSteppedGroup ? item.participants.map(p => usersList.find(x => x.id === p.userId)) : (ev?.users || []).map(uid => usersList.find(x => x.id === uid))).filter(Boolean);
+
+                                        return `
+                                            <div onclick="openEventModal('${evId}')"
+                                                 title="${escapeHtml(item.title)}: ${item.time}-${item.endTime}"
+                                                 style="top:${topPx}px; height:${heightPx}px; left:calc(${leftPct}% + 1px); width:calc(${widthPct}% - 2px); background-color:${cat.bgHex}; border-color:${cat.borderHex}; color:${cat.textHex};"
+                                                 class="absolute rounded-xl border-2 p-1.5 shadow-2xs overflow-hidden flex flex-col justify-between cursor-pointer hover:brightness-95 transition z-10">
+                                                <div class="leading-tight truncate">
+                                                    <div class="text-[10px] font-black uppercase truncate">${escapeHtml(item.title)}</div>
+                                                    <div class="text-[9px] font-bold opacity-85 truncate">${item.time}-${item.endTime}</div>
+                                                </div>
+                                                <div class="flex items-center gap-1 mt-auto pt-0.5 truncate">
+                                                    ${uBadges.map(u => `<span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color:${u.hex}" title="${u.name}"></span>`).join('')}
+                                                    <span class="text-[8.5px] font-bold opacity-80 truncate">${escapeHtml(item.subcategory || '')}</span>
+                                                </div>
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        timedItems.forEach(item => {
+                
                         if (item.isSteppedGroup) {
                             const cat = catsMap[item.category] || catsMap.sportivi;
                             itemsHtml += `
@@ -3513,7 +3652,8 @@ function ghOpenSetup() {
                     });
                 }
 
-                html += `
+                
+                    }html += `
                     <div id="listDate_${ds}" class="bg-white rounded-2xl border ${isToday ? 'border-indigo-400 shadow-md ring-2 ring-indigo-400/20' : 'border-slate-200 shadow-2xs'} p-3 space-y-2">
                         <div class="flex items-center justify-between pb-1.5 border-b border-slate-100">
                             <div class="flex items-center gap-2">
@@ -4251,25 +4391,71 @@ function ghOpenSetup() {
             const cont = document.getElementById('screenAltroCategoriesManager');
             if (!cont) return;
             const catsMap = getActiveCategoriesMap();
-            cont.innerHTML = Object.values(catsMap).map(c => {
+            const catsList = Object.values(catsMap);
+
+            let headerHtml = `
+                <!-- GESTIONE CATEGORIE PER PATRIZIO (AGGIUNGI E RIORDINA) -->
+                <div class="p-3 rounded-2xl border-2 border-indigo-200 bg-indigo-50/60 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-black uppercase text-indigo-950 flex items-center gap-1.5">
+                            <i data-lucide="folder-plus" class="w-4 h-4 text-indigo-600"></i>
+                            <span>Nuova Categoria Personalizzata</span>
+                        </span>
+                        <span class="text-[10px] font-bold text-indigo-700 bg-indigo-100 px-2 py-0.5 rounded-full">Patrizio Admin</span>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-1.5 pt-1">
+                        <input type="text" id="newCategoryLabelInput" placeholder="Nome nuova categoria (es. Corsi, Hobby...)"
+                               class="flex-1 min-w-[140px] px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold focus:outline-indigo-500">
+                        <select id="newCategoryColorSelect" class="px-2 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold text-slate-800">
+                            <option value="#3b82f6" selected>ðŸ”µ Blu</option>
+                            <option value="#10b981">ðŸŸ¢ Verde</option>
+                            <option value="#f59e0b">ðŸŸ  Arancione</option>
+                            <option value="#8b5cf6">ðŸŸ£ Viola</option>
+                            <option value="#ec4899">ðŸŒ¸ Rosa</option>
+                            <option value="#14b8a6">ðŸ©µ Turchese</option>
+                            <option value="#64748b">ðŸ©¶ Grigio</option>
+                        </select>
+                        <button type="button" onclick="addNewCustomCategoryFromAltro()"
+                                class="px-3 py-1.5 rounded-xl text-xs font-black bg-indigo-600 hover:bg-indigo-700 text-white shadow-2xs transition shrink-0">
+                            + Crea Categoria
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            let itemsHtml = catsList.map((c, idx) => {
                 const subs = state.subcategories[c.id] || [];
                 const defaultSubs = DEFAULT_SUBCATEGORIES[c.id] || [];
+                const isFirst = idx === 0;
+                const isLast = idx === catsList.length - 1;
+
                 return `
-                    <div class="p-3 rounded-2xl border border-slate-200 bg-slate-50 space-y-2">
+                    <div class="p-3 rounded-2xl border border-slate-200 bg-white shadow-2xs space-y-2">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-2">
-                                <span class="w-3 h-3 rounded-full" style="background-color:${c.borderHex}"></span>
+                                <span class="w-3.5 h-3.5 rounded-full shadow-2xs" style="background-color:${c.borderHex}"></span>
                                 <span class="text-xs font-black uppercase text-slate-900">${escapeHtml(c.label)}</span>
                             </div>
-                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full" style="background-color:${c.bgHex}; color:${c.textHex}">
-                                ${subs.length} sotto-categorie
-                            </span>
+                            
+                            <!-- Tasti Riordina (Sposta Su / Sposta GiÃ¹) -->
+                            <div class="flex items-center gap-1">
+                                <button type="button" onclick="moveCategoryPosition(${idx}, -1)" ${isFirst ? 'disabled class="opacity-30 cursor-not-allowed p-1"' : 'class="p-1 rounded-lg bg-slate-100 hover:bg-indigo-100 text-slate-700 hover:text-indigo-700"'} title="Sposta su nell'elenco">
+                                    <i data-lucide="arrow-up" class="w-3.5 h-3.5"></i>
+                                </button>
+                                <button type="button" onclick="moveCategoryPosition(${idx}, 1)" ${isLast ? 'disabled class="opacity-30 cursor-not-allowed p-1"' : 'class="p-1 rounded-lg bg-slate-100 hover:bg-indigo-100 text-slate-700 hover:text-indigo-700"'} title="Sposta giÃ¹ nell'elenco">
+                                    <i data-lucide="arrow-down" class="w-3.5 h-3.5"></i>
+                                </button>
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ml-1" style="background-color:${c.bgHex}; color:${c.textHex}">
+                                    ${subs.length} sottocategorie
+                                </span>
+                            </div>
                         </div>
+
                         <div class="flex flex-wrap gap-1.5 pt-1">
                             ${subs.map(s => {
                                 const isDefault = defaultSubs.includes(s);
                                 return `
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-bold bg-white border border-slate-200 text-slate-700 shadow-2xs">
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-bold bg-slate-50 border border-slate-200 text-slate-700 shadow-2xs">
                                         <span>${escapeHtml(s)}</span>
                                         ${!isDefault ? `
                                             <button type="button" onclick="deleteCustomSubcategory('${c.id}', '${escapeHtml(s)}', event)"
@@ -4279,8 +4465,9 @@ function ghOpenSetup() {
                                 `;
                             }).join('')}
                         </div>
+
                         <div class="flex items-center gap-1.5 pt-1">
-                            <input type="text" id="newSubInput_${c.id}" placeholder="Nuova sotto-categoria / sport (es. Basket, Nuoto...)"
+                            <input type="text" id="newSubInput_${c.id}" placeholder="Nuova sotto-categoria (es. Nuoto, Inglese...)"
                                    class="flex-1 px-2.5 py-1 rounded-xl border border-slate-300 bg-white text-xs font-semibold focus:outline-indigo-500">
                             <button type="button" onclick="addCategorySubcategoryFromInput('${c.id}')"
                                     class="px-3 py-1 rounded-xl text-xs font-black bg-indigo-600 hover:bg-indigo-700 text-white shadow-2xs transition shrink-0">
@@ -4290,7 +4477,84 @@ function ghOpenSetup() {
                     </div>
                 `;
             }).join('');
+
+            cont.innerHTML = headerHtml + itemsHtml;
+            if (window.lucide) lucide.createIcons();
         }
+
+        window.addNewCustomCategoryFromAltro = function() {
+            const input = document.getElementById('newCategoryLabelInput');
+            const colorSel = document.getElementById('newCategoryColorSelect');
+            if (!input || !input.value.trim()) return;
+
+            const label = input.value.trim();
+            const hex = colorSel ? colorSel.value : '#3b82f6';
+            const catId = 'cat_' + Date.now();
+
+            if (!state.familyDefaultColors) state.familyDefaultColors = {};
+            if (!state.familyDefaultColors.categories) state.familyDefaultColors.categories = {};
+
+            // Inizializza categorie di default se non presenti
+            Object.keys(DEFAULT_CATEGORIES_COLORS).forEach(k => {
+                if (!state.familyDefaultColors.categories[k]) {
+                    state.familyDefaultColors.categories[k] = { ...DEFAULT_CATEGORIES_COLORS[k] };
+                }
+            });
+
+            state.familyDefaultColors.categories[catId] = {
+                id: catId,
+                label: label,
+                borderHex: hex,
+                bgHex: hex + '20',
+                textHex: hex
+            };
+            if (!state.subcategories[catId]) state.subcategories[catId] = [];
+
+            input.value = '';
+            renderAltroCategoriesManager();
+            renderFormControls();
+            renderFilterDropdowns();
+            renderApp();
+            showToast(`Categoria "${label}" aggiunta con successo!`);
+
+            if (typeof GH !== 'undefined' && GH.setDoc) {
+                GH.setDoc(GH.doc(null, 'settings/default_colors'), {
+                    categories: state.familyDefaultColors.categories,
+                    users: state.familyDefaultColors.users || {}
+                });
+            }
+        };
+
+        window.moveCategoryPosition = function(index, direction) {
+            const catsMap = getActiveCategoriesMap();
+            const keys = Object.keys(catsMap);
+            const targetIndex = index + direction;
+            if (targetIndex < 0 || targetIndex >= keys.length) return;
+
+            // Scambia
+            const temp = keys[index];
+            keys[index] = keys[targetIndex];
+            keys[targetIndex] = temp;
+
+            // Ricostruisci mappa ordinata
+            const newCatMap = {};
+            keys.forEach(k => { newCatMap[k] = catsMap[k]; });
+            if (!state.familyDefaultColors) state.familyDefaultColors = {};
+            state.familyDefaultColors.categories = newCatMap;
+
+            renderAltroCategoriesManager();
+            renderFormControls();
+            renderFilterDropdowns();
+            renderApp();
+            showToast("Ordine categorie aggiornato!");
+
+            if (typeof GH !== 'undefined' && GH.setDoc) {
+                GH.setDoc(GH.doc(null, 'settings/default_colors'), {
+                    categories: state.familyDefaultColors.categories,
+                    users: state.familyDefaultColors.users || {}
+                });
+            }
+        };
 
         function renderAltroScreen() {
             const user = BASE_USERS.find(u => u.id === state.activeProfileId) || BASE_USERS[0];
@@ -4306,7 +4570,6 @@ function ghOpenSetup() {
             renderAltroCategoriesManager();
         }
 
-        // BADGE E CONTEGGI
         function updateShoppingBadge() {
             const actCount = state.shoppingList.filter(it => !it.completed).length;
             const b = document.getElementById('navSpesaCountBadge');
@@ -5015,7 +5278,9 @@ function ghOpenSetup() {
                 }
             });
             renderApp();
-            if (mode === 'list') setTimeout(() => scrollToTodayInList(), 60);
+                        if (mode === 'day') setTimeout(() => scrollToCurrentTimeInDay(), 80);
+            else if (mode === 'week') setTimeout(() => scrollToCurrentTimeInWeek(), 80);
+            else if (mode === 'list') setTimeout(() => scrollToTodayInList(), 80);
         };
 
         window.navigatePeriod = function(delta) {
@@ -5373,23 +5638,48 @@ function ghOpenSetup() {
         };
 
         function renderFormControls() {
+            const usersList = getActiveUsersList();
             const usersGrid = document.getElementById('formUsersGrid');
+            const summaryBadges = document.getElementById('formUsersSelectedBadges');
+
             if (usersGrid) {
-                usersGrid.innerHTML = BASE_USERS.map(u => {
+                usersGrid.innerHTML = usersList.map(u => {
                     const sel = state.formUsers.includes(u.id);
                     return `
                         <label class="flex items-center gap-1.5 p-2 rounded-xl border cursor-pointer select-none transition ${sel ? 'bg-indigo-50 border-indigo-500 shadow-2xs ring-1 ring-indigo-500/30' : 'bg-slate-50 border-slate-200'}">
                             <input type="checkbox" onchange="toggleUserInForm('${u.id}')" ${sel ? 'checked' : ''} class="w-4 h-4 rounded text-indigo-600 focus:ring-0">
-                            <span class="w-3 h-3 rounded-full shrink-0" style="background-color:${getUserColor(u.id)}"></span>
+                            <span class="w-3 h-3 rounded-full shrink-0" style="background-color:${u.hex}"></span>
                             <span class="text-xs font-black text-slate-800">${u.name}</span>
                         </label>
                     `;
                 }).join('');
             }
 
+            if (summaryBadges) {
+                if (state.formUsers.length === usersList.length) {
+                    summaryBadges.innerHTML = `<span class="px-2.5 py-0.5 rounded-lg bg-indigo-600 text-white font-black text-xs">Tutta la famiglia (6)</span>`;
+                } else if (state.formUsers.length === 0) {
+                    summaryBadges.innerHTML = `<span class="text-xs text-rose-500 font-bold italic">Nessun componente selezionato</span>`;
+                } else {
+                    summaryBadges.innerHTML = state.formUsers.map(uid => {
+                        const u = usersList.find(x => x.id === uid) || { name: uid, hex: '#4f46e5' };
+                        return `<span class="px-2 py-0.5 rounded-lg text-white font-black text-xs flex items-center gap-1 shadow-2xs" style="background-color:${u.hex}">
+                            <span>${u.name}</span>
+                        </span>`;
+                    }).join('');
+                }
+            }
+
+            // Barra Categoria selezionata
+            const catsMap = getActiveCategoriesMap();
+            const curCat = catsMap[state.formCategory] || catsMap.sportivi || { label: 'Sportivi', bgHex: '#a7f3d0', borderHex: '#10b981', textHex: '#064e3b' };
+            const catDot = document.getElementById('formCategoryBadgeDot');
+            const catLbl = document.getElementById('formCategorySelectedLabel');
+            if (catDot) catDot.style.backgroundColor = curCat.borderHex;
+            if (catLbl) catLbl.textContent = curCat.label;
+
             const catsGrid = document.getElementById('formCategoriesGrid');
             if (catsGrid) {
-                const catsMap = getActiveCategoriesMap();
                 catsGrid.innerHTML = Object.values(catsMap).map(c => {
                     const sel = state.formCategory === c.id;
                     return `
@@ -5404,10 +5694,10 @@ function ghOpenSetup() {
 
             const durGrid = document.getElementById('durationQuickButtons');
             if (durGrid) {
-                durGrid.innerHTML = DURATION_PRESETS.map(d => `
-                    <button type="button" onclick="selectQuickDuration('${d}')"
-                            class="px-2 py-1 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-[10.5px] font-bold text-slate-700 text-center transition">
-                        ${d}
+                durGrid.innerHTML = DURATION_PRESETS_EXTENDED.map((d, idx) => `
+                    <button type="button" onclick="selectQuickDurationPreset(${idx})"
+                            class="px-2 py-1 rounded-lg bg-white border border-slate-300 hover:bg-indigo-50 hover:border-indigo-400 text-[11px] font-black text-slate-800 text-center shadow-2xs transition">
+                        ${d.label}
                     </button>
                 `).join('');
             }
@@ -6258,6 +6548,589 @@ function ghOpenSetup() {
         }
 
         setInterval(updateHeaderClock, 30000);
+                // ========================================================
+        // GESTIONE RIEPILOGO EVENTO (SOLA LETTURA: MODIFICA, DUPLICA, ELIMINA)
+        // ========================================================
+        let currentSummaryEventId = null;
+
+        window.showEventSummary = function(eventId) {
+            const ev = state.events.find(x => x.id === eventId);
+            if (!ev) return;
+            currentSummaryEventId = eventId;
+
+            const modal = document.getElementById('eventSummaryModal');
+            if (!modal) return;
+
+            const catsMap = getActiveCategoriesMap();
+            const usersList = getActiveUsersList();
+            const cat = catsMap[ev.category] || catsMap.famigliari || { label: 'Generale', bgHex: '#e0e7ff', borderHex: '#6366f1', textHex: '#312e81' };
+
+            // Badge Categoria e Sottocategoria
+            const catBadge = document.getElementById('summaryCategoryBadge');
+            if (catBadge) {
+                catBadge.textContent = cat.label;
+                catBadge.style.backgroundColor = cat.borderHex;
+            }
+            const subBadge = document.getElementById('summarySubcategoryBadge');
+            if (subBadge) {
+                subBadge.textContent = ev.subcategory ? `â€¢ ${ev.subcategory}` : '';
+            }
+
+            // Titolo
+            const titleEl = document.getElementById('summaryTitle');
+            if (titleEl) titleEl.textContent = ev.title || 'Senza titolo';
+
+            // Chi riguarda
+            const usersBox = document.getElementById('summaryUsersList');
+            if (usersBox) {
+                const assigned = Array.isArray(ev.users) ? ev.users : [];
+                usersBox.innerHTML = assigned.map(uid => {
+                    const u = usersList.find(x => x.id === uid) || { name: uid, hex: '#4f46e5' };
+                    return `<span class="px-2.5 py-1 rounded-xl text-xs font-black text-white shadow-2xs flex items-center gap-1.5" style="background-color:${u.hex}">
+                        <span class="w-2 h-2 rounded-full bg-white/80"></span>
+                        <span>${u.name}</span>
+                    </span>`;
+                }).join('') || '<span class="text-xs text-slate-400 italic">Nessun familiare assegnato</span>';
+            }
+
+            // Data
+            const dateEl = document.getElementById('summaryDateStr');
+            if (dateEl && ev.date) {
+                const d = new Date(ev.date + 'T00:00:00');
+                dateEl.textContent = d.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+            }
+
+            // Orario e Durata tra parentesi
+            const timeEl = document.getElementById('summaryTimeAndDuration');
+            if (timeEl) {
+                if (ev.time && ev.time.toLowerCase().includes('tutto')) {
+                    timeEl.textContent = 'Tutto il giorno';
+                } else if (ev.time) {
+                    const end = ev.endTime ? ` - ${ev.endTime}` : '';
+                    const dur = formatEventDuration(ev);
+                    timeEl.textContent = `${ev.time}${end}${dur ? ` (${dur})` : ''}`;
+                } else {
+                    timeEl.textContent = 'Orario non specificato';
+                }
+            }
+
+            // Ripetizione
+            const recRow = document.getElementById('summaryRecurrenceRow');
+            const recTxt = document.getElementById('summaryRecurrenceText');
+            if (recRow && recTxt) {
+                if (ev.recurrence && ev.recurrence !== 'none') {
+                    recRow.classList.remove('hidden');
+                    const map = { daily: 'Ogni giorno', weekly: 'Ogni settimana', biweekly: 'Ogni 2 settimane', monthly: 'Ogni mese', yearly: 'Ogni anno' };
+                    recTxt.textContent = map[ev.recurrence] || ev.recurrence;
+                } else {
+                    recRow.classList.add('hidden');
+                }
+            }
+
+            // Notifica
+            const notifBox = document.getElementById('summaryNotificationBox');
+            const notifTxt = document.getElementById('summaryNotificationText');
+            if (notifBox && notifTxt) {
+                const notifMap = {
+                    '5m': 'Notifica 5 minuti prima',
+                    '10m': 'Notifica 10 minuti prima',
+                    '15m': 'Notifica 15 minuti prima',
+                    '20m': 'Notifica 20 minuti prima',
+                    '30m': 'Notifica 30 minuti prima',
+                    '1h': 'Notifica 1 ora prima',
+                    '2h': 'Notifica 2 ore prima',
+                    '1d': 'Notifica 1 giorno prima',
+                    'none': 'Nessuna notifica'
+                };
+                const val = ev.notificationAdvance || '15m';
+                notifTxt.textContent = notifMap[val] || `Notifica: ${val}`;
+                if (ev.personalTimer === 'sound_timer') {
+                    notifTxt.textContent += ' (con avviso acustico / suoneria)';
+                }
+            }
+
+            // Luogo
+            const placeBox = document.getElementById('summaryPlaceBox');
+            const placeTxt = document.getElementById('summaryPlaceText');
+            if (placeBox && placeTxt) {
+                if (ev.place) {
+                    placeBox.classList.remove('hidden');
+                    placeTxt.textContent = ev.place;
+                } else {
+                    placeBox.classList.add('hidden');
+                }
+            }
+
+            // Note
+            const notesBox = document.getElementById('summaryNotesBox');
+            const notesTxt = document.getElementById('summaryNotesText');
+            if (notesBox && notesTxt) {
+                if (ev.notes) {
+                    notesBox.classList.remove('hidden');
+                    notesTxt.textContent = ev.notes;
+                } else {
+                    notesBox.classList.add('hidden');
+                }
+            }
+
+            modal.classList.remove('hidden');
+            if (window.lucide) lucide.createIcons();
+        };
+
+        window.closeEventSummaryModal = function() {
+            const modal = document.getElementById('eventSummaryModal');
+            if (modal) modal.classList.add('hidden');
+            currentSummaryEventId = null;
+        };
+
+        window.editEventFromSummary = function() {
+            if (!currentSummaryEventId) return;
+            const id = currentSummaryEventId;
+            closeEventSummaryModal();
+            openEventEditModal(id);
+        };
+
+        window.duplicateEventFromSummary = function() {
+            if (!currentSummaryEventId) return;
+            const id = currentSummaryEventId;
+            closeEventSummaryModal();
+            duplicateEvent(id);
+        };
+
+        window.deleteEventFromSummary = function() {
+            if (!currentSummaryEventId) return;
+            const id = currentSummaryEventId;
+            if (confirm("Vuoi eliminare definitivamente questo appuntamento?")) {
+                closeEventSummaryModal();
+                deleteEventWithSync(id);
+            }
+        };
+
+        function formatEventDuration(ev) {
+            if (!ev) return '';
+            if (ev.duration) return ev.duration;
+            if (ev.time && ev.endTime) {
+                const [sh, sm] = ev.time.split(':').map(Number);
+                const [eh, em] = ev.endTime.split(':').map(Number);
+                const diff = (eh * 60 + em) - (sh * 60 + sm);
+                if (diff > 0) {
+                    const h = Math.floor(diff / 60);
+                    const m = diff % 60;
+                    return `${h > 0 ? h + 'h ' : ''}${m > 0 ? m + 'm' : ''}`.trim();
+                }
+            }
+            return '';
+        }
+
+        // ========================================================
+        // APERTURA FORM AGGIUNGI / MODIFICA EVENTO
+        // ========================================================
+        window.openEventModal = function(id = null, defaultDate = null, defaultTime = null) {
+            if (id) {
+                showEventSummary(id);
+                return;
+            }
+            openEventEditModal(null, defaultDate, defaultTime);
+        };
+
+        window.openEventEditModal = function(id = null, defaultDate = null, defaultTime = null) {
+            renderFormControls();
+            state.confirmingDelete = false;
+
+            const modal = document.getElementById('eventModal');
+            const header = document.getElementById('eventModalHeader');
+            const btnDel = document.getElementById('btnDeleteEvent');
+
+            if (id) {
+                const ev = state.events.find(x => x.id === id);
+                if (!ev) return;
+                header.textContent = 'Modifica Impegno';
+                if (btnDel) btnDel.classList.remove('hidden');
+
+                document.getElementById('formEventId').value = ev.id;
+                document.getElementById('formTitle').value = ev.title || '';
+                document.getElementById('formDate').value = ev.date || '';
+                document.getElementById('formTime').value = ev.time || '';
+                document.getElementById('formEndTime').value = ev.endTime || '';
+                document.getElementById('formDuration').value = ev.duration || '';
+                document.getElementById('formNotes').value = ev.notes || '';
+                document.getElementById('formRecurrence').value = ev.recurrence || 'none';
+                document.getElementById('formPlace').value = ev.place || '';
+                document.getElementById('formNotificationAdvance').value = ev.notificationAdvance || '15m';
+                document.getElementById('formPersonalTimer').value = ev.personalTimer || 'sound_timer';
+                document.getElementById('formVisibility').value = ev.visibility || 'all';
+
+                state.formCategory = ev.category || 'sportivi';
+                state.formUsers = Array.isArray(ev.users) && ev.users.length > 0 ? [...ev.users] : [state.activeProfileId];
+                state.formSubcategory = ev.subcategory || '';
+                state.formPatrizioCategory = ev.patrizioCategory || '';
+            } else {
+                header.textContent = 'Nuovo Impegno';
+                if (btnDel) btnDel.classList.add('hidden');
+
+                document.getElementById('formEventId').value = '';
+                document.getElementById('formTitle').value = '';
+                document.getElementById('formDate').value = defaultDate || toIsoDate(state.singleDayDate);
+                const startTime = defaultTime || '18:00';
+                document.getElementById('formTime').value = startTime;
+                
+                // Default 1 ora: calcola ora fine in automatico
+                const [sh, sm] = startTime.split(':').map(Number);
+                const endH = (sh + 1) % 24;
+                document.getElementById('formEndTime').value = `${String(endH).padStart(2, '0')}:${String(sm).padStart(2, '0')}`;
+                document.getElementById('formDuration').value = '1 h';
+                
+                document.getElementById('formNotes').value = '';
+                document.getElementById('formRecurrence').value = 'none';
+                document.getElementById('formPlace').value = '';
+                document.getElementById('formNotificationAdvance').value = '15m';
+                document.getElementById('formPersonalTimer').value = 'sound_timer';
+                document.getElementById('formVisibility').value = 'all';
+
+                state.formCategory = 'sportivi';
+                // Di default l'account che sta utilizzando l'app
+                state.formUsers = [state.activeProfileId];
+                state.formSubcategory = '';
+                state.formPatrizioCategory = '';
+            }
+
+            renderFormControls();
+            renderPatrizioPersonalCategories();
+            renderFormSubcategories();
+            updateCalculatedDurationHint();
+            modal.classList.remove('hidden');
+            if (window.lucide) lucide.createIcons();
+        };
+
+        window.duplicateEvent = function(id) {
+            const ev = state.events.find(x => x.id === id);
+            if (!ev) return;
+            openEventEditModal(null, ev.date, ev.time);
+            document.getElementById('eventModalHeader').textContent = 'Duplica Impegno';
+            document.getElementById('formTitle').value = (ev.title || '') + ' (Copia)';
+            document.getElementById('formEndTime').value = ev.endTime || '';
+            document.getElementById('formDuration').value = ev.duration || '';
+            document.getElementById('formNotes').value = ev.notes || '';
+            document.getElementById('formPlace').value = ev.place || '';
+            document.getElementById('formRecurrence').value = ev.recurrence || 'none';
+            document.getElementById('formNotificationAdvance').value = ev.notificationAdvance || '15m';
+            document.getElementById('formPersonalTimer').value = ev.personalTimer || 'sound_timer';
+            document.getElementById('formVisibility').value = ev.visibility || 'all';
+
+            state.formCategory = ev.category || 'sportivi';
+            state.formUsers = Array.isArray(ev.users) ? [...ev.users] : [state.activeProfileId];
+            state.formSubcategory = ev.subcategory || '';
+            state.formPatrizioCategory = ev.patrizioCategory || '';
+
+            renderFormControls();
+            updateCalculatedDurationHint();
+        };
+
+        window.deleteEventWithSync = function(id) {
+            state.events = state.events.filter(x => x.id !== id);
+            persistEventsLocally();
+            renderApp();
+            showToast("Impegno eliminato!");
+            if (typeof GH !== 'undefined' && GH.deleteDoc) {
+                GH.deleteDoc(GH.collection(null, 'events'), id);
+            }
+        };
+
+        // ========================================================
+        // CALCOLO AUTOMATICO ORA INIZIO, DURATA E ORA FINE
+        // ========================================================
+        const DURATION_PRESETS_EXTENDED = [
+            { label: "15'", min: 15 },
+            { label: "30'", min: 30 },
+            { label: "45'", min: 45 },
+            { label: "1 h", min: 60 },
+            { label: "1h 30", min: 90 },
+            { label: "2 h", min: 120 },
+            { label: "Mattina (4h)", min: 240, setStart: "08:30" },
+            { label: "Pomeriggio (4h)", min: 240, setStart: "14:30" },
+            { label: "Sera (4h)", min: 240, setStart: "19:30" },
+            { label: "Tutto il giorno", allDay: true }
+        ];
+
+        window.selectQuickDurationPreset = function(idx) {
+            const item = DURATION_PRESETS_EXTENDED[idx];
+            if (!item) return;
+
+            const stInput = document.getElementById('formTime');
+            const etInput = document.getElementById('formEndTime');
+            const durInput = document.getElementById('formDuration');
+
+            if (item.allDay) {
+                stInput.value = '00:00';
+                etInput.value = '23:59';
+                durInput.value = 'Tutto il giorno';
+                updateCalculatedDurationHint();
+                return;
+            }
+
+            if (item.setStart && !stInput.value) {
+                stInput.value = item.setStart;
+            } else if (item.setStart) {
+                stInput.value = item.setStart;
+            }
+
+            const startTime = stInput.value || '18:00';
+            stInput.value = startTime;
+
+            const [sh, sm] = startTime.split(':').map(Number);
+            const startTotalMin = sh * 60 + sm;
+            const endTotalMin = (startTotalMin + item.min) % 1440;
+
+            const endH = Math.floor(endTotalMin / 60);
+            const endM = endTotalMin % 60;
+            etInput.value = `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`;
+            durInput.value = item.label;
+
+            updateCalculatedDurationHint();
+        };
+
+        window.applyCustomDurationInputs = function() {
+            const h = parseInt(document.getElementById('formCustomHours').value || '0', 10);
+            const m = parseInt(document.getElementById('formCustomMinutes').value || '0', 10);
+            const totalMin = h * 60 + m;
+            if (totalMin <= 0) return;
+
+            const stInput = document.getElementById('formTime');
+            const etInput = document.getElementById('formEndTime');
+            const durInput = document.getElementById('formDuration');
+
+            const startTime = stInput.value || '18:00';
+            stInput.value = startTime;
+
+            const [sh, sm] = startTime.split(':').map(Number);
+            const endTotalMin = (sh * 60 + sm + totalMin) % 1440;
+            const endH = Math.floor(endTotalMin / 60);
+            const endM = endTotalMin % 60;
+
+            etInput.value = `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`;
+            const durStr = `${h > 0 ? h + 'h ' : ''}${m > 0 ? m + 'm' : ''}`.trim();
+            durInput.value = durStr;
+            updateCalculatedDurationHint();
+            showToast(`Durata impostata: ${durStr}`);
+        };
+
+        window.onFormStartTimeChange = function() {
+            const st = document.getElementById('formTime').value;
+            const durInput = document.getElementById('formDuration').value;
+            const etInput = document.getElementById('formEndTime');
+
+            if (st && durInput) {
+                const durMin = parseDurationToMinutes(durInput, st);
+                if (durMin > 0) {
+                    const [sh, sm] = st.split(':').map(Number);
+                    const endTotalMin = (sh * 60 + sm + durMin) % 1440;
+                    const endH = Math.floor(endTotalMin / 60);
+                    const endM = endTotalMin % 60;
+                    etInput.value = `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`;
+                }
+            }
+            updateCalculatedDurationHint();
+        };
+
+        window.onFormEndTimeChange = function() {
+            const st = document.getElementById('formTime').value;
+            const et = document.getElementById('formEndTime').value;
+            const durInput = document.getElementById('formDuration');
+
+            if (st && et) {
+                const [sh, sm] = st.split(':').map(Number);
+                const [eh, em] = et.split(':').map(Number);
+                let diff = (eh * 60 + em) - (sh * 60 + sm);
+                if (diff < 0) diff += 1440;
+                if (diff > 0) {
+                    const h = Math.floor(diff / 60);
+                    const m = diff % 60;
+                    const durStr = `${h > 0 ? h + 'h ' : ''}${m > 0 ? m + 'm' : ''}`.trim() || '30m';
+                    durInput.value = durStr;
+                }
+            }
+            updateCalculatedDurationHint();
+        };
+
+        function updateCalculatedDurationHint() {
+            const hint = document.getElementById('calculatedDurationHint');
+            const st = document.getElementById('formTime')?.value;
+            const et = document.getElementById('formEndTime')?.value;
+            const dur = document.getElementById('formDuration')?.value;
+            if (!hint) return;
+            if (st && et) {
+                hint.textContent = `Orario: ${st} - ${et} ${dur ? `(${dur})` : ''}`;
+            } else if (dur) {
+                hint.textContent = `Durata: ${dur}`;
+            } else {
+                hint.textContent = '';
+            }
+        }
+
+        // Dropdown toggle per "Chi riguarda"
+        window.toggleFormUsersDropdown = function(e) {
+            if (e) e.stopPropagation();
+            const dd = document.getElementById('formUsersDropdown');
+            if (dd) dd.classList.toggle('hidden');
+        };
+
+        // Dropdown toggle per Categoria
+        window.toggleFormCategoryDropdown = function(e) {
+            if (e) e.stopPropagation();
+            const dd = document.getElementById('formCategoryDropdown');
+            if (dd) dd.classList.toggle('hidden');
+        };
+
+        // ========================================================
+        // SCROLL AUTOMATICO ALL'ORA ATTUALE (1h PRIMA + PROSSIME 3-4h)
+        // ========================================================
+        window.scrollToCurrentTimeInDay = function() {
+            const vp = document.getElementById('dayTimelineViewport');
+            if (!vp) return;
+            const now = new Date();
+            const curMin = now.getHours() * 60 + now.getMinutes();
+            // Centra mostrando 1 ora prima dell'orario attuale
+            const target = Math.max(0, curMin - 60);
+            vp.scrollTo({ top: target, behavior: 'smooth' });
+        };
+
+        window.scrollToCurrentTimeInWeek = function() {
+            const vp = document.getElementById('weekTimelineViewport');
+            if (!vp) return;
+            const now = new Date();
+            const curMin = now.getHours() * 60 + now.getMinutes();
+            const target = Math.max(0, curMin - 60);
+
+            // Trova la colonna del giorno corrente
+            const todayCol = document.getElementById(`weekCol_${getTodayIso()}`);
+            let leftScroll = 0;
+            if (todayCol) {
+                leftScroll = Math.max(0, todayCol.offsetLeft - 60);
+            }
+            vp.scrollTo({ top: target, left: leftScroll, behavior: 'smooth' });
+        };
+
+        // ========================================================
+        // CALCOLO DISPOSIZIONE EVENTI SOVRAPPOSTI (COLONNE AFFIANCATE)
+        // ========================================================
+        function computeOverlappingEventLayout(items) {
+            if (!items || items.length === 0) return [];
+            // Ordina per orario di inizio crescente; a paritÃ , il piÃ¹ lungo per primo
+            const sorted = [...items].sort((a, b) => (a.startMin || 0) - (b.startMin || 0) || (b.durMin || 0) - (a.durMin || 0));
+
+            const columns = [];
+            sorted.forEach(ev => {
+                let placed = false;
+                for (let i = 0; i < columns.length; i++) {
+                    const lastInCol = columns[i][columns[i].length - 1];
+                    if ((lastInCol.startMin + lastInCol.durMin) <= ev.startMin) {
+                        columns[i].push(ev);
+                        ev.colIndex = i;
+                        placed = true;
+                        break;
+                    }
+                }
+                if (!placed) {
+                    ev.colIndex = columns.length;
+                    columns.push([ev]);
+                }
+            });
+
+            // Normalizza il numero totale di colonne per ciascun gruppo sovrapposto
+            sorted.forEach(ev => {
+                const evEnd = ev.startMin + ev.durMin;
+                const overlapping = sorted.filter(o => o.startMin < evEnd && (o.startMin + o.durMin) > ev.startMin);
+                const maxCol = Math.max(...overlapping.map(o => o.colIndex || 0)) + 1;
+                ev.clusterCols = maxCol;
+            });
+
+            sorted.forEach(ev => {
+                const evEnd = ev.startMin + ev.durMin;
+                const overlapping = sorted.filter(o => o.startMin < evEnd && (o.startMin + o.durMin) > ev.startMin);
+                const clusterMax = Math.max(...overlapping.map(o => o.clusterCols || 1));
+                ev.clusterCols = clusterMax;
+            });
+
+            return sorted;
+        }
+
+        // ========================================================
+        // SUONERIA TIMER E NOTIFICHE PROMEMORIA (ANCHE SCHERMO SPENTO)
+        // ========================================================
+        window.playChimeSound = function() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                
+                const now = ctx.currentTime;
+                const osc1 = ctx.createOscillator();
+                const osc2 = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc1.type = 'sine';
+                osc1.frequency.setValueAtTime(783.99, now); // Sol5 (G5)
+                osc1.frequency.setValueAtTime(1046.50, now + 0.18); // Do6 (C6)
+
+                osc2.type = 'triangle';
+                osc2.frequency.setValueAtTime(523.25, now); // Do5 (C5)
+                osc2.frequency.setValueAtTime(659.25, now + 0.18); // Mi5 (E5)
+
+                gain.gain.setValueAtTime(0.35, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 1.4);
+
+                osc1.connect(gain);
+                osc2.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc1.start(now);
+                osc2.start(now);
+                osc1.stop(now + 1.4);
+                osc2.stop(now + 1.4);
+            } catch(e) { console.log('Audio chime error:', e); }
+
+            if ('vibrate' in navigator) {
+                try { navigator.vibrate([250, 100, 250, 100, 500]); } catch(e){}
+            }
+        };
+
+        window.testLockscreenNotification = async function() {
+            if ('Notification' in window) {
+                if (Notification.permission !== 'granted') {
+                    const perm = await Notification.requestPermission();
+                    if (perm !== 'granted') {
+                        showToast("Permesso notifiche rifiutato dal browser!");
+                        return;
+                    }
+                }
+            }
+
+            showToast("â³ Prova avviata! Blocca lo schermo ORA: tra 5 secondi suonerÃ  la notifica!", 5000);
+
+            setTimeout(async () => {
+                playChimeSound();
+                if ('serviceWorker' in navigator) {
+                    const reg = await navigator.serviceWorker.getRegistration();
+                    if (reg) {
+                        reg.showNotification("Agenda Famiglia: Promemoria!", {
+                            body: "Test suoneria e avviso a schermo spento funzionante!",
+                            icon: "./icons/icon-192.png",
+                            badge: "./icons/icon-192.png",
+                            vibrate: [300, 150, 300, 150, 600],
+                            tag: "test-reminder"
+                        });
+                        return;
+                    }
+                }
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    new Notification("Agenda Famiglia: Promemoria!", {
+                        body: "Test suoneria funzionante!",
+                        icon: "./icons/icon-192.png"
+                    });
+                }
+            }, 5000);
+        };
+
         function bootApp() {
             renderApp();
             initAuth();
