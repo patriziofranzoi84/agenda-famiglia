@@ -133,7 +133,7 @@
                             <div id="usersDropdownMenu" class="hidden absolute left-0 mt-1 w-80 bg-white rounded-2xl shadow-2xl border border-slate-200 p-2.5 z-50">
                                 <div class="flex items-center justify-between pb-1.5 mb-1.5 border-b border-slate-100 px-1">
                                     <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Chi (Componenti & Impegni)</span>
-                                    <button type="button" onclick="toggleAllUsersFilter()" class="text-xs font-extrabold text-indigo-600 hover:underline">Tutti</button>
+                                    <button type="button" onclick="toggleAllUsersFilter()" id="btnToggleAllUsers" class="text-xs font-black text-indigo-600 hover:underline">Tutti</button>
                                 </div>
                                 <div class="space-y-1 max-h-64 overflow-y-auto thin-scroll" id="usersCheckboxList">
                                     <!-- Popolato dinamicamente da script con checkbox e tasto [+ Impegno] -->
@@ -149,14 +149,14 @@
                             <button type="button" onclick="toggleDropdown('categoriesDropdownMenu', event)" id="btnToggleCategoriesDropdown"
                                     class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-[11px] font-black border border-amber-300 bg-amber-100 hover:bg-amber-200 text-amber-950 shadow-2xs transition">
                                 <i data-lucide="layers" class="w-3.5 h-3.5 text-amber-700"></i>
-                                <span id="categoriesFilterBtnLabel">Cosa: 7</span>
+                                <span id="categoriesFilterBtnLabel">Cosa: 8</span>
                                 <i data-lucide="chevron-down" class="w-3 h-3 text-amber-500"></i>
                             </button>
 
                             <div id="categoriesDropdownMenu" class="hidden absolute left-0 mt-1 w-72 bg-white rounded-2xl shadow-2xl border border-slate-200 p-2.5 z-50">
                                 <div class="flex items-center justify-between pb-1.5 mb-1.5 border-b border-slate-100 px-1">
                                     <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Filtra Cosa (Attività)</span>
-                                    <button type="button" onclick="toggleAllCategoriesFilter()" class="text-xs font-extrabold text-indigo-600 hover:underline">Tutte</button>
+                                    <button type="button" onclick="toggleAllCategoriesFilter()" id="btnToggleAllCategories" class="text-xs font-black text-amber-700 hover:underline">Tutti</button>
                                 </div>
                                 <div class="space-y-1" id="categoriesCheckboxList">
                                     <!-- Popolato dinamicamente da script -->
@@ -264,6 +264,20 @@
         <!-- ======================================================== -->
         <div id="mainScreenCalendario" class="flex-1 w-full h-full overflow-hidden flex flex-col">
 
+            <!-- BANNER NOTIFICA CATEGORIE DISMESSE SPOSTATE IN "ALTRO" DA MODIFICARE -->
+            <div id="recategorizeGlobalBanner" class="hidden mb-1.5 p-2 sm:p-2.5 rounded-2xl bg-amber-50 border-2 border-amber-300 text-amber-950 shadow-xs flex items-center justify-between gap-2 shrink-0 animate-in fade-in">
+                <div class="flex items-center gap-2 text-xs font-bold min-w-0">
+                    <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600 shrink-0"></i>
+                    <span class="truncate">
+                        <span id="recategorizeBannerCount" class="px-1.5 py-0.2 rounded-full bg-amber-500 text-slate-950 font-black text-[10px]">0</span>
+                        <span id="recategorizeBannerText">impegni con categoria precedente non più attiva spostati in <strong>"Altro"</strong></span>
+                    </span>
+                </div>
+                <button type="button" onclick="openRecategorizeModal()" class="px-2.5 py-1 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-[11px] shrink-0 shadow-2xs transition">
+                    Modifica ora
+                </button>
+            </div>
+
             <!-- 1. VISTA LISTA INFINITA (Ancorata alle attività di adesso/oggi, scorrevole su e giù) -->
             <section id="listViewSection" class="hidden flex-1 h-full overflow-y-auto thin-scroll p-1">
                 <div class="max-w-4xl mx-auto space-y-2 pb-10">
@@ -298,6 +312,9 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Banner Lavori di casa eseguiti nel giorno -->
+                <div id="singleDayChoresBanner" class="hidden px-3 py-1.5 bg-amber-50 border-b border-amber-200 text-xs flex flex-wrap items-center justify-between gap-1.5 shrink-0"></div>
 
                 <!-- Contenitore Timeline Oraria con ore fisse a sinistra e impegni dentro altri -->
                 <div id="dayTimelineViewport" class="flex-1 overflow-y-auto overflow-x-hidden thin-scroll relative bg-slate-50 w-full">
@@ -374,6 +391,11 @@
                         <button type="button" onclick="setChoresTab('confermate')" id="btnChoreTabConfermate"
                                 class="px-2.5 py-1 rounded-lg text-xs font-bold text-emerald-900 hover:bg-emerald-100 transition">
                             ✓ Confermate (<span id="casaCountConfermate">0</span>)
+                        </button>
+                        <button type="button" onclick="setChoresTab('storico')" id="btnChoreTabStorico"
+                                class="px-2.5 py-1 rounded-lg text-xs font-bold text-indigo-900 hover:bg-indigo-100 transition flex items-center gap-1">
+                            <span>📊 Riepilogo & Storico</span>
+                            <span id="casaCountStorico" class="px-1.5 py-0.2 rounded-full text-[9px] bg-indigo-100 text-indigo-800 font-black">0</span>
                         </button>
                     </div>
 
@@ -707,8 +729,8 @@
                             </div>
                             <div>
                                 <div class="text-[10px] font-black uppercase tracking-wider text-emerald-800">Ultimo Aggiornamento App</div>
-                                <div class="text-sm font-black text-slate-900 tracking-tight" id="appLastUpdateDateTime">21/10/2026 alle 17:12</div>
-                                <div class="text-[10px] font-bold text-slate-500" id="appDeviceCheckDateTime">Verificato su questo cellulare: 21/10/2026 alle 17:12</div>
+                                <div class="text-sm font-black text-slate-900 tracking-tight" id="appLastUpdateDateTime">21/10/2026 alle 18:14</div>
+                                <div class="text-[10px] font-bold text-slate-500" id="appDeviceCheckDateTime">Verificato su questo cellulare: 21/10/2026 alle 18:14</div>
                             </div>
                         </div>
                         <div class="self-start sm:self-center">
@@ -953,7 +975,7 @@
             <!-- FOOTER INFO VERSIONE E DATA AGGIORNAMENTO -->
             <div class="pt-2 pb-6 text-center space-y-0.5">
                 <p class="text-[11px] font-black text-slate-500">Agenda Familiare Condivisa • rev. 16</p>
-                <p class="text-[10px] font-bold text-slate-400" id="altroFooterLastUpdate">Ultimo aggiornamento rilasciato: 21/10/2026 alle 17:12</p>
+                <p class="text-[10px] font-bold text-slate-400" id="altroFooterLastUpdate">Ultimo aggiornamento rilasciato: 21/10/2026 alle 18:14</p>
             </div>
         </div>
 
@@ -1228,6 +1250,9 @@
                 </div>
             </div>
 
+            <!-- Banner Lavori di casa del giorno nel popup timeline -->
+            <div id="dayTimelineChoresBanner" class="hidden px-3 py-1.5 bg-amber-50 border-b border-amber-200 text-xs flex flex-wrap items-center justify-between gap-1.5 shrink-0"></div>
+
             <!-- Contenitore timeline scrollabile -->
             <div id="dayTimelineGridContainer" class="flex-1 overflow-y-auto thin-scroll p-3 space-y-2 relative bg-slate-50"></div>
 
@@ -1287,6 +1312,17 @@
 
             <!-- Corpo Riepilogo in sola lettura -->
             <div class="p-4 sm:p-5 overflow-y-auto thin-scroll space-y-3.5 text-xs sm:text-sm">
+                <!-- Alert Categoria Dismessa -->
+                <div id="summaryRecategorizeAlert" class="hidden p-3 rounded-2xl bg-amber-50 border-2 border-amber-300 text-amber-950 space-y-1">
+                    <div class="flex items-center gap-1.5 font-black text-xs text-amber-900">
+                        <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600 shrink-0"></i>
+                        <span>Categoria dismessa: <span id="summaryPreviousCategoryLabel">Auto</span></span>
+                    </div>
+                    <p class="text-[11px] font-medium text-amber-800 leading-snug">
+                        Questo appuntamento apparteneva a una categoria non più attiva ed è stato provvisoriamente assegnato ad <strong>"Altro"</strong>. Tocca <strong>"Modifica"</strong> qui sotto per scegliere la nuova categoria desiderata.
+                    </p>
+                </div>
+
                 <!-- Titolo -->
                 <div>
                     <h3 id="summaryTitle" class="text-lg sm:text-xl font-black text-slate-900 leading-tight">Titolo Evento</h3>
@@ -1368,6 +1404,44 @@
             </div>
         </div>
     </div>
+
+    <!-- ======================================================== -->
+    <!-- MODALE ELENCO IMPEGNI DA RICLASSIFICARE (CATEGORIE DISMESSE SPOSTATE IN ALTRO) -->
+    <!-- ======================================================== -->
+    <div id="recategorizeListModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white w-full max-w-lg rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90dvh] animate-in slide-in-from-bottom-4 duration-200">
+            <!-- Header Modal -->
+            <div class="px-4 py-3 bg-amber-500 text-slate-950 flex items-center justify-between shrink-0 shadow-xs">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="alert-triangle" class="w-5 h-5 text-slate-950"></i>
+                    <div>
+                        <h3 class="text-sm sm:text-base font-black">Impegni da riclassificare</h3>
+                        <p class="text-[10px] font-bold text-amber-950 opacity-90">Spostati provvisoriamente in "Altro"</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeRecategorizeModal()" class="p-1 rounded-lg text-slate-950/70 hover:text-slate-950 transition">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <!-- Info Box -->
+            <div class="p-3 bg-amber-50/80 border-b border-amber-200 text-xs text-amber-950 space-y-1">
+                <p class="font-semibold text-[11px] leading-snug">
+                    Le categorie non più attive (come <em>Auto</em>) sono state dismesse. Gli impegni sottostanti sono stati assegnati provvisoriamente ad <strong>"Altro"</strong>: tocca <strong>"Modifica Categoria"</strong> per scegliere la nuova categoria desiderata (es. Personali, Lavoro, Famiglia).
+                </p>
+            </div>
+            <!-- Lista Eventi da Modificare -->
+            <div id="recategorizeEventsList" class="p-3 sm:p-4 overflow-y-auto thin-scroll space-y-2 flex-1 min-h-[150px]">
+                <!-- Popolato dinamicamente -->
+            </div>
+            <!-- Footer -->
+            <div class="p-3 bg-slate-50 border-t border-slate-200 flex justify-end shrink-0">
+                <button type="button" onclick="closeRecategorizeModal()" class="px-4 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-black transition">
+                    Chiudi
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div id="eventModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
         <div class="bg-white w-full max-w-2xl rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-200 max-h-[94dvh] flex flex-col overflow-hidden animate-in slide-in-from-bottom-6 sm:slide-in-from-bottom-2 duration-200">
             <!-- Header Modal -->
@@ -1417,6 +1491,17 @@
                     <p id="formUsersError" class="hidden text-xs font-bold text-rose-600 mt-1">Seleziona almeno un componente.</p>
                 </div>
 
+                <!-- Alert Categoria Dismessa nel Form -->
+                <div id="formRecategorizeNotice" class="hidden p-3 rounded-2xl bg-amber-50 border-2 border-amber-400 text-amber-950 space-y-1">
+                    <div class="flex items-center gap-1.5 font-black text-xs text-amber-900">
+                        <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600 shrink-0"></i>
+                        <span>Categoria dismessa: <span id="formPreviousCategoryLabel">Auto</span></span>
+                    </div>
+                    <p class="text-[11px] font-medium text-amber-800 leading-snug">
+                        La categoria originale di questo impegno non è più attiva ed è stato provvisoriamente impostato su <strong>"Altro"</strong>. <strong>Seleziona la nuova categoria corretta</strong> qui sotto e salva l'impegno per confermare.
+                    </p>
+                </div>
+
                 <!-- 3. CATEGORIA (COMPATTA A COMPARSA CON SCELTA RAPIDA E AGGIUNTA) -->
                 <div class="relative">
                     <div class="flex items-center justify-between mb-1">
@@ -1430,7 +1515,7 @@
                          class="w-full p-2 rounded-xl border border-slate-300 bg-white cursor-pointer flex items-center justify-between gap-2 shadow-2xs hover:border-indigo-400 transition">
                         <div class="flex items-center gap-2 truncate">
                             <span id="formCategoryBadgeDot" class="w-3.5 h-3.5 rounded-full shrink-0 bg-indigo-600"></span>
-                            <span id="formCategorySelectedLabel" class="font-black text-xs uppercase text-slate-800 truncate">Sportivi</span>
+                            <span id="formCategorySelectedLabel" class="font-black text-xs uppercase text-slate-800 truncate">Famiglia</span>
                         </div>
                         <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 shrink-0"></i>
                     </div>
@@ -1457,7 +1542,7 @@
                             <div class="flex items-center justify-between">
                                 <span class="text-[10px] font-black uppercase text-indigo-950 flex items-center gap-1">
                                     <i data-lucide="tag" class="w-3 h-3 text-indigo-600"></i>
-                                    <span>Sottocategoria: <strong id="formSubcategoryCatLabel" class="text-indigo-600">Sportivi</strong></span>
+                                    <span>Sottocategoria: <strong id="formSubcategoryCatLabel" class="text-indigo-600">Famiglia</strong></span>
                                 </span>
                             </div>
                             <div id="formSubcategoriesList" class="flex flex-wrap gap-1 items-center"></div>
@@ -1770,6 +1855,61 @@
                 <button type="button" onclick="closeChoreAssignModal()" class="px-3 py-1.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">Annulla</button>
                 <button type="button" onclick="confirmChoreAssignment()" class="px-4 py-1.5 rounded-xl text-xs font-black bg-amber-500 hover:bg-amber-600 text-slate-950 shadow-2xs">Conferma Spostamento</button>
             </div>
+        </div>
+    </div>
+
+    <!-- MODALE REGISTRAZIONE LAVORO DI CASA NELLO STORICO -->
+    <div id="manualChoreHistoryModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4">
+        <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl border border-slate-200 p-4 space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center shadow-2xs">
+                        <i data-lucide="clipboard-check" class="w-4 h-4"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-black text-slate-900">Registra Lavoro Fatto</h3>
+                        <p class="text-[10px] font-bold text-slate-500">Aggiungi un lavoro allo storico della casa</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeManualChoreHistoryModal()" class="text-slate-400 hover:text-slate-600">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <form onsubmit="handleSaveManualChoreHistory(event)" class="space-y-2.5">
+                <div>
+                    <label class="block text-[10.5px] font-extrabold uppercase text-slate-500 mb-0.5">Lavoro Svolto</label>
+                    <div class="space-y-1.5">
+                        <select id="manualChoreSelect" onchange="onManualChoreSelectChange(this.value)" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold">
+                            <!-- Popolato dinamicamente -->
+                        </select>
+                        <input type="text" id="manualChoreCustomTitle" placeholder="Specifica altro lavoro..." class="hidden w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-semibold">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[10.5px] font-extrabold uppercase text-slate-500 mb-0.5">Chi lo ha fatto?</label>
+                    <select id="manualChoreUserSelect" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold">
+                        <!-- Popolato dinamicamente da BASE_USERS -->
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-[10.5px] font-extrabold uppercase text-slate-500 mb-0.5">Data</label>
+                        <input type="date" id="manualChoreDateInput" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-[10.5px] font-extrabold uppercase text-slate-500 mb-0.5">Orario</label>
+                        <input type="time" id="manualChoreTimeInput" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold">
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+                    <button type="button" onclick="closeManualChoreHistoryModal()" class="px-3 py-1.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">Annulla</button>
+                    <button type="submit" class="px-4 py-1.5 rounded-xl text-xs font-black bg-indigo-600 hover:bg-indigo-700 text-white shadow-2xs">Registra nello Storico</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -2161,7 +2301,7 @@ function ghOpenSetup() {
         const APP_VERSION = 'rev.16';
         const APP_BUILD_INFO = {
             rev: 'rev. 16',
-            dateTime: '21/10/2026 alle 17:12'
+            dateTime: '21/10/2026 alle 18:14'
         };
 
         // 1. I 6 PROFILI DELLA FAMIGLIA (CON AUTENTICAZIONE PASSWORD O DATA DI NASCITA)
@@ -2174,26 +2314,92 @@ function ghOpenSetup() {
             { id: 'u6', name: 'Clara',    role: 'Figlia',        hex: '#0e7490', isAdmin: false, pwd: '',      birthdate: '12032019' }
         ];
 
-        // 2. LE 7 CATEGORIE CONDIVISE (Inclusi Pagamenti e Auto)
+        // 2. LE 8 CATEGORIE CONDIVISE: Famiglia, Personali, Scuola, Lavoro, Sport, Visite, Pagamenti, Altro
         const BASE_CATEGORIES = {
-            famigliari: { id: 'famigliari', label: 'Famigliari', bgHex: '#fde68a', borderHex: '#f59e0b', textHex: '#451a03' },
-            scolastici: { id: 'scolastici', label: 'Scolastici', bgHex: '#bae6fd', borderHex: '#0284c7', textHex: '#082f49' },
-            lavorativi: { id: 'lavorativi', label: 'Lavorativi', bgHex: '#c7d2fe', borderHex: '#4f46e5', textHex: '#1e1b4b' },
-            sportivi:   { id: 'sportivi',   label: 'Sportivi',   bgHex: '#a7f3d0', borderHex: '#10b981', textHex: '#064e3b' },
-            medici:     { id: 'medici',     label: 'Medici',     bgHex: '#fecdd3', borderHex: '#e11d48', textHex: '#4c0519' },
-            pagamenti:  { id: 'pagamenti',  label: 'Pagamenti',  bgHex: '#e0e7ff', borderHex: '#6366f1', textHex: '#312e81' },
-            auto:       { id: 'auto',       label: 'Auto',       bgHex: '#ffedd5', borderHex: '#f97316', textHex: '#7c2d12' }
+            famiglia:  { id: 'famiglia',  label: 'Famiglia',  bgHex: '#fef08a', borderHex: '#eab308', textHex: '#713f12' },
+            personali: { id: 'personali', label: 'Personali', bgHex: '#f5d0fe', borderHex: '#c026d3', textHex: '#701a75' },
+            scuola:    { id: 'scuola',    label: 'Scuola',    bgHex: '#bae6fd', borderHex: '#0284c7', textHex: '#082f49' },
+            lavoro:    { id: 'lavoro',    label: 'Lavoro',    bgHex: '#c7d2fe', borderHex: '#4f46e5', textHex: '#1e1b4b' },
+            sport:     { id: 'sport',     label: 'Sport',     bgHex: '#a7f3d0', borderHex: '#10b981', textHex: '#064e3b' },
+            visite:    { id: 'visite',    label: 'Visite',    bgHex: '#fecdd3', borderHex: '#e11d48', textHex: '#4c0519' },
+            pagamenti: { id: 'pagamenti', label: 'Pagamenti', bgHex: '#e0e7ff', borderHex: '#6366f1', textHex: '#312e81' },
+            altro:     { id: 'altro',     label: 'Altro',     bgHex: '#e2e8f0', borderHex: '#64748b', textHex: '#1e293b' }
         };
+
+        function normalizeCategory(cat) {
+            if (!cat) return 'famiglia';
+            const c = String(cat).toLowerCase().trim();
+            if (c === 'famigliari' || c === 'famiglia') return 'famiglia';
+            if (c === 'personali' || c === 'personale') return 'personali';
+            if (c === 'scolastici' || c === 'scuola') return 'scuola';
+            if (c === 'lavorativi' || c === 'lavoro') return 'lavoro';
+            if (c === 'sportivi' || c === 'sport') return 'sport';
+            if (c === 'medici' || c === 'visite' || c === 'visita') return 'visite';
+            if (c === 'pagamenti' || c === 'pagamento') return 'pagamenti';
+            if (c === 'auto' || c === 'altro') return 'altro';
+            return BASE_CATEGORIES[c] ? c : 'altro';
+        }
+
+        // Migrazione categorie: se un appuntamento aveva una categoria non più presente (es: 'auto' o vecchie categorie dismesse),
+        // viene impostato su 'altro' e contrassegnato con needsRecategorize = true per essere modificato dall'utente una volta aggiornata l'app.
+        function migrateEventCategories(list) {
+            if (!Array.isArray(list)) return [];
+            const directRenames = {
+                'famigliari': 'famiglia',
+                'famiglia': 'famiglia',
+                'personali': 'personali',
+                'personale': 'personali',
+                'scolastici': 'scuola',
+                'scuola': 'scuola',
+                'lavorativi': 'lavoro',
+                'lavoro': 'lavoro',
+                'sportivi': 'sport',
+                'sport': 'sport',
+                'medici': 'visite',
+                'visite': 'visite',
+                'visita': 'visite',
+                'pagamenti': 'pagamenti',
+                'pagamento': 'pagamenti',
+                'altro': 'altro'
+            };
+            list.forEach(e => {
+                if (!e) return;
+                if (e.needsRecategorize === false) {
+                    e.category = normalizeCategory(e.category);
+                    return;
+                }
+                const raw = (e.category || '').toLowerCase().trim();
+                if (raw === 'auto' || (raw && !directRenames[raw] && !BASE_CATEGORIES[raw])) {
+                    const oldLabel = e.previousCategory || (raw ? (raw.charAt(0).toUpperCase() + raw.slice(1)) : 'Auto');
+                    e.category = 'altro';
+                    e.needsRecategorize = true;
+                    e.previousCategory = oldLabel;
+                } else {
+                    e.category = directRenames[raw] || normalizeCategory(raw);
+                }
+            });
+            return list;
+        }
+
+        function getRecategorizeBadgeHtml(ev, compact = false) {
+            if (!ev || !ev.needsRecategorize) return '';
+            const oldCat = escapeHtml(ev.previousCategory || 'Auto');
+            if (compact) {
+                return `<span class="px-1.5 py-0.2 rounded text-[8px] font-black bg-amber-400 text-amber-950 border border-amber-500 shadow-2xs shrink-0 flex items-center gap-0.5" title="Categoria '${oldCat}' non più attiva: spostato provvisoriamente in 'Altro'. Tocca per modificare">⚠️ Modifica</span>`;
+            }
+            return `<span class="px-1.5 py-0.5 rounded text-[8.5px] font-black bg-amber-400 text-amber-950 border border-amber-500 shadow-2xs shrink-0 flex items-center gap-0.5" title="Categoria '${oldCat}' non più attiva: spostato provvisoriamente in 'Altro'. Tocca per modificare">⚠️ Da modificare (ex: ${oldCat})</span>`;
+        }
 
         // 3. SOTTO-CATEGORIE PREDEFINITE CONDIVISE
         const DEFAULT_SUBCATEGORIES = {
-            lavorativi: ['Multites', 'Sicurezza', 'Uff. Isola', 'Uff. Monticello', 'Sopralluogo'],
-            sportivi:   ['Twirling', 'Yoga', 'Calcio', 'Palestra', 'Corsa', 'Basket', 'Nuoto'],
-            famigliari: ['Spesa', 'Famiglia', 'Casa', 'Commissioni', 'Cena'],
-            medici:     ['Visita medica', 'Controllo', 'Dentista', 'Esami sangue'],
-            scolastici: ['Scuola', 'Compiti', 'Riunione docenti', 'Colloquio'],
-            pagamenti:  ['Bollette', 'Inarcassa', 'Bollo auto', 'Assicurazione', 'F24 / Tasse', 'Altro'],
-            auto:       ['Assicurazione', 'Bollo', 'Revisione', 'Tagliando', 'Altro']
+            famiglia:  ['Spesa', 'Famiglia', 'Casa', 'Commissioni', 'Cena', 'Compleanno', 'Altro'],
+            personali: ['Personali', 'Tempo libero', 'Hobby', 'Acquisti', 'Viaggi', 'Altro'],
+            scuola:    ['Scuola', 'Compiti', 'Riunione docenti', 'Colloquio', 'Gita', 'Altro'],
+            lavoro:    ['Multites', 'Sicurezza', 'Uff. Isola', 'Uff. Monticello', 'Sopralluogo', 'Riunione', 'Altro'],
+            sport:     ['Twirling', 'Yoga', 'Calcio', 'Palestra', 'Corsa', 'Basket', 'Nuoto', 'Altro'],
+            visite:    ['Visita medica', 'Controllo', 'Dentista', 'Esami sangue', 'Specialista', 'Fisioterapia', 'Altro'],
+            pagamenti: ['Bollette', 'Inarcassa', 'Bollo auto', 'Assicurazione', 'F24 / Tasse', 'Spese casa', 'Altro'],
+            altro:     ['Auto', 'Tagliando', 'Revisione', 'Varie', 'Promemoria', 'Altro']
         };
 
         // 4. CATEGORIE PERSONALI PATRIZIO (IN ORDINE ALFABETICO)
@@ -2285,6 +2491,11 @@ function ghOpenSetup() {
         }
         // Data di riferimento "Oggi": Lunedì 19 Ottobre 2026
         function getTodayIso() { return toIsoDate(new Date()); }
+        function parseIsoDateToLocalDate(isoStr) {
+            if (!isoStr) return new Date();
+            const parts = isoStr.split('-').map(Number);
+            return new Date(parts[0], parts[1] - 1, parts[2] || 1, 12, 0, 0);
+        }
         function getMondayOfWeek(dateObj) {
             const d = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
             const day = d.getDay();
@@ -2385,7 +2596,7 @@ function ghOpenSetup() {
 
         function getRoutineSchoolEventsForDate(dateStr) {
             if (!state.showRoutineSchool) return [];
-            if (!state.selectedCategories.includes('scolastici')) return [];
+            if (!state.selectedCategories.includes('scuola') && !state.selectedCategories.includes('scolastici')) return [];
 
             const [y, m, d] = dateStr.split('-').map(Number);
             const dow = new Date(y, m - 1, d).getDay();
@@ -2401,7 +2612,7 @@ function ghOpenSetup() {
                     time: '07:50',
                     endTime: '16:00',
                     duration: '8h 10m',
-                    category: 'scolastici',
+                    category: 'scuola',
                     users: ['u5'],
                     notes: '',
                     isRoutineSchool: true
@@ -2415,7 +2626,7 @@ function ghOpenSetup() {
                     time: '08:00',
                     endTime: '16:00',
                     duration: '8 ore',
-                    category: 'scolastici',
+                    category: 'scuola',
                     users: ['u6'],
                     notes: '',
                     isRoutineSchool: true
@@ -2434,10 +2645,11 @@ function ghOpenSetup() {
             const merged = JSON.parse(JSON.stringify(DEFAULT_SUBCATEGORIES));
             if (saved && typeof saved === 'object') {
                 Object.keys(saved).forEach(cat => {
-                    if (!merged[cat]) merged[cat] = [];
+                    const normCat = normalizeCategory(cat);
+                    if (!merged[normCat]) merged[normCat] = [];
                     if (Array.isArray(saved[cat])) {
                         saved[cat].forEach(sub => {
-                            if (!merged[cat].includes(sub)) merged[cat].push(sub);
+                            if (!merged[normCat].includes(sub)) merged[normCat].push(sub);
                         });
                     }
                 });
@@ -2546,7 +2758,7 @@ function ghOpenSetup() {
                 consolidatedTwirling.push({
                     id: `twirling_${dateStr}`,
                     title: 'Twirling',
-                    category: 'sportivi',
+                    category: 'sport',
                     subcategory: 'Twirling',
                     date: dateStr,
                     time: minTime,
@@ -2568,16 +2780,19 @@ function ghOpenSetup() {
         }
 
         function loadPersistedEvents() {
+            let list = null;
             try {
                 const raw = localStorage.getItem('agenda_famiglia_events_rev16') || localStorage.getItem('agenda_famiglia_events_rev14') || localStorage.getItem('agenda_famiglia_events_rev13') || localStorage.getItem('agenda_famiglia_events_rev12') || localStorage.getItem('agenda_famiglia_events_rev11') || localStorage.getItem('agenda_famiglia_events_rev10');
                 if (raw) {
                     const parsed = JSON.parse(raw);
                     if (Array.isArray(parsed) && parsed.length > 0) {
-                        return consolidateTwirlingEvents(parsed);
+                        list = parsed;
                     }
                 }
             } catch(e) {}
-            return consolidateTwirlingEvents(buildRequestedSeedEvents());
+            if (!list) list = buildRequestedSeedEvents();
+            migrateEventCategories(list);
+            return consolidateTwirlingEvents(list);
         }
 
         function persistEventsLocally() {
@@ -2631,14 +2846,151 @@ function ghOpenSetup() {
             return DEFAULT_CHORES;
         }
 
+        function buildInitialChoresHistory() {
+            return [
+                {
+                    id: 'chist_1',
+                    choreId: 'chore_1',
+                    title: 'Stendere',
+                    date: '2026-10-21',
+                    time: '14:20',
+                    executedBy: 'Asia',
+                    executedByUid: 'u3',
+                    confirmedBy: 'Patrizio',
+                    confirmedAt: '21/10 ore 14:35',
+                    timestamp: new Date('2026-10-21T14:20:00').getTime()
+                },
+                {
+                    id: 'chist_2',
+                    choreId: 'chore_3',
+                    title: 'Umido',
+                    date: '2026-10-21',
+                    time: '19:15',
+                    executedBy: 'Mattia',
+                    executedByUid: 'u4',
+                    confirmedBy: 'Manuela',
+                    confirmedAt: '21/10 ore 19:25',
+                    timestamp: new Date('2026-10-21T19:15:00').getTime()
+                },
+                {
+                    id: 'chist_3',
+                    choreId: 'chore_2',
+                    title: 'Ritirare bucato',
+                    date: '2026-10-20',
+                    time: '16:30',
+                    executedBy: 'Emma',
+                    executedByUid: 'u5',
+                    confirmedBy: 'Patrizio',
+                    confirmedAt: '20/10 ore 17:00',
+                    timestamp: new Date('2026-10-20T16:30:00').getTime()
+                },
+                {
+                    id: 'chist_4',
+                    choreId: 'chore_6',
+                    title: 'Plastica',
+                    date: '2026-10-20',
+                    time: '08:10',
+                    executedBy: 'Asia',
+                    executedByUid: 'u3',
+                    confirmedBy: 'Manuela',
+                    confirmedAt: '20/10 ore 08:30',
+                    timestamp: new Date('2026-10-20T08:10:00').getTime()
+                },
+                {
+                    id: 'chist_5',
+                    choreId: 'chore_9',
+                    title: 'Pulizia cucina',
+                    date: '2026-10-20',
+                    time: '21:30',
+                    executedBy: 'Patrizio',
+                    executedByUid: 'u1',
+                    confirmedBy: 'Manuela',
+                    confirmedAt: '20/10 ore 22:00',
+                    timestamp: new Date('2026-10-20T21:30:00').getTime()
+                },
+                {
+                    id: 'chist_6',
+                    choreId: 'chore_5',
+                    title: 'Carta',
+                    date: '2026-10-19',
+                    time: '15:45',
+                    executedBy: 'Clara',
+                    executedByUid: 'u6',
+                    confirmedBy: 'Patrizio',
+                    confirmedAt: '19/10 ore 16:00',
+                    timestamp: new Date('2026-10-19T15:45:00').getTime()
+                },
+                {
+                    id: 'chist_7',
+                    choreId: 'chore_4',
+                    title: 'Secco',
+                    date: '2026-10-19',
+                    time: '20:00',
+                    executedBy: 'Mattia',
+                    executedByUid: 'u4',
+                    confirmedBy: 'Patrizio',
+                    confirmedAt: '19/10 ore 20:15',
+                    timestamp: new Date('2026-10-19T20:00:00').getTime()
+                },
+                {
+                    id: 'chist_8',
+                    choreId: 'chore_7',
+                    title: 'Vetro',
+                    date: '2026-10-15',
+                    time: '17:00',
+                    executedBy: 'Asia',
+                    executedByUid: 'u3',
+                    confirmedBy: 'Patrizio',
+                    confirmedAt: '15/10 ore 17:30',
+                    timestamp: new Date('2026-10-15T17:00:00').getTime()
+                },
+                {
+                    id: 'chist_9',
+                    choreId: 'chore_9',
+                    title: 'Pulizia cucina',
+                    date: '2026-10-14',
+                    time: '21:00',
+                    executedBy: 'Manuela',
+                    executedByUid: 'u2',
+                    confirmedBy: 'Patrizio',
+                    confirmedAt: '14/10 ore 21:30',
+                    timestamp: new Date('2026-10-14T21:00:00').getTime()
+                },
+                {
+                    id: 'chist_10',
+                    choreId: 'chore_8',
+                    title: 'Olio',
+                    date: '2026-10-12',
+                    time: '11:30',
+                    executedBy: 'Mattia',
+                    executedByUid: 'u4',
+                    confirmedBy: 'Patrizio',
+                    confirmedAt: '12/10 ore 12:00',
+                    timestamp: new Date('2026-10-12T11:30:00').getTime()
+                }
+            ];
+        }
+
+        function loadPersistedChoresHistory() {
+            try {
+                const raw = localStorage.getItem('agenda_famiglia_chores_history_rev16');
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+                }
+            } catch(e) {}
+            return buildInitialChoresHistory();
+        }
+
         function persistChores() {
             try {
                 localStorage.setItem('agenda_famiglia_chores_rev16', JSON.stringify(state.chores));
-                localStorage.setItem('agenda_famiglia_chores_rev11', JSON.stringify(state.chores));
+                localStorage.setItem('agenda_famiglia_chores_history_rev16', JSON.stringify(state.choresHistory || []));
             } catch(e) {}
             if (db && currentUser) {
                 setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_chores_rev16', 'current_chores'), {
                     chores: state.chores,
+                    choresHistory: state.choresHistory || [],
                     updatedAt: new Date().toISOString()
                 }).catch(err => console.error(err));
             }
@@ -2690,7 +3042,7 @@ function ghOpenSetup() {
                         endTime: '20:00',
                         duration: '3h 30m',
                         hasDifferentTimes: true,
-                        category: 'sportivi',
+                        category: 'sport',
                         users: ['u3', 'u5', 'u6'],
                         place: 'Palestra Isola / Palestra',
                         notes: 'Allenamenti Twirling Asia, Emma e Clara',
@@ -2736,7 +3088,7 @@ function ghOpenSetup() {
                         endTime: '21:00',
                         duration: '3 ore',
                         hasDifferentTimes: true,
-                        category: 'sportivi',
+                        category: 'sport',
                         users: ['u3', 'u5', 'u6'],
                         place: 'Palestra Isola / Palestra',
                         notes: 'Allenamenti Twirling Asia, Emma e Clara',
@@ -2778,7 +3130,7 @@ function ghOpenSetup() {
             items.push({
                 id: 'visite_mediche_demo',
                 title: 'Visite Mediche',
-                category: 'medici',
+                category: 'visite',
                 subcategory: 'Controllo Generale',
                 date: '2026-10-28',
                 time: '08:00',
@@ -2812,6 +3164,26 @@ function ghOpenSetup() {
                 ]
             });
 
+            // Appuntamento demo con categoria dismessa 'auto':
+            // Verrà migrato provvisoriamente in 'altro' con needsRecategorize = true per essere modificato dall'utente
+            items.push({
+                id: 'auto_tagliando_demo',
+                title: 'Tagliando e Revisione Auto',
+                category: 'auto',
+                subcategory: 'Tagliando',
+                date: '2026-10-30',
+                time: '09:00',
+                endTime: '11:00',
+                duration: '2 ore',
+                users: ['u1'],
+                place: 'Officina Autorizzata',
+                notes: 'Controllo freni, cambio olio e revisione periodica',
+                recurrence: 'none',
+                notificationAdvance: '1d',
+                personalTimer: 'sound_timer',
+                visibility: 'all'
+            });
+
             return items;
         }
 
@@ -2827,8 +3199,12 @@ function ghOpenSetup() {
             events: loadPersistedEvents(),
             subcategories: loadPersistedSubcategories(),
             chores: loadPersistedChores(),
+            choresHistory: loadPersistedChoresHistory(),
+            choresHistoryPeriod: 'day', // 'day', 'week', 'month'
+            choresHistoryDate: getTodayIso(),
+            choresHistoryUserFilter: 'all',
             userLogins: loadPersistedUserLogins(),
-            choresTab: 'tutti', // 'tutti', 'da_fare', 'da_confermare', 'confermate'
+            choresTab: 'tutti', // 'tutti', 'da_fare', 'da_confermare', 'confermate', 'storico'
             casaUserFilter: 'all', // Filtro utente per faccende da confermare/confermate
             pendingChoreIdForAssign: null,
             bills: loadPersistedBills(),
@@ -2861,7 +3237,7 @@ function ghOpenSetup() {
             calendarMonth: new Date().getMonth(),
             popupDate: null,
             timelineZoomHours: 4,
-            formCategory: 'sportivi',
+            formCategory: 'famiglia',
             formUsers: ['u1'],
             formAttachments: [],
             shoppingList: loadPersistedShoppingList(),
@@ -2880,10 +3256,11 @@ function ghOpenSetup() {
         }
 
         function getCategoryBgColor(catId) {
+            const norm = normalizeCategory(catId);
             const profCustom = state.personalColorsByProfile[state.activeProfileId];
-            if (profCustom && profCustom.categories && profCustom.categories[catId]) return profCustom.categories[catId];
-            if (state.familyDefaultColors.categories && state.familyDefaultColors.categories[catId]) return state.familyDefaultColors.categories[catId];
-            return (BASE_CATEGORIES[catId] || BASE_CATEGORIES.famigliari).bgHex;
+            if (profCustom && profCustom.categories && profCustom.categories[norm]) return profCustom.categories[norm];
+            if (state.familyDefaultColors.categories && state.familyDefaultColors.categories[norm]) return state.familyDefaultColors.categories[norm];
+            return (BASE_CATEGORIES[norm] || BASE_CATEGORIES.famiglia).bgHex;
         }
 
         function getActiveUsersList() {
@@ -2895,6 +3272,24 @@ function ghOpenSetup() {
             Object.keys(BASE_CATEGORIES).forEach(k => {
                 res[k] = { ...BASE_CATEGORIES[k], bgHex: getCategoryBgColor(k) };
             });
+            if (state.familyDefaultColors && state.familyDefaultColors.categories) {
+                Object.keys(state.familyDefaultColors.categories).forEach(k => {
+                    const c = state.familyDefaultColors.categories[k];
+                    const normK = normalizeCategory(k);
+                    if (res[normK] && typeof c === 'string') {
+                        res[normK].bgHex = c;
+                    } else if (c && c.label && !res[normK]) {
+                        res[normK] = { ...c, bgHex: getCategoryBgColor(normK) };
+                    }
+                });
+            }
+            // Alias di retrocompatibilità per vecchi nomi categoria
+            res['famigliari'] = res['famiglia'];
+            res['scolastici'] = res['scuola'];
+            res['lavorativi'] = res['lavoro'];
+            res['sportivi']   = res['sport'];
+            res['medici']     = res['visite'];
+            res['auto']       = res['altro'];
             return res;
         }
 
@@ -2934,7 +3329,8 @@ function ghOpenSetup() {
                 }
                 const list = [];
                 snap.forEach(d => list.push({ id: d.id, ...d.data() }));
-                state.events = list;
+                migrateEventCategories(list);
+                state.events = consolidateTwirlingEvents(list);
                 persistEventsLocally();
                 renderApp();
                 if (state.popupDate) renderDayTimelinePopup(false);
@@ -2954,9 +3350,15 @@ function ghOpenSetup() {
             const choresCol = collection(db, 'artifacts', appId, 'public', 'data', 'family_chores_rev16');
             onSnapshot(choresCol, (snap) => {
                 snap.forEach(d => {
-                    if (d.id === 'current_chores' && d.data().chores) {
-                        state.chores = d.data().chores;
-                        try { localStorage.setItem('agenda_famiglia_chores_rev16', JSON.stringify(state.chores)); } catch(e){}
+                    if (d.id === 'current_chores') {
+                        if (d.data().chores) {
+                            state.chores = d.data().chores;
+                            try { localStorage.setItem('agenda_famiglia_chores_rev16', JSON.stringify(state.chores)); } catch(e){}
+                        }
+                        if (d.data().choresHistory) {
+                            state.choresHistory = d.data().choresHistory;
+                            try { localStorage.setItem('agenda_famiglia_chores_history_rev16', JSON.stringify(state.choresHistory)); } catch(e){}
+                        }
                         renderCasaScreen();
                     }
                 });
@@ -3042,9 +3444,24 @@ function ghOpenSetup() {
         function renderFilterDropdowns() {
             // Dropdown / Griglia Utenti "Chi" (con tasto rapido + Impegno)
             const usersContainer = document.getElementById('usersCheckboxList') || document.getElementById('filterUsersGrid');
+            const activeList = getActiveUsersList();
+            const allUsersSelected = activeList.length > 0 && activeList.every(u => state.selectedUsers.includes(u.id));
+
             if (usersContainer) {
-                const activeList = getActiveUsersList();
-                usersContainer.innerHTML = activeList.map(u => {
+                let usersHtml = `
+                    <div class="flex items-center justify-between gap-1.5 p-1.5 rounded-xl border transition ${allUsersSelected ? 'bg-indigo-100/90 border-indigo-300 font-black' : 'bg-slate-50 border-slate-200 opacity-70'}">
+                        <label class="flex items-center gap-2 cursor-pointer select-none flex-1 min-w-0" onclick="event.stopPropagation()">
+                            <input type="checkbox" onchange="toggleAllUsersFilter()" ${allUsersSelected ? 'checked' : ''} class="w-4 h-4 rounded text-indigo-600 focus:ring-0 cursor-pointer">
+                            <span class="w-3 h-3 rounded-full shrink-0 shadow-2xs bg-indigo-600"></span>
+                            <span class="text-xs font-black text-slate-900">Tutti (${activeList.length})</span>
+                        </label>
+                        <span class="text-[10px] font-extrabold px-1.5 py-0.2 rounded-md ${allUsersSelected ? 'bg-indigo-200 text-indigo-950' : 'bg-slate-200 text-slate-600'}">
+                            ${allUsersSelected ? 'Tutti attivi' : 'Seleziona tutti'}
+                        </span>
+                    </div>
+                `;
+
+                usersHtml += activeList.map(u => {
                     const sel = state.selectedUsers.includes(u.id);
                     return `
                         <div class="flex items-center justify-between gap-1.5 p-1.5 rounded-xl border transition ${sel ? 'bg-indigo-50/80 border-indigo-200' : 'bg-slate-50 border-slate-200 opacity-60'}">
@@ -3053,7 +3470,6 @@ function ghOpenSetup() {
                                 <span class="w-3 h-3 rounded-full shrink-0 shadow-2xs" style="background-color:${u.hex}"></span>
                                 <div class="truncate">
                                     <span class="text-xs font-bold text-slate-800">${escapeHtml(u.name)}</span>
-                                    
                                 </div>
                             </label>
                             <button type="button" onclick="openEventModalForUser('${u.id}', event)" title="Aggiungi impegno per ${escapeHtml(u.name)}"
@@ -3063,13 +3479,31 @@ function ghOpenSetup() {
                         </div>
                     `;
                 }).join('');
+                usersContainer.innerHTML = usersHtml;
             }
 
             // Dropdown / Griglia Categorie "Cosa"
             const catsContainer = document.getElementById('categoriesCheckboxList') || document.getElementById('filterCategoriesGrid');
+            const activeCats = getActiveCategoriesMap();
+            const allCatKeys = Object.keys(BASE_CATEGORIES);
+            const allCatsSelected = allCatKeys.length > 0 && allCatKeys.every(k => state.selectedCategories.includes(k));
+
             if (catsContainer) {
-                const activeCats = getActiveCategoriesMap();
-                catsContainer.innerHTML = Object.values(activeCats).map(c => {
+                let catsHtml = `
+                    <label class="flex items-center justify-between p-1.5 rounded-xl border cursor-pointer select-none transition ${allCatsSelected ? 'bg-amber-100/90 border-amber-400 font-black' : 'bg-slate-50 border-slate-200 text-slate-700 font-bold'}" onclick="event.stopPropagation()">
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" onchange="toggleAllCategoriesFilter()" ${allCatsSelected ? 'checked' : ''} class="w-4 h-4 rounded text-amber-600 focus:ring-0 cursor-pointer">
+                            <span class="w-3 h-3 rounded-full shrink-0 shadow-2xs bg-amber-500"></span>
+                            <span class="text-xs font-black text-slate-900">Tutti (${allCatKeys.length})</span>
+                        </div>
+                        <span class="text-[10px] font-extrabold px-1.5 py-0.2 rounded-md ${allCatsSelected ? 'bg-amber-200 text-amber-950' : 'bg-slate-200 text-slate-600'}">
+                            ${allCatsSelected ? 'Tutte attive' : 'Seleziona tutti'}
+                        </span>
+                    </label>
+                `;
+
+                catsHtml += allCatKeys.map(k => {
+                    const c = activeCats[k] || BASE_CATEGORIES[k];
                     const sel = state.selectedCategories.includes(c.id);
                     return `
                         <label class="flex items-center justify-between p-1.5 rounded-xl border cursor-pointer select-none transition ${sel ? 'bg-amber-50/80 border-amber-300' : 'bg-slate-50 border-slate-200 opacity-60'}" onclick="event.stopPropagation()">
@@ -3082,6 +3516,8 @@ function ghOpenSetup() {
                         </label>
                     `;
                 }).join('');
+
+                catsContainer.innerHTML = catsHtml;
             }
 
             // Checkbox Routine Scuola
@@ -3091,17 +3527,23 @@ function ghOpenSetup() {
             // Etichetta bottone Chi in testata
             const usersBtnLabel = document.getElementById('usersFilterBtnLabel');
             if (usersBtnLabel) {
-                const totalU = BASE_USERS.length;
-                const selU = state.selectedUsers.length;
-                usersBtnLabel.textContent = `Chi: ${selU}`;
+                usersBtnLabel.textContent = `Chi: ${state.selectedUsers.length}`;
             }
 
             // Etichetta bottone Cosa in testata
             const catsBtnLabel = document.getElementById('categoriesFilterBtnLabel');
             if (catsBtnLabel) {
-                const totalC = Object.keys(BASE_CATEGORIES).length;
-                const selC = state.selectedCategories.length;
-                catsBtnLabel.textContent = `Cosa: ${selC}`;
+                catsBtnLabel.textContent = `Cosa: ${state.selectedCategories.length}`;
+            }
+
+            // Aggiorna testo del pulsante Tutti in cima ai menu dropdown
+            const btnUsersAll = document.getElementById('btnToggleAllUsers');
+            if (btnUsersAll) {
+                btnUsersAll.textContent = allUsersSelected ? 'Tutti (Togli)' : 'Tutti';
+            }
+            const btnCatsAll = document.getElementById('btnToggleAllCategories');
+            if (btnCatsAll) {
+                btnCatsAll.textContent = allCatsSelected ? 'Tutti (Togli)' : 'Tutti';
             }
 
             // Contatori badge compatibilità
@@ -3116,7 +3558,8 @@ function ghOpenSetup() {
                 if (e.date !== dateStr) return;
                 const hasMatchingUser = (e.users || []).some(uid => state.selectedUsers.includes(uid));
                 if (!hasMatchingUser) return;
-                if (!state.selectedCategories.includes(e.category)) return;
+                const catNorm = normalizeCategory(e.category);
+                if (!state.selectedCategories.includes(catNorm) && !state.selectedCategories.includes(e.category)) return;
 
                 // Visibilità
                 if (e.visibility === 'assigned_only' && !(e.users || []).includes(state.activeProfileId)) return;
@@ -3353,7 +3796,7 @@ function ghOpenSetup() {
                     timedItems.push({
                         isSteppedGroup: false,
                         title: ev.title || 'Impegno',
-                        category: ev.category || 'famigliari',
+                        category: ev.category || 'famiglia',
                         subcategory: ev.subcategory || ev.notes || '',
                         time: ev.time || `${String(sh).padStart(2, '0')}:${String(sm).padStart(2, '0')}`,
                         endTime: ev.endTime || `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`,
@@ -3373,20 +3816,25 @@ function ghOpenSetup() {
         function renderCellEventCard(ev) {
             const catsMap = getActiveCategoriesMap();
             const usersList = getActiveUsersList();
-            const cat = catsMap[ev.category] || catsMap.famigliari;
+            const cat = catsMap[ev.category] || catsMap.famiglia;
 
             const uBadges = (ev.users || []).map(uid => {
                 const u = usersList.find(x => x.id === uid) || { name: uid, hex: '#4f46e5' };
                 return `<span class="px-1.5 py-0.2 rounded text-[10px] font-black text-white" style="background-color:${u.hex}">${u.name}</span>`;
             }).join('');
 
+            const recatBadge = getRecategorizeBadgeHtml(ev, false);
+
             return `
                 <div onclick="openEventModal('${ev.id}')"
                      style="background-color:${cat.bgHex}; border-color:${cat.borderHex}; color:${cat.textHex};"
                      class="rounded-xl border p-2 shadow-2xs transition cursor-pointer hover:brightness-95 flex flex-col justify-between space-y-1">
                     <div class="flex items-center justify-between gap-1 leading-tight">
-                        <span class="text-xs font-black uppercase truncate">${escapeHtml(ev.title)}</span>
-                        <span class="text-[10px] font-bold bg-white/80 px-1 rounded">${ev.time || 'Tutto il gg'}</span>
+                        <div class="flex items-center gap-1.5 truncate">
+                            <span class="text-xs font-black uppercase truncate">${escapeHtml(ev.title)}</span>
+                            ${recatBadge}
+                        </div>
+                        <span class="text-[10px] font-bold bg-white/80 px-1 rounded shrink-0">${ev.time || 'Tutto il gg'}</span>
                     </div>
                     <div class="flex items-center justify-between gap-1 pt-1 border-t border-black/5">
                         <span class="text-[10px] font-bold opacity-80 truncate">${escapeHtml(ev.subcategory || ev.notes || '')}</span>
@@ -3401,8 +3849,10 @@ function ghOpenSetup() {
         // ========================================================
         const TIMELINE_START_HOUR = 0;
         const TIMELINE_END_HOUR = 24;
-        const TIMELINE_SLOT_HEIGHT = 30; // 30px per mezzora (60px per ora)
+        const TIMELINE_SLOT_HEIGHT = 30; // 30px per mezzora (60px per ora) per vista settimana
         const TIMELINE_TOTAL_HEIGHT = (TIMELINE_END_HOUR - TIMELINE_START_HOUR) * 60; // 1440px (mezzanotte a mezzanotte)
+        const DAY_TIMELINE_SLOT_HEIGHT = 54; // 54px per mezzora (108px per ora) per vista giorno spaziosa con impegno, orario e utenti sempre visibili
+        const DAY_TIMELINE_TOTAL_HEIGHT = (TIMELINE_END_HOUR - TIMELINE_START_HOUR) * 2 * DAY_TIMELINE_SLOT_HEIGHT; // 2592px
 
         function renderSingleDayView() {
             const dateStr = toIsoDate(state.singleDayDate);
@@ -3417,6 +3867,39 @@ function ghOpenSetup() {
             const evs = getEventsForDate(dateStr);
             const catsMap = getActiveCategoriesMap();
             const usersList = getActiveUsersList();
+
+            // Banner Lavori di Casa svolti nel giorno
+            const dayChoresBanner = document.getElementById('singleDayChoresBanner');
+            if (dayChoresBanner) {
+                const dayChores = (state.choresHistory || []).filter(c => c.date === dateStr);
+                if (dayChores.length > 0) {
+                    dayChoresBanner.classList.remove('hidden');
+                    const badges = dayChores.map(c => {
+                        const u = BASE_USERS.find(x => x.name.toLowerCase() === (c.executedBy || '').toLowerCase());
+                        const color = u ? u.hex : '#f59e0b';
+                        return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black text-white shadow-2xs" style="background-color:${color}">
+                            <span>${escapeHtml(c.title)}</span>
+                            <span class="opacity-80">(${escapeHtml(c.executedBy || '')}${c.time ? ` ${c.time}` : ''})</span>
+                        </span>`;
+                    }).join('');
+                    dayChoresBanner.innerHTML = `
+                        <div class="flex items-center gap-1.5 flex-wrap flex-1">
+                            <span class="font-black text-amber-950 flex items-center gap-1 text-[11px]">
+                                <i data-lucide="home" class="w-3.5 h-3.5 text-amber-600"></i>
+                                <span>Casa (${dayChores.length}):</span>
+                            </span>
+                            ${badges}
+                        </div>
+                        <button type="button" onclick="goToCasaHistoryForDate('${dateStr}')" class="text-[10px] font-black text-indigo-700 hover:text-indigo-900 underline shrink-0">
+                            Vedi Storico Casa →
+                        </button>
+                    `;
+                    lucide.createIcons();
+                } else {
+                    dayChoresBanner.classList.add('hidden');
+                    dayChoresBanner.innerHTML = '';
+                }
+            }
 
             const btnTimeline = document.getElementById('btnDayModeTimeline');
             const btnCompact = document.getElementById('btnDayModeCompact');
@@ -3439,7 +3922,7 @@ function ghOpenSetup() {
                     const laidOutWeekItems = computeOverlappingEventLayout(timedItems);
                 laidOutWeekItems.forEach(item => {
                         if (item.isSteppedGroup) {
-                            const cat = catsMap[item.category] || catsMap.sportivi;
+                            const cat = catsMap[item.category] || catsMap.sport;
                             html += `
                                 <div onclick="openActivityDetailModal(JSON.parse(this.dataset.item))"
                                      data-item="${escapeHtml(JSON.stringify(item))}"
@@ -3480,11 +3963,11 @@ function ghOpenSetup() {
             const grid = document.getElementById('dayTimelineGrid');
             if (!grid) return;
 
-            let bodyHtml = `<div class="flex items-start relative w-full overflow-hidden" style="height:${TIMELINE_TOTAL_HEIGHT}px;">`;
+            let bodyHtml = `<div class="flex items-start relative w-full overflow-hidden" style="height:${DAY_TIMELINE_TOTAL_HEIGHT}px;">`;
 
-            // Colonna ore fisse a sinistra (07:00 -> 23:00) identica alla settimana
+            // Colonna ore fisse a sinistra con altezza riga aumentata
             bodyHtml += `
-                <div class="sticky left-0 z-20 w-12 sm:w-14 min-w-[48px] sm:min-w-[56px] bg-slate-50 border-r border-slate-300 select-none shadow-2xs shrink-0" style="height:${TIMELINE_TOTAL_HEIGHT}px;">
+                <div class="sticky left-0 z-20 w-12 sm:w-14 min-w-[48px] sm:min-w-[56px] bg-slate-50 border-r border-slate-300 select-none shadow-2xs shrink-0" style="height:${DAY_TIMELINE_TOTAL_HEIGHT}px;">
             `;
             const totalHalfHours = (TIMELINE_END_HOUR - TIMELINE_START_HOUR) * 2;
             for (let s = 0; s < totalHalfHours; s++) {
@@ -3492,9 +3975,9 @@ function ghOpenSetup() {
                 const isHalf = s % 2 === 1;
                 const hhmm = `${String(hour).padStart(2, '0')}:${isHalf ? '30' : '00'}`;
                 bodyHtml += `
-                    <div style="height:${TIMELINE_SLOT_HEIGHT}px;"
-                         class="border-t ${isHalf ? 'border-dashed border-slate-200/80' : 'border-slate-300'} flex items-start justify-end pr-1.5 pt-0.5">
-                        <span class="${isHalf ? 'text-[9px] font-semibold text-slate-400' : 'text-[10px] font-extrabold text-slate-600'}">
+                    <div style="height:${DAY_TIMELINE_SLOT_HEIGHT}px;"
+                         class="border-t ${isHalf ? 'border-dashed border-slate-200/80' : 'border-slate-300'} flex items-start justify-end pr-1.5 pt-1">
+                        <span class="${isHalf ? 'text-[9.5px] font-bold text-slate-400' : 'text-[11px] font-black text-slate-700'}">
                             ${isHalf ? ':30' : hhmm}
                         </span>
                     </div>
@@ -3504,7 +3987,7 @@ function ghOpenSetup() {
 
             // Colonna principale eventi della giornata
             bodyHtml += `
-                <div class="flex-1 min-w-0 border-r border-slate-200 relative bg-white w-full overflow-hidden" style="height:${TIMELINE_TOTAL_HEIGHT}px;">
+                <div class="flex-1 min-w-0 border-r border-slate-200 relative bg-white w-full overflow-hidden" style="height:${DAY_TIMELINE_TOTAL_HEIGHT}px;">
             `;
 
             // Righe orizzontali ogni mezzora
@@ -3515,18 +3998,18 @@ function ghOpenSetup() {
                 bodyHtml += `
                     <div onclick="openEventModal(null, '${dateStr}', '${hhmm}')"
                          title="Tocca per aggiungere alle ${hhmm}"
-                         style="top:${s * TIMELINE_SLOT_HEIGHT}px; height:${TIMELINE_SLOT_HEIGHT}px;"
+                         style="top:${s * DAY_TIMELINE_SLOT_HEIGHT}px; height:${DAY_TIMELINE_SLOT_HEIGHT}px;"
                          class="absolute inset-x-0 border-t ${isHalf ? 'border-dashed border-slate-100 hover:bg-indigo-50/20' : 'border-slate-200 hover:bg-indigo-50/30'} cursor-pointer transition">
                     </div>
                 `;
             }
 
-            // Linea rossa tratteggiata orario attuale (per capire dove siamo nel giorno)
+            // Linea rossa tratteggiata orario attuale (calcolata con altezza riga maggiorata)
             const todayStr = getTodayIso();
             if (dateStr === todayStr) {
                 const now = new Date();
                 const curMin = now.getHours() * 60 + now.getMinutes();
-                const curTopPx = curMin;
+                const curTopPx = Math.round((curMin - (TIMELINE_START_HOUR * 60)) * (DAY_TIMELINE_SLOT_HEIGHT / 30));
                 const nowTimeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
                 bodyHtml += `
                     <div id="dayCurrentTimeLine" style="top:${curTopPx}px;"
@@ -3575,13 +4058,25 @@ function ghOpenSetup() {
             laidOutTrees.forEach(item => {
                 const outer = item.tree.outer;
                 const children = item.tree.children;
-                const topPx = outer.startMin - (TIMELINE_START_HOUR * 60);
-                const heightPx = Math.max(34, outer.durMin);
-                const cat = catsMap[outer.category] || catsMap.famigliari;
+                const topPx = Math.round((outer.startMin - (TIMELINE_START_HOUR * 60)) * (DAY_TIMELINE_SLOT_HEIGHT / 30));
+                const heightPx = Math.max(54, Math.round(outer.durMin * (DAY_TIMELINE_SLOT_HEIGHT / 30)));
+                const cat = catsMap[outer.category] || catsMap.famiglia;
                 const outerUsers = (outer.users || []).map(uid => usersList.find(x => x.id === uid) || { name: uid, hex: '#4f46e5' });
                 const col = item.colIndex || 0;
                 const totalCols = item.clusterCols || 1;
                 const posStyle = `top:${topPx}px; height:${heightPx}px; left:calc(${(col / totalCols) * 100}% + 2px); width:calc(${(100 / totalCols)}% - 4px);`;
+
+                // Badge utenti con colore specifico e orari se differenziati
+                let outerUserBadges = '';
+                if (outer.hasDifferentTimes && Array.isArray(outer.schedule) && outer.schedule.length > 0) {
+                    outerUserBadges = outer.schedule.map(s => {
+                        const u = usersList.find(x => x.id === s.userId) || { name: s.userName || s.userId || 'Tutti', hex: '#4f46e5' };
+                        const timePart = s.time ? ` (${s.time}${s.endTime ? '-' + s.endTime : ''})` : '';
+                        return `<span class="px-2 py-0.5 rounded-full text-[9.5px] font-black text-white shadow-2xs whitespace-nowrap" style="background-color:${u.hex}">${escapeHtml(u.name)}${timePart}</span>`;
+                    }).join('');
+                } else {
+                    outerUserBadges = outerUsers.map(u => `<span class="px-2 py-0.5 rounded-full text-[9.5px] font-black text-white shadow-2xs whitespace-nowrap" style="background-color:${u.hex}">${escapeHtml(u.name)}</span>`).join('');
+                }
 
                 if (children.length > 0) {
                     // Contenitore Esterno con Rettangolo Annidato Interno
@@ -3592,36 +4087,54 @@ function ghOpenSetup() {
                              class="absolute rounded-2xl border-2 shadow-md p-2 overflow-hidden flex flex-col justify-between cursor-pointer transition hover:brightness-95 group z-10">
                             
                             <!-- Testata evento esterno -->
-                            <div class="flex items-center justify-between gap-1 leading-tight shrink-0 bg-white/75 px-2 py-1 rounded-xl border border-black/10">
-                                <div class="truncate">
-                                    <span class="text-xs font-black uppercase">${escapeHtml(outer.title)}</span>
-                                    <span class="text-[10px] font-bold opacity-80 ml-1">${outer.time} - ${outer.endTime || ''}</span>
+                            <div class="flex items-center justify-between gap-1 leading-tight shrink-0 bg-white/85 px-2 py-1.5 rounded-xl border border-black/10 shadow-2xs">
+                                <div class="truncate flex items-center gap-1.5">
+                                    <span class="text-xs sm:text-sm font-black uppercase">${escapeHtml(outer.title)}</span>
+                                    <span class="text-[10px] font-bold opacity-80">${outer.time} - ${outer.endTime || ''}</span>
+                                    ${getRecategorizeBadgeHtml(outer, false)}
                                 </div>
-                                <div class="flex items-center gap-1 shrink-0">
-                                    ${outerUsers.map(u => `<span class="px-1.5 py-0.2 rounded text-[9px] font-black text-white" style="background-color:${u.hex}">${u.name}</span>`).join('')}
+                                <div class="flex items-center gap-1 shrink-0 flex-wrap">
+                                    ${outerUserBadges}
                                 </div>
                             </div>
 
                             <!-- Rettangoli Annidati all'interno della fascia oraria -->
-                            <div class="relative flex-1 mt-1.5 rounded-xl bg-black/5 p-1 min-h-[44px]">
+                            <div class="relative flex-1 mt-1.5 rounded-xl bg-black/5 p-1 min-h-[50px]">
                                 ${children.map(child => {
-                                    const childRelTop = Math.max(2, child.startMin - outer.startMin);
-                                    const childHeight = Math.max(28, child.durMin);
-                                    const childCat = catsMap[child.category] || catsMap.sportivi;
+                                    const childRelTop = Math.max(2, Math.round((child.startMin - outer.startMin) * (DAY_TIMELINE_SLOT_HEIGHT / 30)));
+                                    const childHeight = Math.max(40, Math.round(child.durMin * (DAY_TIMELINE_SLOT_HEIGHT / 30)));
+                                    const childCat = catsMap[child.category] || catsMap.sport;
                                     const childUsers = (child.users || []).map(uid => usersList.find(x => x.id === uid) || { name: uid, hex: '#4f46e5' });
+
+                                    let childUserBadges = '';
+                                    if (child.hasDifferentTimes && Array.isArray(child.schedule) && child.schedule.length > 0) {
+                                        childUserBadges = child.schedule.map(s => {
+                                            const u = usersList.find(x => x.id === s.userId) || { name: s.userName || s.userId || 'Tutti', hex: '#4f46e5' };
+                                            const timePart = s.time ? ` (${s.time}${s.endTime ? '-' + s.endTime : ''})` : '';
+                                            return `<span class="px-1.5 py-0.2 rounded-full text-[9px] font-black text-white shadow-2xs whitespace-nowrap" style="background-color:${u.hex}">${escapeHtml(u.name)}${timePart}</span>`;
+                                        }).join('');
+                                    } else {
+                                        childUserBadges = childUsers.map(u => `<span class="px-1.5 py-0.2 rounded-full text-[9px] font-black text-white shadow-2xs whitespace-nowrap" style="background-color:${u.hex}">${escapeHtml(u.name)}</span>`).join('');
+                                    }
 
                                     return `
                                         <div onclick="event.stopPropagation(); openEventModal('${child.id}')"
                                              title="Impegno interno: ${escapeHtml(child.title)} (${child.time} - ${child.endTime || ''})"
                                              style="top:${childRelTop}px; height:${childHeight}px; background-color:${childCat.bgHex}; border-color:${childCat.borderHex}; color:${childCat.textHex};"
-                                             class="absolute inset-x-1 rounded-xl border-2 shadow-sm p-1.5 overflow-hidden flex items-center justify-between gap-1 cursor-pointer transition hover:scale-[1.01] hover:brightness-105 z-20">
-                                            <div class="truncate flex items-center gap-1.5">
-                                                <span class="w-1.5 h-1.5 rounded-full shrink-0" style="background-color:${childCat.borderHex}"></span>
-                                                <span class="text-[11px] font-black uppercase truncate">${escapeHtml(child.title)}</span>
-                                                <span class="text-[10px] font-bold bg-white/80 px-1 rounded">${child.time} - ${child.endTime || ''}</span>
+                                             class="absolute inset-x-1 rounded-xl border-2 shadow-sm p-1.5 sm:p-2 overflow-hidden flex flex-col justify-between cursor-pointer transition hover:scale-[1.005] hover:brightness-105 z-20">
+                                            <div class="flex items-center justify-between gap-1 leading-tight">
+                                                <div class="truncate flex items-center gap-1.5">
+                                                    <span class="w-2 h-2 rounded-full shrink-0" style="background-color:${childCat.borderHex}"></span>
+                                                    <span class="text-[11px] sm:text-xs font-black uppercase truncate">${escapeHtml(child.title)}</span>
+                                                    ${getRecategorizeBadgeHtml(child, true)}
+                                                </div>
+                                                <span class="text-[10px] font-bold bg-white/85 px-1.5 py-0.5 rounded shadow-2xs shrink-0">${child.time} - ${child.endTime || ''}</span>
                                             </div>
-                                            <div class="flex items-center gap-1 shrink-0">
-                                                ${childUsers.map(u => `<span class="px-1.5 py-0.2 rounded text-[9px] font-black text-white" style="background-color:${u.hex}">${u.name}</span>`).join('')}
+                                            <div class="flex items-center justify-between gap-1 mt-auto pt-1 flex-wrap">
+                                                <span class="text-[9.5px] font-bold opacity-80 truncate">${escapeHtml(child.subcategory || child.notes || '')}</span>
+                                                <div class="flex items-center gap-1 shrink-0 flex-wrap">
+                                                    ${childUserBadges}
+                                                </div>
                                             </div>
                                         </div>
                                     `;
@@ -3634,15 +4147,19 @@ function ghOpenSetup() {
                         <div onclick="openEventModal('${outer.id}')"
                              title="${escapeHtml(outer.title)} (${outer.time} - ${outer.endTime || ''})"
                              style="${posStyle} background-color:${cat.bgHex}; border-color:${cat.borderHex}; color:${cat.textHex};"
-                             class="absolute rounded-xl border-2 shadow-2xs p-1.5 overflow-hidden flex flex-col justify-between cursor-pointer transition hover:brightness-95 group z-10">
-                            <div class="flex items-center justify-between gap-1 leading-tight">
-                                <span class="text-xs font-black uppercase truncate">${escapeHtml(outer.title)}</span>
-                                <span class="text-[10px] font-bold bg-white/80 px-1 rounded">${outer.time} - ${outer.endTime || ''}</span>
+                             class="absolute rounded-xl border-2 shadow-2xs p-2 overflow-hidden flex flex-col justify-between cursor-pointer transition hover:brightness-95 group z-10">
+                            <div class="flex items-center justify-between gap-1.5 leading-tight">
+                                <div class="truncate flex items-center gap-1.5">
+                                    <span class="text-xs sm:text-sm font-black uppercase truncate">${escapeHtml(outer.title)}</span>
+                                    ${outer.category ? `<span class="text-[9px] font-extrabold px-1.5 py-0.2 rounded-full bg-black/5 opacity-75 hidden sm:inline-block">${escapeHtml(outer.category)}</span>` : ''}
+                                    ${getRecategorizeBadgeHtml(outer, false)}
+                                </div>
+                                <span class="text-[10px] sm:text-[10.5px] font-bold bg-white/90 px-1.5 py-0.5 rounded shadow-2xs shrink-0">${outer.time} - ${outer.endTime || ''}</span>
                             </div>
-                            <div class="flex items-center justify-between gap-1 mt-auto pt-1">
+                            <div class="flex items-center justify-between gap-1.5 mt-auto pt-1 flex-wrap">
                                 <span class="text-[10px] font-bold opacity-80 truncate">${escapeHtml(outer.subcategory || outer.notes || '')}</span>
-                                <div class="flex items-center gap-0.5 shrink-0">
-                                    ${outerUsers.map(u => `<span class="px-1.5 py-0.2 rounded text-[9px] font-black text-white" style="background-color:${u.hex}">${u.name}</span>`).join('')}
+                                <div class="flex items-center gap-1 shrink-0 flex-wrap">
+                                    ${outerUserBadges}
                                 </div>
                             </div>
                         </div>
@@ -3650,6 +4167,7 @@ function ghOpenSetup() {
                 }
             });
             bodyHtml += `</div></div>`;
+            grid.innerHTML = bodyHtml;
             grid.innerHTML = bodyHtml;
 
             if (dateStr === todayStr) {
@@ -3779,7 +4297,7 @@ function ghOpenSetup() {
                     const heightPx = Math.max(26, item.durMin);
 
                     if (item.isSteppedGroup) {
-                        const cat = catsMap[item.category] || catsMap.sportivi;
+                        const cat = catsMap[item.category] || catsMap.sport;
                         const partCount = item.participants.length;
 
                         bodyHtml += `
@@ -3813,7 +4331,7 @@ function ghOpenSetup() {
                         `;
                     } else {
                         const ev = item.ev;
-                        const cat = catsMap[ev.category] || catsMap.famigliari;
+                        const cat = catsMap[ev.category] || catsMap.famiglia;
                         const uBadges = (ev.users || []).map(uid => {
                             const u = usersList.find(x => x.id === uid) || { name: uid, hex: '#4f46e5' };
                             return `<span class="px-1 py-0.2 rounded text-[8.5px] font-black text-white" style="background-color:${u.hex}">${u.name}</span>`;
@@ -3825,7 +4343,10 @@ function ghOpenSetup() {
                                  style="top:${topPx}px; height:${heightPx}px; left:calc(${((item.colIndex||0)/(item.clusterCols||1))*100}% + 1px); width:calc(${(100/(item.clusterCols||1))}% - 2px); background-color:${cat.bgHex}; border-color:${cat.borderHex}; color:${cat.textHex};"
                                  class="absolute rounded-xl border p-1 shadow-2xs overflow-hidden flex flex-col justify-between cursor-pointer transition hover:brightness-95 group z-10">
                                 <div class="flex items-center justify-between gap-1 leading-tight">
-                                    <span class="text-[10px] font-black uppercase truncate">${escapeHtml(ev.title)}</span>
+                                    <div class="truncate flex items-center gap-1">
+                                        <span class="text-[10px] font-black uppercase truncate">${escapeHtml(ev.title)}</span>
+                                        ${getRecategorizeBadgeHtml(ev, true)}
+                                    </div>
                                     <span class="text-[8.5px] font-bold bg-white/80 px-1 rounded">${ev.time}</span>
                                 </div>
                                 <div class="flex items-center justify-between gap-0.5 mt-auto pt-0.5">
@@ -3862,6 +4383,7 @@ function ghOpenSetup() {
             const grid = document.getElementById('monthDaysGrid');
             if (!grid) return;
             const usersList = getActiveUsersList();
+            const catsMap = getActiveCategoriesMap();
 
             let html = '';
             for (let i = 0; i < offset; i++) {
@@ -3896,7 +4418,7 @@ function ghOpenSetup() {
                                 const displayItems = monthItems.slice(0, 3);
                                 let res = displayItems.map(item => {
                                     if (item.isSteppedGroup) {
-                                        const cat = BASE_CATEGORIES[item.category] || BASE_CATEGORIES.sportivi || BASE_CATEGORIES.famigliari;
+                                        const cat = catsMap[item.category] || catsMap.sport || catsMap.famiglia;
                                         const timeSpan = (item.time && item.endTime && item.endTime !== item.time)
                                             ? `${item.time} - ${item.endTime}`
                                             : (item.time || '');
@@ -3927,7 +4449,7 @@ function ghOpenSetup() {
                                         `;
                                     } else {
                                         const ev = item.ev;
-                                        const cat = BASE_CATEGORIES[ev.category] || BASE_CATEGORIES.famigliari;
+                                        const cat = catsMap[ev.category] || catsMap.famiglia;
                                         const startTime = item.time || ev.time || '';
                                         const endTime = item.endTime || ev.endTime || '';
                                         const isAllDay = item.isAllDay || !startTime || (typeof startTime === 'string' && startTime.toLowerCase().includes('tutto'));
@@ -3945,6 +4467,7 @@ function ghOpenSetup() {
                                                     <div class="truncate flex items-center gap-1 min-w-0">
                                                         <span class="w-1.5 h-1.5 rounded-full shrink-0" style="background-color:${cat.borderHex}"></span>
                                                         <span class="truncate font-bold text-[8.5px] leading-tight">${escapeHtml(ev.title)}</span>
+                                                        ${ev.needsRecategorize ? `<span class="text-[8px] font-black text-amber-600 shrink-0" title="Categoria non più attiva: spostato in Altro">⚠️</span>` : ''}
                                                     </div>
                                                     <div class="flex items-center gap-0.5 shrink-0">
                                                         ${(ev.users || []).map(uid => {
@@ -4022,7 +4545,7 @@ function ghOpenSetup() {
                 } else {
                     // All day events
                     allDayEvents.forEach(ev => {
-                        const cat = catsMap[ev.category] || catsMap.famigliari;
+                        const cat = catsMap[ev.category] || catsMap.famiglia;
                         const uBadges = (ev.users || []).map(uid => {
                             const u = usersList.find(x => x.id === uid) || { name: uid, hex: '#4f46e5' };
                             return `<span class="px-2 py-0.5 rounded text-[10px] font-black text-white" style="background-color:${u.hex}">${u.name}</span>`;
@@ -4035,6 +4558,7 @@ function ghOpenSetup() {
                                 <div class="truncate">
                                     <div class="text-xs font-black uppercase truncate flex items-center gap-1.5">
                                         <span>${escapeHtml(ev.title)}</span>
+                                        ${getRecategorizeBadgeHtml(ev, false)}
                                         ${ev.isCompleted ? `<i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i>` : ''}
                                     </div>
                                     <div class="text-[10px] font-bold opacity-80 truncate">Tutto il giorno ${ev.subcategory || ev.notes ? ` - ${escapeHtml(ev.subcategory || ev.notes)}` : ''}</div>
@@ -4076,8 +4600,8 @@ function ghOpenSetup() {
                                         const widthPct = 100 / totalCols;
                                         const ev = item.ev || (item.isSteppedGroup ? item.events[0] : null);
                                         const itemTitle = (item.title || (ev ? ev.title : '') || 'Impegno').trim();
-                                        const itemCat = item.category || (ev ? ev.category : 'famigliari');
-                                        const cat = catsMap[itemCat] || catsMap.sportivi || catsMap.famigliari;
+                                        const itemCat = item.category || (ev ? ev.category : 'famiglia');
+                                        const cat = catsMap[itemCat] || catsMap.sport || catsMap.famiglia;
                                         const evId = item.isSteppedGroup ? item.events[0].id : (ev ? ev.id : '');
                                         const uBadges = (item.isSteppedGroup ? item.participants.map(p => usersList.find(x => x.id === p.userId)) : (ev?.users || []).map(uid => usersList.find(x => x.id === uid))).filter(Boolean);
                                         const itemTime = item.time || (ev ? (ev.time || '18:00') : '18:00');
@@ -4094,7 +4618,10 @@ function ghOpenSetup() {
                                                  style="top:${topPx}px; height:${heightPx}px; left:calc(${leftPct}% + 1px); width:calc(${widthPct}% - 2px); background-color:${cat.bgHex}; border-color:${cat.borderHex}; color:${cat.textHex};"
                                                  class="absolute rounded-xl border-2 p-1.5 shadow-2xs overflow-hidden flex flex-col justify-between cursor-pointer hover:brightness-95 transition z-10">
                                                 <div class="leading-tight truncate">
-                                                    <div class="text-[10px] font-black uppercase truncate">${escapeHtml(itemTitle)}</div>
+                                                    <div class="text-[10px] font-black uppercase truncate flex items-center gap-1">
+                                                        <span>${escapeHtml(itemTitle)}</span>
+                                                        ${item.ev ? getRecategorizeBadgeHtml(item.ev, true) : ''}
+                                                    </div>
                                                     <div class="text-[9px] font-bold opacity-85 truncate">${timeRange}</div>
                                                 </div>
                                                 <div class="flex items-center gap-1 mt-auto pt-0.5 truncate">
@@ -4111,7 +4638,7 @@ function ghOpenSetup() {
                         timedItems.forEach(item => {
                 
                         if (item.isSteppedGroup) {
-                            const cat = catsMap[item.category] || catsMap.sportivi;
+                            const cat = catsMap[item.category] || catsMap.sport;
                             itemsHtml += `
                                 <div onclick="event.stopPropagation(); openActivityDetailModal(JSON.parse(this.dataset.item))"
                                      data-item="${escapeHtml(JSON.stringify(item))}"
@@ -4136,7 +4663,7 @@ function ghOpenSetup() {
                             `;
                         } else {
                             const ev = item.ev;
-                            const cat = catsMap[ev.category] || catsMap.famigliari;
+                            const cat = catsMap[ev.category] || catsMap.famiglia;
                             const uBadges = (ev.users || []).map(uid => {
                                 const u = usersList.find(x => x.id === uid) || { name: uid, hex: '#4f46e5' };
                                 return `<span class="px-2 py-0.5 rounded text-[10px] font-black text-white" style="background-color:${u.hex}">${u.name}</span>`;
@@ -4151,6 +4678,7 @@ function ghOpenSetup() {
                                     <div class="truncate">
                                         <div class="text-xs font-black uppercase truncate flex items-center gap-1.5">
                                             <span>${escapeHtml(ev.title)}</span>
+                                            ${getRecategorizeBadgeHtml(ev, false)}
                                             ${ev.isCompleted ? `<i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i>` : ''}
                                         </div>
                                         <div class="text-[10px] font-bold opacity-80 truncate">
@@ -4207,6 +4735,39 @@ function ghOpenSetup() {
                 title.textContent = `Zoom Giornata: ${dt.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' })}`;
             }
 
+            // Banner Lavori di Casa nel giorno dello zoom timeline
+            const choresBanner = document.getElementById('dayTimelineChoresBanner');
+            if (choresBanner) {
+                const dayChores = (state.choresHistory || []).filter(c => c.date === dateStr);
+                if (dayChores.length > 0) {
+                    choresBanner.classList.remove('hidden');
+                    const badges = dayChores.map(c => {
+                        const u = BASE_USERS.find(x => x.name.toLowerCase() === (c.executedBy || '').toLowerCase());
+                        const color = u ? u.hex : '#f59e0b';
+                        return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black text-white shadow-2xs" style="background-color:${color}">
+                            <span>${escapeHtml(c.title)}</span>
+                            <span class="opacity-80">(${escapeHtml(c.executedBy || '')}${c.time ? ` ${c.time}` : ''})</span>
+                        </span>`;
+                    }).join('');
+                    choresBanner.innerHTML = `
+                        <div class="flex items-center gap-1.5 flex-wrap flex-1">
+                            <span class="font-black text-amber-950 flex items-center gap-1 text-[11px]">
+                                <i data-lucide="home" class="w-3.5 h-3.5 text-amber-600"></i>
+                                <span>Casa (${dayChores.length}):</span>
+                            </span>
+                            ${badges}
+                        </div>
+                        <button type="button" onclick="closeDayTimelineModal(); goToCasaHistoryForDate('${dateStr}')" class="text-[10px] font-black text-indigo-700 hover:text-indigo-900 underline shrink-0">
+                            Apri Casa →
+                        </button>
+                    `;
+                    lucide.createIcons();
+                } else {
+                    choresBanner.classList.add('hidden');
+                    choresBanner.innerHTML = '';
+                }
+            }
+
             let html = '';
             for (let h = 7; h <= 22; h++) {
                 const hh00 = `${String(h).padStart(2, '0')}:00`;
@@ -4224,7 +4785,7 @@ function ghOpenSetup() {
                                 return hStart === h;
                             }).map(it => {
                                 if (it.isSteppedGroup) {
-                                    const cat = catsMap[it.category] || catsMap.sportivi;
+                                    const cat = catsMap[it.category] || catsMap.sport;
                                     return `
                                         <div onclick="event.stopPropagation(); openActivityDetailModal(JSON.parse(this.dataset.item))"
                                              data-item="${escapeHtml(JSON.stringify(it))}"
@@ -4270,7 +4831,7 @@ function ghOpenSetup() {
 
             const adminToolbar = document.getElementById('casaAdminToolbar');
             if (adminToolbar) {
-                if (isParent) adminToolbar.classList.remove('hidden');
+                if (isParent && state.choresTab !== 'storico') adminToolbar.classList.remove('hidden');
                 else adminToolbar.classList.add('hidden');
             }
 
@@ -4288,7 +4849,8 @@ function ghOpenSetup() {
                 tutti: document.getElementById('btnChoreTabTutti'),
                 da_fare: document.getElementById('btnChoreTabDaFare'),
                 da_confermare: document.getElementById('btnChoreTabDaConfermare'),
-                confermate: document.getElementById('btnChoreTabConfermate')
+                confermate: document.getElementById('btnChoreTabConfermate'),
+                storico: document.getElementById('btnChoreTabStorico')
             };
             Object.keys(tabButtons).forEach(t => {
                 const btn = tabButtons[t];
@@ -4300,6 +4862,13 @@ function ghOpenSetup() {
                     }
                 }
             });
+
+            // 0. TAB STORICO & RIEPILOGO (Giornaliero, Settimanale, Mensile con conteggi e classifica)
+            if (state.choresTab === 'storico') {
+                renderCasaStoricoView(container);
+                lucide.createIcons();
+                return;
+            }
 
             // 1. TAB TUTTI (Catalogo: mostra SOLO il nome del lavoro, senza 'fatto da me')
             if (state.choresTab === 'tutti') {
@@ -4524,6 +5093,261 @@ function ghOpenSetup() {
                 container.innerHTML = groupHtml;
                 lucide.createIcons();
             }
+        }
+
+        // ========================================================
+        // SCHERMATA CASA: TAB 5 - STORICO & RIEPILOGO GIORNALIERO/SETTIMANALE/MENSILE
+        // ========================================================
+        function renderCasaStoricoView(container) {
+            const period = state.choresHistoryPeriod || 'day';
+            const curDateIso = state.choresHistoryDate || getTodayIso();
+            const history = state.choresHistory || [];
+            const loggedUser = BASE_USERS.find(u => u.id === state.activeProfileId) || BASE_USERS[0];
+            const isParent = !!loggedUser.isAdmin;
+
+            // 1. Calcola range del periodo ed etichetta testuale
+            let periodItems = [];
+            let periodTitle = '';
+            let periodSubtitle = '';
+
+            const todayIso = getTodayIso();
+
+            if (period === 'day') {
+                const [y, m, d] = curDateIso.split('-').map(Number);
+                const dt = new Date(y, m - 1, d);
+                const isToday = curDateIso === todayIso;
+                const dayName = dt.toLocaleDateString('it-IT', { weekday: 'long' });
+                const dayFull = dt.toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' });
+                periodTitle = `${isToday ? 'Oggi, ' : ''}${dayName.charAt(0).toUpperCase() + dayName.slice(1)} ${dayFull}`;
+                periodItems = history.filter(item => item.date === curDateIso);
+                periodSubtitle = `Visualizzazione Giornaliera • ${periodItems.length} lavor${periodItems.length === 1 ? 'o' : 'i'} registrat${periodItems.length === 1 ? 'o' : 'i'}`;
+            } else if (period === 'week') {
+                const curD = parseIsoDateToLocalDate(curDateIso);
+                const monday = getMondayOfWeek(curD);
+                const sunday = new Date(monday);
+                sunday.setDate(sunday.getDate() + 6);
+                const monIso = toIsoDate(monday);
+                const sunIso = toIsoDate(sunday);
+
+                const monStr = monday.toLocaleDateString('it-IT', { day: 'numeric', month: 'short' });
+                const sunStr = sunday.toLocaleDateString('it-IT', { day: 'numeric', month: 'short', year: 'numeric' });
+                periodTitle = `Settimana: ${monStr} - ${sunStr}`;
+                periodItems = history.filter(item => item.date >= monIso && item.date <= sunIso);
+                periodSubtitle = `Visualizzazione Settimanale • ${periodItems.length} lavor${periodItems.length === 1 ? 'o' : 'i'} registrat${periodItems.length === 1 ? 'o' : 'i'}`;
+            } else if (period === 'month') {
+                const [y, m] = curDateIso.split('-').map(Number);
+                const dt = new Date(y, m - 1, 1);
+                const mName = dt.toLocaleDateString('it-IT', { month: 'long', year: 'numeric' });
+                const ymPrefix = `${y}-${String(m).padStart(2, '0')}`;
+                periodTitle = `Mese di ${mName.charAt(0).toUpperCase() + mName.slice(1)}`;
+                periodItems = history.filter(item => item.date && item.date.startsWith(ymPrefix));
+                periodSubtitle = `Visualizzazione Mensile • ${periodItems.length} lavor${periodItems.length === 1 ? 'o' : 'i'} registrat${periodItems.length === 1 ? 'o' : 'i'}`;
+            }
+
+            // Ordina per timestamp decrescente
+            periodItems.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+            // 2. Calcola conteggi per ciascun membro della famiglia e top contributor
+            const totalCount = periodItems.length;
+            const userCounts = {};
+            BASE_USERS.forEach(u => {
+                userCounts[u.name] = periodItems.filter(item => (item.executedBy || '').toLowerCase() === u.name.toLowerCase()).length;
+            });
+            const maxCount = Math.max(0, ...Object.values(userCounts));
+
+            // 3. Filtro Dettaglio per Utente
+            const activeUserFilter = state.choresHistoryUserFilter || 'all';
+            let displayItems = periodItems;
+            if (activeUserFilter !== 'all') {
+                displayItems = periodItems.filter(item => (item.executedBy || '').toLowerCase() === activeUserFilter.toLowerCase());
+            }
+
+            // 4. Markup completo
+            let html = `
+                <div class="space-y-3">
+                    <!-- Barra Selezione Periodo & Tasto Registra Lavoro -->
+                    <div class="bg-white rounded-2xl border border-slate-200 p-2 sm:p-2.5 shadow-2xs flex flex-wrap items-center justify-between gap-2">
+                        <div class="inline-flex items-center gap-1 p-0.5 rounded-xl bg-slate-100">
+                            <button type="button" onclick="setChoresHistoryPeriod('day')"
+                                    class="px-2.5 py-1 rounded-lg text-xs ${period === 'day' ? 'font-black bg-indigo-600 text-white shadow-2xs' : 'font-bold text-slate-700 hover:bg-white/80'} transition">
+                                📅 Giornaliero
+                            </button>
+                            <button type="button" onclick="setChoresHistoryPeriod('week')"
+                                    class="px-2.5 py-1 rounded-lg text-xs ${period === 'week' ? 'font-black bg-indigo-600 text-white shadow-2xs' : 'font-bold text-slate-700 hover:bg-white/80'} transition">
+                                📆 Settimanale
+                            </button>
+                            <button type="button" onclick="setChoresHistoryPeriod('month')"
+                                    class="px-2.5 py-1 rounded-lg text-xs ${period === 'month' ? 'font-black bg-indigo-600 text-white shadow-2xs' : 'font-bold text-slate-700 hover:bg-white/80'} transition">
+                                🗓️ Mensile
+                            </button>
+                        </div>
+
+                        <div class="flex items-center gap-1.5">
+                            <button type="button" onclick="openManualChoreHistoryModal()"
+                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black bg-amber-500 hover:bg-amber-600 text-slate-950 shadow-2xs transition">
+                                <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+                                <span>+ Registra lavoro</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Navigatore Data / Periodo -->
+                    <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl p-3 text-white shadow-md flex flex-wrap items-center justify-between gap-2">
+                        <div class="flex items-center gap-1.5">
+                            <button type="button" onclick="navigateChoresHistoryPeriod(-1)"
+                                    class="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition" title="Periodo precedente">
+                                <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                            </button>
+                            <button type="button" onclick="navigateChoresHistoryPeriod(1)"
+                                    class="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition" title="Periodo successivo">
+                                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                            </button>
+                            <button type="button" onclick="resetChoresHistoryToToday()"
+                                    class="px-2.5 py-1 rounded-xl text-[11px] font-black bg-white/15 hover:bg-white/25 text-white transition">
+                                Oggi
+                            </button>
+                        </div>
+
+                        <div class="text-right flex-1 sm:flex-initial">
+                            <div class="text-xs sm:text-sm font-black tracking-tight text-white">${escapeHtml(periodTitle)}</div>
+                            <div class="text-[10px] font-bold text-indigo-200">${escapeHtml(periodSubtitle)}</div>
+                        </div>
+                    </div>
+
+                    <!-- Riepilogo & Classifica Famiglia (Totale e per Persona con Barra Percentuale) -->
+                    <div class="bg-white rounded-2xl border border-slate-200 p-3 space-y-2.5 shadow-2xs">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-1.5">
+                                <i data-lucide="trophy" class="w-4 h-4 text-amber-500"></i>
+                                <span class="text-xs font-black text-slate-900 uppercase tracking-wide">Riepilogo & Conteggio Membri</span>
+                            </div>
+                            <span class="text-[10.5px] font-bold text-slate-400">Tocca un membro per filtrare</span>
+                        </div>
+
+                        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+                            ${BASE_USERS.map(u => {
+                                const count = userCounts[u.name] || 0;
+                                const isTop = maxCount > 0 && count === maxCount;
+                                const pct = totalCount > 0 ? Math.round((count / totalCount) * 100) : 0;
+                                const isSelected = activeUserFilter.toLowerCase() === u.name.toLowerCase();
+
+                                return `
+                                    <div onclick="toggleChoresHistoryUserFilter('${u.name}')"
+                                         class="cursor-pointer rounded-xl border p-2 transition ${isSelected ? 'border-indigo-500 bg-indigo-50/70 shadow-xs ring-2 ring-indigo-400' : 'border-slate-200 bg-slate-50/80 hover:bg-white hover:border-slate-300 shadow-2xs'} flex flex-col justify-between">
+                                        <div class="flex items-center justify-between gap-1 mb-1">
+                                            <div class="flex items-center gap-1.5 min-w-0">
+                                                <span class="w-2.5 h-2.5 rounded-full shrink-0 shadow-2xs" style="background-color: ${u.hex}"></span>
+                                                <span class="text-xs font-black text-slate-800 truncate">${u.name}</span>
+                                            </div>
+                                            ${isTop ? `<span class="px-1.5 py-0.2 rounded-md bg-amber-400 text-slate-950 text-[9px] font-black shrink-0 shadow-2xs">🏆 Top</span>` : ''}
+                                        </div>
+
+                                        <div class="mt-1 flex items-baseline justify-between">
+                                            <span class="text-base sm:text-lg font-black text-slate-900">${count}</span>
+                                            <span class="text-[10px] font-bold text-slate-400">${pct}%</span>
+                                        </div>
+
+                                        <div class="w-full bg-slate-200 rounded-full h-1.5 mt-1 overflow-hidden">
+                                            <div class="h-full rounded-full transition-all" style="width: ${pct}%; background-color: ${u.hex}"></div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+
+                    <!-- Elenco Dettagliato dei Lavori Svolti -->
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between px-1">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-black text-slate-800 uppercase tracking-wide">
+                                    Dettaglio Lavori (${displayItems.length})
+                                </span>
+                                ${activeUserFilter !== 'all' ? `
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10.5px] font-black bg-indigo-100 text-indigo-900 border border-indigo-200">
+                                        <span>Filtro: <strong>${escapeHtml(activeUserFilter)}</strong></span>
+                                        <button type="button" onclick="toggleChoresHistoryUserFilter('${escapeHtml(activeUserFilter)}')" class="hover:text-rose-600">
+                                            <i data-lucide="x" class="w-3 h-3"></i>
+                                        </button>
+                                    </span>
+                                ` : ''}
+                            </div>
+                            ${activeUserFilter !== 'all' ? `
+                                <button type="button" onclick="setChoresHistoryUserFilter('all')" class="text-[10.5px] font-bold text-indigo-600 hover:underline">
+                                    Mostra tutti
+                                </button>
+                            ` : ''}
+                        </div>
+
+                        ${displayItems.length === 0 ? `
+                            <div class="bg-white rounded-2xl border border-slate-200 p-8 text-center space-y-2 shadow-2xs">
+                                <div class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-700 mx-auto flex items-center justify-center">
+                                    <i data-lucide="clipboard-list" class="w-5 h-5"></i>
+                                </div>
+                                <div class="text-xs font-black text-slate-700">Nessun lavoro registrato per questo periodo.</div>
+                                <p class="text-[10.5px] text-slate-400">Quando i lavori vengono completati e confermati oppure registrati manualmente, appariranno qui con data, orario e chi li ha fatti.</p>
+                                <button type="button" onclick="openManualChoreHistoryModal()"
+                                        class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-black bg-amber-500 hover:bg-amber-600 text-slate-950 transition">
+                                    <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                                    <span>Registra un lavoro adesso</span>
+                                </button>
+                            </div>
+                        ` : `
+                            <div class="space-y-1.5">
+                                ${displayItems.map(item => {
+                                    const uObj = BASE_USERS.find(x => x.name.toLowerCase() === (item.executedBy || '').toLowerCase()) || { hex: '#4f46e5' };
+                                    const [iy, im, id] = (item.date || '').split('-').map(Number);
+                                    const dateLabel = (iy && im && id) ? `${String(id).padStart(2, '0')}/${String(im).padStart(2, '0')}/${iy}` : (item.date || '');
+
+                                    return `
+                                        <div class="bg-white rounded-xl border border-slate-200 p-2.5 flex flex-wrap items-center justify-between gap-2 shadow-2xs hover:border-slate-300 transition">
+                                            <div class="flex items-center gap-2.5 min-w-0">
+                                                <span class="w-3 h-3 rounded-full shrink-0 shadow-2xs" style="background-color: ${uObj.hex}"></span>
+                                                <div class="min-w-0">
+                                                    <div class="flex items-center gap-1.5 flex-wrap">
+                                                        <span class="text-xs sm:text-sm font-extrabold text-slate-900">${escapeHtml(item.title)}</span>
+                                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-black text-white shadow-2xs" style="background-color: ${uObj.hex}">${escapeHtml(item.executedBy || 'Famiglia')}</span>
+                                                    </div>
+                                                    <div class="flex items-center gap-2 text-[10px] font-bold text-slate-500 mt-0.5 flex-wrap">
+                                                        <span class="flex items-center gap-1">
+                                                            <i data-lucide="calendar" class="w-3 h-3 text-slate-400"></i>
+                                                            <span>${dateLabel}</span>
+                                                        </span>
+                                                        ${item.time ? `
+                                                            <span class="flex items-center gap-1">
+                                                                <i data-lucide="clock" class="w-3 h-3 text-slate-400"></i>
+                                                                <span>ore ${escapeHtml(item.time)}</span>
+                                                            </span>
+                                                        ` : ''}
+                                                        ${item.confirmedBy ? `
+                                                            <span class="text-emerald-700 font-extrabold flex items-center gap-1">
+                                                                <i data-lucide="check" class="w-3 h-3 text-emerald-600"></i>
+                                                                <span>Confermato da ${escapeHtml(item.confirmedBy)}</span>
+                                                            </span>
+                                                        ` : ''}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex items-center gap-1 shrink-0">
+                                                ${isParent ? `
+                                                    <button type="button" onclick="deleteChoresHistoryEntry('${item.id}')"
+                                                            title="Elimina dallo storico"
+                                                            class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition">
+                                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                                    </button>
+                                                ` : ''}
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        `}
+                    </div>
+                </div>
+            `;
+
+            container.innerHTML = html;
         }
 
         // ========================================================
@@ -4903,7 +5727,7 @@ function ghOpenSetup() {
             const cont = document.getElementById('screenAltroCategoriesManager');
             if (!cont) return;
             const catsMap = getActiveCategoriesMap();
-            const catsList = Object.values(catsMap);
+            const catsList = Object.keys(BASE_CATEGORIES).map(k => catsMap[k] || BASE_CATEGORIES[k]);
 
             let headerHtml = `
                 <!-- GESTIONE CATEGORIE PER PATRIZIO (AGGIUNGI E RIORDINA) -->
@@ -5262,6 +6086,7 @@ function ghOpenSetup() {
             const todoCount = state.chores.filter(c => c.status === 'da_fare').length;
             const pendingCount = state.chores.filter(c => c.status === 'da_confermare').length;
             const doneCount = state.chores.filter(c => c.status === 'confermate').length;
+            const storicoCount = (state.choresHistory || []).length;
 
             const elT = document.getElementById('casaCountTutti');
             if (elT) elT.textContent = tuttiCount;
@@ -5271,6 +6096,8 @@ function ghOpenSetup() {
             if (elPend) elPend.textContent = pendingCount;
             const elDone = document.getElementById('casaCountConfermate');
             if (elDone) elDone.textContent = doneCount;
+            const elStorico = document.getElementById('casaCountStorico');
+            if (elStorico) elStorico.textContent = storicoCount;
 
             const navB = document.getElementById('navCasaCountBadge');
             if (navB) {
@@ -5332,6 +6159,23 @@ function ghOpenSetup() {
             renderMonthView();
             renderListView();
 
+            // Aggiorna banner impegni con categorie dismesse spostati in 'Altro'
+            const recatEvents = (state.events || []).filter(e => e.needsRecategorize);
+            const recatBanner = document.getElementById('recategorizeGlobalBanner');
+            if (recatBanner) {
+                if (recatEvents.length > 0) {
+                    recatBanner.classList.remove('hidden');
+                    const countEl = document.getElementById('recategorizeBannerCount');
+                    const textEl = document.getElementById('recategorizeBannerText');
+                    if (countEl) countEl.textContent = recatEvents.length;
+                    if (textEl) {
+                        textEl.innerHTML = `${recatEvents.length === 1 ? "impegno con categoria precedente non più attiva spostato" : "impegni con categorie precedenti non più attive spostati"} provvisoriamente in <strong>\"Altro\"</strong>`;
+                    }
+                } else {
+                    recatBanner.classList.add('hidden');
+                }
+            }
+
             // Render altre schermate
             renderCasaScreen();
             renderShoppingScreen();
@@ -5340,6 +6184,74 @@ function ghOpenSetup() {
             renderAltroScreen();
 
             lucide.createIcons();
+        }
+
+        // ========================================================
+        // GESTIONE MODALE RICLASSIFICAZIONE CATEGORIE DISMESSE
+        // ========================================================
+        window.openRecategorizeModal = function() {
+            renderRecategorizeList();
+            const modal = document.getElementById('recategorizeListModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                if (window.lucide) lucide.createIcons();
+            }
+        };
+
+        window.closeRecategorizeModal = function() {
+            const modal = document.getElementById('recategorizeListModal');
+            if (modal) modal.classList.add('hidden');
+        };
+
+        function renderRecategorizeList() {
+            const container = document.getElementById('recategorizeEventsList');
+            if (!container) return;
+            const recatEvents = (state.events || []).filter(e => e.needsRecategorize);
+            if (recatEvents.length === 0) {
+                container.innerHTML = `
+                    <div class="py-10 text-center space-y-2">
+                        <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto">
+                            <i data-lucide="check" class="w-6 h-6"></i>
+                        </div>
+                        <div class="text-xs font-black text-slate-800">Tutti gli impegni sono stati riclassificati!</div>
+                        <div class="text-[11px] text-slate-500">Non ci sono più appuntamenti con categorie dismesse.</div>
+                    </div>
+                `;
+                if (window.lucide) lucide.createIcons();
+                return;
+            }
+
+            const usersList = getActiveUsersList();
+            container.innerHTML = recatEvents.map(ev => {
+                const uBadges = (ev.users || []).map(uid => {
+                    const u = usersList.find(x => x.id === uid) || { name: uid, hex: '#4f46e5' };
+                    return `<span class="px-1.5 py-0.2 rounded text-[9.5px] font-black text-white" style="background-color:${u.hex}">${u.name}</span>`;
+                }).join('');
+
+                const oldCat = escapeHtml(ev.previousCategory || 'Auto');
+                return `
+                    <div class="p-3 rounded-2xl bg-white border-2 border-amber-300 shadow-2xs space-y-2">
+                        <div class="flex items-start justify-between gap-2">
+                            <div>
+                                <div class="text-xs font-black text-slate-900 uppercase">${escapeHtml(ev.title)}</div>
+                                <div class="text-[11px] font-bold text-slate-500 mt-0.5">${ev.date}${ev.time ? ` • ${ev.time}` : ''}${ev.endTime ? `-${ev.endTime}` : ''}</div>
+                            </div>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-100 text-amber-900 border border-amber-300 shrink-0">
+                                Ex: ${oldCat}
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-between gap-2 pt-1.5 border-t border-slate-100">
+                            <div class="flex items-center gap-1 shrink-0">${uBadges}</div>
+                            <button type="button" onclick="closeRecategorizeModal(); openEventEditModal('${ev.id}')"
+                                    class="px-3 py-1 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-[11px] shadow-2xs transition flex items-center gap-1">
+                                <i data-lucide="edit-2" class="w-3 h-3"></i>
+                                <span>Modifica Categoria</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            if (window.lucide) lucide.createIcons();
         }
 
         // ========================================================
@@ -5610,9 +6522,25 @@ function ghOpenSetup() {
             chore.confirmedBy = curUser.name;
             chore.confirmedAt = `${dateStr} ore ${timeStr}`;
 
+            // Memorizza nello storico permanente con data e orario
+            if (!state.choresHistory) state.choresHistory = [];
+            const execUser = BASE_USERS.find(u => u.name.toLowerCase() === (chore.executedBy || '').toLowerCase());
+            state.choresHistory.unshift({
+                id: 'chist_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+                choreId: chore.id,
+                title: chore.title,
+                date: toIsoDate(now),
+                time: timeStr,
+                executedBy: chore.executedBy || curUser.name,
+                executedByUid: execUser ? execUser.id : '',
+                confirmedBy: curUser.name,
+                confirmedAt: `${dateStr} ore ${timeStr}`,
+                timestamp: now.getTime()
+            });
+
             persistChores();
             renderCasaScreen();
-            showToast(`Lavoro "${chore.title}" confermato!`);
+            showToast(`Lavoro "${chore.title}" confermato e archiviato nello storico!`);
         };
 
         // Patrizio o Manuela tolgono la spunta / rifiutano -> torna su 'da_fare'
@@ -5666,6 +6594,170 @@ function ghOpenSetup() {
             closeNewChoreModal();
             renderCasaScreen();
             showToast(`Attività "${title}" aggiunta con successo!`);
+        };
+
+        // ========================================================
+        // AZIONI STORICO & RIEPILOGO CASA (GIORNALIERO/SETTIMANALE/MENSILE)
+        // ========================================================
+        window.setChoresHistoryPeriod = function(p) {
+            state.choresHistoryPeriod = p;
+            renderCasaScreen();
+        };
+
+        window.setChoresHistoryUserFilter = function(u) {
+            state.choresHistoryUserFilter = u;
+            renderCasaScreen();
+        };
+
+        window.navigateChoresHistoryPeriod = function(dir) {
+            const cur = parseIsoDateToLocalDate(state.choresHistoryDate || getTodayIso());
+            if (state.choresHistoryPeriod === 'week') {
+                cur.setDate(cur.getDate() + (dir * 7));
+            } else if (state.choresHistoryPeriod === 'month') {
+                cur.setMonth(cur.getMonth() + dir);
+            } else {
+                cur.setDate(cur.getDate() + dir);
+            }
+            state.choresHistoryDate = toIsoDate(cur);
+            renderCasaScreen();
+        };
+
+        window.resetChoresHistoryToToday = function() {
+            state.choresHistoryDate = getTodayIso();
+            renderCasaScreen();
+        };
+
+        window.toggleChoresHistoryUserFilter = function(userName) {
+            if ((state.choresHistoryUserFilter || 'all').toLowerCase() === userName.toLowerCase()) {
+                state.choresHistoryUserFilter = 'all';
+            } else {
+                state.choresHistoryUserFilter = userName;
+            }
+            renderCasaScreen();
+        };
+
+        window.deleteChoresHistoryEntry = function(id) {
+            const curUser = BASE_USERS.find(u => u.id === state.activeProfileId);
+            if (!curUser || !curUser.isAdmin) {
+                showToast("Solo Patrizio o Manuela possono eliminare registrazioni dallo storico.");
+                return;
+            }
+            if (!confirm("Eliminare questa registrazione dallo storico?")) return;
+            state.choresHistory = (state.choresHistory || []).filter(item => item.id !== id);
+            persistChores();
+            renderCasaScreen();
+            showToast("Registrazione eliminata dallo storico.");
+        };
+
+        window.goToCasaHistoryForDate = function(dateStr) {
+            state.choresHistoryPeriod = 'day';
+            state.choresHistoryDate = dateStr;
+            state.choresHistoryUserFilter = 'all';
+            window.switchMainScreen('casa');
+            window.setChoresTab('storico');
+        };
+
+        window.openManualChoreHistoryModal = function(prefillDate) {
+            const modal = document.getElementById('manualChoreHistoryModal');
+            if (!modal) return;
+
+            const selectChore = document.getElementById('manualChoreSelect');
+            if (selectChore) {
+                let opts = '<option value="">-- Seleziona attività dal catalogo --</option>';
+                (state.chores || []).forEach(ch => {
+                    opts += `<option value="${escapeHtml(ch.title)}">${escapeHtml(ch.title)}</option>`;
+                });
+                opts += '<option value="__custom__">✏️ Altro lavoro (scrivi tu)...</option>';
+                selectChore.innerHTML = opts;
+                if (state.chores && state.chores.length > 0) {
+                    selectChore.value = state.chores[0].title;
+                }
+            }
+
+            const customTitle = document.getElementById('manualChoreCustomTitle');
+            if (customTitle) {
+                customTitle.value = '';
+                customTitle.classList.add('hidden');
+            }
+
+            const selectUser = document.getElementById('manualChoreUserSelect');
+            if (selectUser) {
+                selectUser.innerHTML = BASE_USERS.map(u => `
+                    <option value="${u.name}" ${u.id === state.activeProfileId ? 'selected' : ''}>${u.name}</option>
+                `).join('');
+            }
+
+            const targetDate = prefillDate || state.choresHistoryDate || getTodayIso();
+            const dateInput = document.getElementById('manualChoreDateInput');
+            if (dateInput) dateInput.value = targetDate;
+
+            const now = new Date();
+            const timeInput = document.getElementById('manualChoreTimeInput');
+            if (timeInput) {
+                timeInput.value = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            }
+
+            modal.classList.remove('hidden');
+        };
+
+        window.closeManualChoreHistoryModal = function() {
+            const modal = document.getElementById('manualChoreHistoryModal');
+            if (modal) modal.classList.add('hidden');
+        };
+
+        window.onManualChoreSelectChange = function(val) {
+            const customTitle = document.getElementById('manualChoreCustomTitle');
+            if (customTitle) {
+                if (val === '__custom__') {
+                    customTitle.classList.remove('hidden');
+                    customTitle.focus();
+                } else {
+                    customTitle.classList.add('hidden');
+                }
+            }
+        };
+
+        window.handleSaveManualChoreHistory = function(e) {
+            if (e) e.preventDefault();
+            const choreSelect = document.getElementById('manualChoreSelect').value;
+            const customTitle = document.getElementById('manualChoreCustomTitle').value.trim();
+            const choreTitle = (choreSelect === '__custom__' ? customTitle : choreSelect) || customTitle;
+            if (!choreTitle) {
+                showToast("Specifica il nome del lavoro svolto.");
+                return;
+            }
+
+            const userName = document.getElementById('manualChoreUserSelect').value;
+            const choreDate = document.getElementById('manualChoreDateInput').value || getTodayIso();
+            const choreTime = document.getElementById('manualChoreTimeInput').value || '12:00';
+
+            const userObj = BASE_USERS.find(u => u.name.toLowerCase() === userName.toLowerCase());
+            const curUser = BASE_USERS.find(u => u.id === state.activeProfileId) || BASE_USERS[0];
+
+            if (!state.choresHistory) state.choresHistory = [];
+            const [y, m, d] = choreDate.split('-').map(Number);
+            const [hh, mm] = choreTime.split(':').map(Number);
+            const entryTs = new Date(y, m - 1, d, hh || 12, mm || 0).getTime();
+
+            state.choresHistory.unshift({
+                id: 'chist_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+                choreId: '',
+                title: choreTitle,
+                date: choreDate,
+                time: choreTime,
+                executedBy: userName,
+                executedByUid: userObj ? userObj.id : '',
+                confirmedBy: curUser.name,
+                confirmedAt: `${String(d).padStart(2, '0')}/${String(m).padStart(2, '0')} ore ${choreTime}`,
+                timestamp: entryTs
+            });
+
+            state.choresHistory.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+            persistChores();
+            closeManualChoreHistoryModal();
+            renderCasaScreen();
+            showToast(`Lavoro "${choreTitle}" registrato per ${userName}!`);
         };
 
         // ========================================================
@@ -6120,41 +7212,49 @@ function ghOpenSetup() {
         // Filtri Header
         window.toggleUserFilter = function(uid) {
             if (state.selectedUsers.includes(uid)) {
-                if (state.selectedUsers.length > 1) {
-                    state.selectedUsers = state.selectedUsers.filter(x => x !== uid);
-                }
+                state.selectedUsers = state.selectedUsers.filter(x => x !== uid);
             } else {
                 state.selectedUsers.push(uid);
             }
             renderApp();
         };
 
-        window.toggleAllUsersFilter = function() {
-            if (state.selectedUsers.length === BASE_USERS.length) {
-                state.selectedUsers = [state.activeProfileId];
+        window.toggleAllUsersFilter = function(forceSelectAll) {
+            const allUsers = BASE_USERS.map(u => u.id);
+            if (typeof forceSelectAll === 'boolean') {
+                state.selectedUsers = forceSelectAll ? [...allUsers] : [];
             } else {
-                state.selectedUsers = BASE_USERS.map(u => u.id);
+                const isAllSelected = allUsers.length > 0 && allUsers.every(uid => state.selectedUsers.includes(uid));
+                if (isAllSelected) {
+                    state.selectedUsers = [];
+                } else {
+                    state.selectedUsers = [...allUsers];
+                }
             }
             renderApp();
         };
 
         window.toggleCategoryFilter = function(cid) {
-            if (state.selectedCategories.includes(cid)) {
-                if (state.selectedCategories.length > 1) {
-                    state.selectedCategories = state.selectedCategories.filter(x => x !== cid);
-                }
+            const normCid = normalizeCategory(cid);
+            if (state.selectedCategories.includes(normCid)) {
+                state.selectedCategories = state.selectedCategories.filter(x => x !== normCid);
             } else {
-                state.selectedCategories.push(cid);
+                state.selectedCategories.push(normCid);
             }
             renderApp();
         };
 
-        window.toggleAllCategoriesFilter = function() {
-            const allCats = Object.keys(BASE_CATEGORIES);
-            if (state.selectedCategories.length === allCats.length) {
-                state.selectedCategories = ['sportivi', 'famigliari'];
+        window.toggleAllCategoriesFilter = function(forceSelectAll) {
+            const activeCats = Object.keys(BASE_CATEGORIES);
+            if (typeof forceSelectAll === 'boolean') {
+                state.selectedCategories = forceSelectAll ? [...activeCats] : [];
             } else {
-                state.selectedCategories = allCats;
+                const isAllSelected = activeCats.length > 0 && activeCats.every(k => state.selectedCategories.includes(k));
+                if (isAllSelected) {
+                    state.selectedCategories = [];
+                } else {
+                    state.selectedCategories = [...activeCats];
+                }
             }
             renderApp();
         };
@@ -6177,7 +7277,7 @@ function ghOpenSetup() {
 
             const catsMap = getActiveCategoriesMap();
             const usersList = getActiveUsersList();
-            const cat = catsMap[item.category] || catsMap.sportivi;
+            const cat = catsMap[item.category] || catsMap.sport;
 
             if (headerBadge) {
                 headerBadge.textContent = cat.label;
@@ -6581,7 +7681,7 @@ function ghOpenSetup() {
 
             // Barra Categoria selezionata
             const catsMap = getActiveCategoriesMap();
-            const curCat = catsMap[state.formCategory] || catsMap.sportivi || { label: 'Sportivi', bgHex: '#a7f3d0', borderHex: '#10b981', textHex: '#064e3b' };
+            const curCat = catsMap[state.formCategory] || catsMap.famiglia || { label: 'Famiglia', bgHex: '#fef08a', borderHex: '#eab308', textHex: '#713f12' };
             const catDot = document.getElementById('formCategoryBadgeDot');
             const catLbl = document.getElementById('formCategorySelectedLabel');
             if (catDot) catDot.style.backgroundColor = curCat.borderHex;
@@ -6589,7 +7689,8 @@ function ghOpenSetup() {
 
             const catsGrid = document.getElementById('formCategoriesGrid');
             if (catsGrid) {
-                catsGrid.innerHTML = Object.values(catsMap).map(c => {
+                catsGrid.innerHTML = Object.keys(BASE_CATEGORIES).map(k => {
+                    const c = catsMap[k] || BASE_CATEGORIES[k];
                     const sel = state.formCategory === c.id;
                     return `
                         <button type="button" onclick="selectCategoryInForm('${c.id}')"
@@ -6726,8 +7827,10 @@ function ghOpenSetup() {
             if (lbl) lbl.textContent = catMap[state.formCategory]?.label || state.formCategory;
 
             if (!box) return;
-            const subs = state.subcategories[state.formCategory] || [];
             const defaultSubs = DEFAULT_SUBCATEGORIES[state.formCategory] || [];
+            const subs = (state.subcategories[state.formCategory] && state.subcategories[state.formCategory].length > 0)
+                ? state.subcategories[state.formCategory]
+                : defaultSubs;
 
             box.innerHTML = subs.map(sub => {
                 const sel = state.formSubcategory === sub;
@@ -6907,6 +8010,7 @@ function ghOpenSetup() {
                 personalTimer,
                 visibility,
                 isCompleted,
+                needsRecategorize: false,
                 updatedAt: new Date().toISOString()
             };
 
@@ -6917,6 +8021,7 @@ function ghOpenSetup() {
             persistEventsLocally();
             closeEventModal();
             renderApp();
+            if (window.renderRecategorizeList) renderRecategorizeList();
 
             try { if (db && currentUser) { await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_events_rev16', id), payload); } } catch (syncErr) { console.warn('Sync warning (salvato in locale):', syncErr); }
             showToast("Impegno salvato con successo!");
@@ -7281,11 +8386,12 @@ function ghOpenSetup() {
 
         window.exportDataJson = function() {
             const backup = {
-                version: 'rev.15',
+                version: 'rev.16',
                 exportedAt: new Date().toISOString(),
                 events: state.events,
                 shoppingList: state.shoppingList,
                 chores: state.chores,
+                choresHistory: state.choresHistory || [],
                 bills: state.bills,
                 subcategories: state.subcategories,
                 familyDefaultColors: state.familyDefaultColors
@@ -7309,9 +8415,13 @@ function ghOpenSetup() {
             reader.onload = function(evt) {
                 try {
                     const data = JSON.parse(evt.target.result);
-                    if (data.events) state.events = data.events;
+                    if (data.events) {
+                        migrateEventCategories(data.events);
+                        state.events = consolidateTwirlingEvents(data.events);
+                    }
                     if (data.shoppingList) state.shoppingList = data.shoppingList;
                     if (data.chores) state.chores = data.chores;
+                    if (data.choresHistory) state.choresHistory = data.choresHistory;
                     if (data.bills) state.bills = data.bills;
                     if (data.subcategories) state.subcategories = data.subcategories;
 
@@ -7331,8 +8441,11 @@ function ghOpenSetup() {
 
         window.resetToInitialData = function() {
             if (!confirm("Vuoi ripristinare tutti i dati dimostrativi di default?")) return;
-            state.events = buildRequestedSeedEvents();
+            const initialEvs = buildRequestedSeedEvents();
+            migrateEventCategories(initialEvs);
+            state.events = consolidateTwirlingEvents(initialEvs);
             state.chores = DEFAULT_CHORES;
+            state.choresHistory = buildInitialChoresHistory();
             state.bills = DEFAULT_BILLS;
             state.shoppingList = DEFAULT_SHOPPING_ITEMS;
             persistEventsLocally();
@@ -7556,7 +8669,7 @@ function ghOpenSetup() {
                 if (el) el.remove();
                 return;
             }
-            const topPx = curMin - (TIMELINE_START_HOUR * 60);
+            const topPx = Math.round((curMin - (TIMELINE_START_HOUR * 60)) * (DAY_TIMELINE_SLOT_HEIGHT / 30));
             const hhMm = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
 
             if (!el) {
@@ -7594,7 +8707,7 @@ function ghOpenSetup() {
 
             const catsMap = getActiveCategoriesMap();
             const usersList = getActiveUsersList();
-            const cat = catsMap[ev.category] || catsMap.famigliari || { label: 'Generale', bgHex: '#e0e7ff', borderHex: '#6366f1', textHex: '#312e81' };
+            const cat = catsMap[ev.category] || catsMap.famiglia || { label: 'Generale', bgHex: '#e0e7ff', borderHex: '#6366f1', textHex: '#312e81' };
 
             // Badge Categoria e Sottocategoria
             const catBadge = document.getElementById('summaryCategoryBadge');
@@ -7604,7 +8717,19 @@ function ghOpenSetup() {
             }
             const subBadge = document.getElementById('summarySubcategoryBadge');
             if (subBadge) {
-                subBadge.textContent = ev.subcategory ? `â€¢ ${ev.subcategory}` : '';
+                subBadge.textContent = ev.subcategory ? `• ${ev.subcategory}` : '';
+            }
+
+            // Alert Categoria dismessa da riclassificare
+            const recatAlert = document.getElementById('summaryRecategorizeAlert');
+            const prevLabel = document.getElementById('summaryPreviousCategoryLabel');
+            if (recatAlert) {
+                if (ev.needsRecategorize) {
+                    recatAlert.classList.remove('hidden');
+                    if (prevLabel) prevLabel.textContent = ev.previousCategory || 'Auto';
+                } else {
+                    recatAlert.classList.add('hidden');
+                }
             }
 
             // Titolo
@@ -7827,10 +8952,24 @@ function ghOpenSetup() {
                 document.getElementById('formVisibility').value = ev.visibility || 'all';
 
                 const compElEdit1 = document.getElementById('formCompleted'); if (compElEdit1) compElEdit1.checked = !!ev.isCompleted;
-                state.formCategory = ev.category || 'sportivi';
+                state.formCategory = normalizeCategory(ev.category || 'famiglia');
                 state.formUsers = Array.isArray(ev.users) && ev.users.length > 0 ? [...ev.users] : [state.activeProfileId];
                 state.formSubcategory = ev.subcategory || '';
                 state.formPatrizioCategory = ev.patrizioCategory || '';
+
+                // Avviso categoria dismessa da riclassificare
+                const recatNotice = document.getElementById('formRecategorizeNotice');
+                const prevCatLabel = document.getElementById('formPreviousCategoryLabel');
+                if (recatNotice) {
+                    if (ev && ev.needsRecategorize) {
+                        recatNotice.classList.remove('hidden');
+                        if (prevCatLabel) prevCatLabel.textContent = ev.previousCategory || 'Auto';
+                        const catDrop = document.getElementById('formCategoryDropdown');
+                        if (catDrop) catDrop.classList.remove('hidden');
+                    } else {
+                        recatNotice.classList.add('hidden');
+                    }
+                }
 
                 if (ev.hasDifferentTimes && Array.isArray(ev.schedule) && ev.schedule.length > 0) {
                     state.formSchedule = JSON.parse(JSON.stringify(ev.schedule));
@@ -7846,6 +8985,9 @@ function ghOpenSetup() {
             } else {
                 header.textContent = 'Nuovo Impegno';
                 if (btnDel) btnDel.classList.add('hidden');
+
+                const recatNotice = document.getElementById('formRecategorizeNotice');
+                if (recatNotice) recatNotice.classList.add('hidden');
 
                 document.getElementById('formEventId').value = '';
                 document.getElementById('formTitle').value = '';
@@ -7867,7 +9009,7 @@ function ghOpenSetup() {
                 document.getElementById('formVisibility').value = 'all';
                 const compElEdit2 = document.getElementById('formCompleted'); if (compElEdit2) compElEdit2.checked = false;
 
-                state.formCategory = 'sportivi';
+                state.formCategory = 'famiglia';
                 // Di default l'account che sta utilizzando l'app
                 state.formUsers = [state.activeProfileId];
                 state.formSubcategory = '';
@@ -7902,7 +9044,7 @@ function ghOpenSetup() {
             document.getElementById('formPersonalTimer').value = ev.personalTimer || 'sound_timer';
             document.getElementById('formVisibility').value = ev.visibility || 'all';
 
-            state.formCategory = ev.category || 'sportivi';
+            state.formCategory = normalizeCategory(ev.category || 'famiglia');
             state.formUsers = Array.isArray(ev.users) ? [...ev.users] : [state.activeProfileId];
             state.formSubcategory = ev.subcategory || '';
             state.formPatrizioCategory = ev.patrizioCategory || '';
@@ -8079,8 +9221,10 @@ function ghOpenSetup() {
             if (!vp) return;
             const now = new Date();
             const curMin = now.getHours() * 60 + now.getMinutes();
-            // Centra mostrando 1 ora prima dell'orario attuale
-            const target = Math.max(0, curMin - 60);
+            // Centra mostrando 1 ora prima dell'orario attuale sulla griglia ingrandita
+            const pxPerMin = DAY_TIMELINE_SLOT_HEIGHT / 30;
+            const curTopPx = Math.round((curMin - (TIMELINE_START_HOUR * 60)) * pxPerMin);
+            const target = Math.max(0, curTopPx - Math.round(60 * pxPerMin));
             vp.scrollTo({ top: target, behavior: 'smooth' });
         };
 
