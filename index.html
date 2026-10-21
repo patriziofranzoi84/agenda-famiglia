@@ -16,7 +16,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Agenda Familiare Condivisa rev.20</title>
+    <title>Agenda Familiare Condivisa rev.21</title>
     <script>
         // Applicazione immediata grandezza caratteri salvata per questo dispositivo
         (function() {
@@ -715,7 +715,7 @@
                         <i data-lucide="user" class="w-5 h-5 text-indigo-400"></i>
                         <h2 class="text-sm sm:text-base font-black">Account e Profilo Famiglia</h2>
                     </div>
-                    <span class="text-[10px] font-bold text-indigo-400 font-black">rev.20</span>
+                    <span class="text-[10px] font-bold text-indigo-400 font-black">rev.21</span>
                 </div>
                 <div class="p-4 space-y-3">
                     <div class="flex items-center justify-between gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200">
@@ -764,8 +764,8 @@
                             </div>
                             <div>
                                 <div class="text-[10px] font-black uppercase tracking-wider text-emerald-800">Ultimo Aggiornamento App</div>
-                                <div class="text-sm font-black text-slate-900 tracking-tight" id="appLastUpdateDateTime">21/10/2026 alle 22:14</div>
-                                <div class="text-[10px] font-bold text-slate-500" id="appDeviceCheckDateTime">Verificato su questo cellulare: 21/10/2026 alle 22:14</div>
+                                <div class="text-sm font-black text-slate-900 tracking-tight" id="appLastUpdateDateTime">21/10/2026 alle 22:38</div>
+                                <div class="text-[10px] font-bold text-slate-500" id="appDeviceCheckDateTime">Verificato su questo cellulare: 21/10/2026 alle 22:38</div>
                             </div>
                         </div>
                         <div class="self-start sm:self-center">
@@ -873,14 +873,14 @@
                 </div>
             </div>
 
-            <!-- Backup, Esportazione e Scaricamento rev.13 -->
+            <!-- Backup, Esportazione e Scaricamento rev.21 -->
             <div class="bg-white rounded-2xl border border-slate-200 shadow-2xs p-4 space-y-3">
                 <h3 class="text-xs font-black uppercase text-slate-400 tracking-wider">Gestione Dati & Download</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                    <button type="button" onclick="downloadRev20File()"
+                    <button type="button" onclick="downloadRev21File()"
                             class="flex flex-col items-center justify-center p-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-center transition shadow-2xs">
                         <i data-lucide="download" class="w-5 h-5 mb-1"></i>
-                        <span class="text-xs font-black">Scarica rev.20</span>
+                        <span class="text-xs font-black">Scarica rev.21</span>
                         <span class="text-[9.5px] opacity-80">File HTML completo</span>
                     </button>
 
@@ -996,12 +996,12 @@
                 <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
                     <div>
                         <div class="text-xs font-black text-slate-800">Scaricamento File HTML Completo</div>
-                        <div class="text-[10px] text-slate-500 font-medium">Backup e download della versione rev.20</div>
+                        <div class="text-[10px] text-slate-500 font-medium">Backup e download della versione rev.21</div>
                     </div>
-                    <button type="button" onclick="downloadRev20File()"
+                    <button type="button" onclick="downloadRev21File()"
                             class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black shadow-2xs transition">
                         <i data-lucide="download" class="w-3.5 h-3.5"></i>
-                        <span>Scarica rev.20</span>
+                        <span>Scarica rev.21</span>
                     </button>
                 </div>
             </div>
@@ -1009,8 +1009,8 @@
 
             <!-- FOOTER INFO VERSIONE E DATA AGGIORNAMENTO -->
             <div class="pt-2 pb-6 text-center space-y-0.5">
-                <p class="text-[11px] font-black text-slate-500">Agenda Familiare Condivisa • rev. 16</p>
-                <p class="text-[10px] font-bold text-slate-400" id="altroFooterLastUpdate">Ultimo aggiornamento rilasciato: 21/10/2026 alle 22:14</p>
+                <p class="text-[11px] font-black text-slate-500">Agenda Familiare Condivisa • rev. 21</p>
+                <p class="text-[10px] font-bold text-slate-400" id="altroFooterLastUpdate">Ultimo aggiornamento rilasciato: 21/10/2026 alle 22:38</p>
             </div>
         </div>
 
@@ -1542,6 +1542,17 @@
                     </p>
                 </div>
 
+                <!-- Banner Impegno Ricorrente e Modifica Copie -->
+                <div id="formRecurringEventBanner" class="hidden p-3 rounded-2xl bg-indigo-50 border-2 border-indigo-300 text-indigo-950 space-y-1">
+                    <div class="flex items-center gap-1.5 font-black text-xs text-indigo-900">
+                        <i data-lucide="repeat" class="w-4 h-4 text-indigo-600 shrink-0"></i>
+                        <span>Impegno Ricorrente (Regola attiva)</span>
+                    </div>
+                    <p id="formRecurringEventBannerText" class="text-[11px] font-medium text-indigo-800 leading-snug">
+                        Questo appuntamento si ripete nel tempo. Modificando i dettagli o la data di fine validità ("Ripeti fino al"), la modifica si applicherà a tutte le copie/ricorrenze.
+                    </p>
+                </div>
+
                 <!-- 3. CATEGORIA (COMPATTA A COMPARSA CON SCELTA RAPIDA E AGGIUNTA) -->
                 <div class="relative">
                     <div class="flex items-center justify-between mb-1">
@@ -1739,6 +1750,35 @@
                                     <option value="0">Domenica</option>
                                 </select>
                             </div>
+                        </div>
+
+                        <!-- Box Data limite fine ripetizione (Ripeti fino al...) -->
+                        <div id="recurrenceUntilBox" class="hidden mt-2 p-2.5 rounded-xl bg-indigo-50/80 border border-indigo-200 space-y-2">
+                            <div class="flex items-center justify-between">
+                                <label for="formRecurrenceUntil" class="text-[10px] font-black uppercase text-indigo-950 flex items-center gap-1">
+                                    <i data-lucide="calendar" class="w-3.5 h-3.5 text-indigo-600"></i>
+                                    <span>Ripeti fino al (data di fine validità):</span>
+                                </label>
+                                <button type="button" onclick="clearRecurrenceUntil()" class="text-[10px] font-bold text-slate-500 hover:text-slate-800">
+                                    Senza fine
+                                </button>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <input type="date" id="formRecurrenceUntil" onchange="onRecurrenceUntilChange()"
+                                       class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold text-slate-800 shadow-2xs focus:outline-indigo-500">
+                            </div>
+                            <!-- Bottoni rapidi per impostare la data di fine -->
+                            <div class="flex flex-wrap gap-1 items-center pt-0.5">
+                                <span class="text-[9.5px] font-bold text-slate-500 mr-0.5">Scelta rapida:</span>
+                                <button type="button" onclick="setRecurrenceUntilQuick(1)" class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-white border border-indigo-200 hover:bg-indigo-100 text-indigo-900 shadow-2xs">+1 mese</button>
+                                <button type="button" onclick="setRecurrenceUntilQuick(3)" class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-white border border-indigo-200 hover:bg-indigo-100 text-indigo-900 shadow-2xs">+3 mesi</button>
+                                <button type="button" onclick="setRecurrenceUntilQuick(6)" class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-white border border-indigo-200 hover:bg-indigo-100 text-indigo-900 shadow-2xs">+6 mesi</button>
+                                <button type="button" onclick="setRecurrenceUntilYearEnd()" class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-white border border-indigo-200 hover:bg-indigo-100 text-indigo-900 shadow-2xs">Fine Anno</button>
+                                <button type="button" onclick="setRecurrenceUntilSchoolEnd()" class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-white border border-indigo-200 hover:bg-indigo-100 text-indigo-900 shadow-2xs">Fine Scuola (10 Giu)</button>
+                            </div>
+                            <p id="recurrenceUntilHint" class="text-[10px] font-medium text-slate-600 leading-snug">
+                                L'appuntamento si ripeterà fino a questa data compresa. Dopo tale data non verrà più mostrato.
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -2490,10 +2530,10 @@ function ghOpenSetup() {
         const { doc, setDoc, deleteDoc, onSnapshot, collection, ghConfigured, ghStart, ghHasToken, ghOpenSetup, ghApplyDot } = GH;
 
 
-        const APP_VERSION = 'rev.20';
-        const APP_BUILD_INFO = {
-            rev: 'rev. 20',
-            dateTime: '21/10/2026 alle 22:14'
+        const APP_VERSION = window.APP_VERSION = 'rev.21';
+        const APP_BUILD_INFO = window.APP_BUILD_INFO = {
+            rev: 'rev. 21',
+            dateTime: '21/10/2026 alle 22:38'
         };
 
         // 1. I 6 PROFILI DELLA FAMIGLIA (CON AUTENTICAZIONE PASSWORD O DATA DI NASCITA)
@@ -2856,21 +2896,38 @@ function ghOpenSetup() {
             }
         }
 
-        function isPredefinedTwirlingSeed(e) {
+        function isAutomaticOrUnwantedTwirlingEvent(e) {
             if (!e) return false;
-            const id = String(e.id || '').toLowerCase();
-            // Elimina solo i vecchi ID seed predefiniti di sistema, MAI gli eventi creati dall'utente
-            return id.startsWith('twirling_') || id.startsWith('tw_seed') || (e.isSeed && String(e.title || '').toLowerCase().includes('twirling'));
+            const title = String(e.title || '').toLowerCase().trim();
+            const sub = String(e.subcategory || '').toLowerCase().trim();
+            const id = String(e.id || '').toLowerCase().trim();
+            const notes = String(e.notes || '').toLowerCase().trim();
+
+            const isTwirling = title.includes('twirling') ||
+                               sub.includes('twirling') ||
+                               id.startsWith('twirling_') ||
+                               id.startsWith('tw_') ||
+                               notes.includes('allenamenti twirling');
+
+            if (!isTwirling) return false;
+
+            // Conserva SOLO ED ESCLUSIVAMENTE l'evento generato dall'utente ("twirling martedi")
+            // Cerchiamo 'marted' per coprire martedi, martedì, martedí, martedi'
+            const isUserTwirling = title.includes('marted');
+            return !isUserTwirling; // Se NON è quello dell'utente, è da eliminare (true)
         }
 
-        function removePredefinedTwirlingSeeds(events) {
+        function removeAllTwirlingEvents(events) {
             if (!Array.isArray(events)) return [];
-            return events.filter(e => !isPredefinedTwirlingSeed(e));
+            return events.filter(e => !isAutomaticOrUnwantedTwirlingEvent(e));
         }
 
-        const removeAllTwirlingEvents = removePredefinedTwirlingSeeds;
-        const isTwirlingEvent = isPredefinedTwirlingSeed;
-        const consolidateTwirlingEvents = removePredefinedTwirlingSeeds;
+        const isTwirlingEvent = isAutomaticOrUnwantedTwirlingEvent;
+        const isPredefinedTwirlingSeed = isAutomaticOrUnwantedTwirlingEvent;
+        const removePredefinedTwirlingSeeds = removeAllTwirlingEvents;
+        const consolidateTwirlingEvents = removeAllTwirlingEvents;
+        window.isAutomaticOrUnwantedTwirlingEvent = isAutomaticOrUnwantedTwirlingEvent;
+        window.removeAllTwirlingEvents = removeAllTwirlingEvents;
 
         function loadPersistedEvents() {
             let list = null;
@@ -3231,7 +3288,7 @@ function ghOpenSetup() {
             },
             personalColorsByProfile: {},
             versionControl: {
-                approvedVersion: 'rev.20',
+                approvedVersion: 'rev.21',
                 approvedBy: 'Patrizio',
                 approvedAt: ''
             },
@@ -3589,48 +3646,56 @@ function ghOpenSetup() {
             const evs = [];
             state.events.forEach(e => {
                 let matchesDate = false;
-                if (e.recurrence === 'specific_weekday') {
-                    if (e.date && dateStr >= e.date) {
-                        const dCur = new Date(dateStr + 'T00:00:00');
-                        const targetDay = Number(e.recurrenceWeekday !== undefined ? e.recurrenceWeekday : 1);
-                        matchesDate = (dCur.getDay() === targetDay);
-                    }
-                } else if (e.recurrence === 'workdays') {
-                    if (e.date && dateStr >= e.date) {
-                        const dCur = new Date(dateStr + 'T00:00:00');
-                        const day = dCur.getDay();
-                        // 1 = Lun, 2 = Mar, 3 = Mer, 4 = Gio, 5 = Ven
-                        matchesDate = (day >= 1 && day <= 5);
-                    }
-                } else {
-                    matchesDate = (e.date === dateStr) || (e.endDate && e.date <= dateStr && e.endDate >= dateStr);
-                    if (!matchesDate && e.recurrence && e.date && dateStr >= e.date) {
-                        if (e.recurrence === 'in_x_days' && e.recurrenceDays > 0) {
-                            const dStart = new Date(e.date + 'T00:00:00');
+
+                // Controllo data fine validità della ricorrenza (Ripeti fino al...)
+                const isPastRecurrenceUntil = e.recurrence && e.recurrence !== 'none' && e.recurrenceUntil && dateStr > e.recurrenceUntil;
+
+                if (!isPastRecurrenceUntil) {
+                    if (e.recurrence === 'specific_weekday') {
+                        if (e.date && dateStr >= e.date) {
                             const dCur = new Date(dateStr + 'T00:00:00');
-                            const diffDays = Math.round((dCur - dStart) / (1000 * 60 * 60 * 24));
-                            if (diffDays > 0 && diffDays % e.recurrenceDays === 0) matchesDate = true;
-                        } else if (e.recurrence === 'daily') {
-                            matchesDate = true;
-                        } else if (e.recurrence === 'weekly') {
-                            const dStart = new Date(e.date + 'T00:00:00');
+                            const targetDay = Number(e.recurrenceWeekday !== undefined ? e.recurrenceWeekday : 1);
+                            matchesDate = (dCur.getDay() === targetDay);
+                        }
+                    } else if (e.recurrence === 'workdays') {
+                        if (e.date && dateStr >= e.date) {
                             const dCur = new Date(dateStr + 'T00:00:00');
-                            matchesDate = (dStart.getDay() === dCur.getDay());
-                        } else if (e.recurrence === 'biweekly') {
-                            const dStart = new Date(e.date + 'T00:00:00');
-                            const dCur = new Date(dateStr + 'T00:00:00');
-                            const diffDays = Math.round((dCur - dStart) / (1000 * 60 * 60 * 24));
-                            matchesDate = (diffDays > 0 && diffDays % 14 === 0);
-                        } else if (e.recurrence === 'monthly') {
-                            const dStart = new Date(e.date + 'T00:00:00');
-                            const dCur = new Date(dateStr + 'T00:00:00');
-                            matchesDate = (dStart.getDate() === dCur.getDate());
-                        } else if (e.recurrence === 'yearly') {
-                            const [sy, sm, sd] = e.date.split('-');
-                            const [cy, cm, cd] = dateStr.split('-');
-                            matchesDate = (sm === cm && sd === cd);
+                            const day = dCur.getDay();
+                            // 1 = Lun, 2 = Mar, 3 = Mer, 4 = Gio, 5 = Ven
+                            matchesDate = (day >= 1 && day <= 5);
+                        }
+                    } else {
+                        matchesDate = (e.date === dateStr) || (e.endDate && e.date <= dateStr && e.endDate >= dateStr);
+                        if (!matchesDate && e.recurrence && e.date && dateStr >= e.date) {
+                            if (e.recurrence === 'in_x_days' && e.recurrenceDays > 0) {
+                                const dStart = new Date(e.date + 'T00:00:00');
+                                const dCur = new Date(dateStr + 'T00:00:00');
+                                const diffDays = Math.round((dCur - dStart) / (1000 * 60 * 60 * 24));
+                                if (diffDays > 0 && diffDays % e.recurrenceDays === 0) matchesDate = true;
+                            } else if (e.recurrence === 'daily') {
+                                matchesDate = true;
+                            } else if (e.recurrence === 'weekly') {
+                                const dStart = new Date(e.date + 'T00:00:00');
+                                const dCur = new Date(dateStr + 'T00:00:00');
+                                matchesDate = (dStart.getDay() === dCur.getDay());
+                            } else if (e.recurrence === 'biweekly') {
+                                const dStart = new Date(e.date + 'T00:00:00');
+                                const dCur = new Date(dateStr + 'T00:00:00');
+                                const diffDays = Math.round((dCur - dStart) / (1000 * 60 * 60 * 24));
+                                matchesDate = (diffDays > 0 && diffDays % 14 === 0);
+                            } else if (e.recurrence === 'monthly') {
+                                const dStart = new Date(e.date + 'T00:00:00');
+                                const dCur = new Date(dateStr + 'T00:00:00');
+                                matchesDate = (dStart.getDate() === dCur.getDate());
+                            } else if (e.recurrence === 'yearly') {
+                                const [sy, sm, sd] = e.date.split('-');
+                                const [cy, cm, cd] = dateStr.split('-');
+                                matchesDate = (sm === cm && sd === cd);
+                            }
                         }
                     }
+                } else {
+                    matchesDate = (e.date === dateStr);
                 }
                 if (!matchesDate && Array.isArray(e.subActivities)) {
                     matchesDate = e.subActivities.some(sub => (sub.date === dateStr) || (sub.endDate && sub.date <= dateStr && sub.endDate >= dateStr));
@@ -8116,6 +8181,7 @@ function ghOpenSetup() {
             const sel = document.getElementById('formRecurrence')?.value;
             const xDaysBox = document.getElementById('recurrenceInXDaysBox');
             const weekdayBox = document.getElementById('recurrenceWeekdayBox');
+            const untilBox = document.getElementById('recurrenceUntilBox');
 
             if (xDaysBox) {
                 if (sel === 'in_x_days') {
@@ -8138,6 +8204,88 @@ function ghOpenSetup() {
                     weekdayBox.classList.add('hidden');
                 }
             }
+
+            if (untilBox) {
+                if (sel && sel !== 'none') {
+                    untilBox.classList.remove('hidden');
+                    updateRecurrenceUntilHint();
+                } else {
+                    untilBox.classList.add('hidden');
+                }
+            }
+
+            const recurBanner = document.getElementById('formRecurringEventBanner');
+            if (recurBanner) {
+                if (sel && sel !== 'none') {
+                    recurBanner.classList.remove('hidden');
+                    updateRecurrenceUntilHint();
+                } else {
+                    recurBanner.classList.add('hidden');
+                }
+            }
+        };
+
+        window.onRecurrenceUntilChange = function() {
+            updateRecurrenceUntilHint();
+        };
+
+        window.updateRecurrenceUntilHint = function() {
+            const untilInput = document.getElementById('formRecurrenceUntil');
+            const hint = document.getElementById('recurrenceUntilHint');
+            const bannerTxt = document.getElementById('formRecurringEventBannerText');
+            const sel = document.getElementById('formRecurrence')?.value;
+            const val = untilInput?.value;
+            if (hint) {
+                if (val) {
+                    const [y, m, d] = val.split('-');
+                    hint.innerHTML = `L'appuntamento si ripeterà fino a <strong>${d}/${m}/${y}</strong> compreso. Dopo tale data non verrà più mostrato.`;
+                } else {
+                    hint.textContent = "Nessuna data di fine impostata: l'appuntamento si ripeterà indefinitamente finché non imposti una data.";
+                }
+            }
+            if (bannerTxt && sel && sel !== 'none') {
+                const untilInfo = val ? `attualmente valido fino al <strong>${val.split('-').reverse().join('/')}</strong>` : 'senza data di fine';
+                bannerTxt.innerHTML = `Questo appuntamento si ripete periodicamente (${untilInfo}). Modificando la regola o la data di validità ("Ripeti fino al"), l'aggiornamento sarà immediatamente visibile in <strong>tutte le copie e ricorrenze</strong> del calendario.`;
+            }
+        };
+
+        window.setRecurrenceUntilQuick = function(monthsToAdd) {
+            const startVal = document.getElementById('formDate')?.value || getTodayIso();
+            const untilInput = document.getElementById('formRecurrenceUntil');
+            if (!untilInput) return;
+            const d = new Date(startVal + 'T00:00:00');
+            d.setMonth(d.getMonth() + monthsToAdd);
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            untilInput.value = `${y}-${m}-${day}`;
+            updateRecurrenceUntilHint();
+        };
+
+        window.setRecurrenceUntilYearEnd = function() {
+            const startVal = document.getElementById('formDate')?.value || getTodayIso();
+            const untilInput = document.getElementById('formRecurrenceUntil');
+            if (!untilInput) return;
+            const d = new Date(startVal + 'T00:00:00');
+            untilInput.value = `${d.getFullYear()}-12-31`;
+            updateRecurrenceUntilHint();
+        };
+
+        window.setRecurrenceUntilSchoolEnd = function() {
+            const startVal = document.getElementById('formDate')?.value || getTodayIso();
+            const untilInput = document.getElementById('formRecurrenceUntil');
+            if (!untilInput) return;
+            const d = new Date(startVal + 'T00:00:00');
+            let year = d.getFullYear();
+            if (d.getMonth() >= 5) year++;
+            untilInput.value = `${year}-06-10`;
+            updateRecurrenceUntilHint();
+        };
+
+        window.clearRecurrenceUntil = function() {
+            const untilInput = document.getElementById('formRecurrenceUntil');
+            if (untilInput) untilInput.value = '';
+            updateRecurrenceUntilHint();
         };
 
         window.setRecurrenceDaysQuick = function(days) {
@@ -8459,6 +8607,7 @@ function ghOpenSetup() {
             const recurrence = document.getElementById('formRecurrence').value;
             const recurrenceDays = parseInt(document.getElementById('formRecurrenceCustomDays')?.value || document.getElementById('formRecurrenceDaysInput')?.value || '1', 10);
             const recurrenceWeekday = parseInt(document.getElementById('formRecurrenceWeekdaySelect')?.value || '1', 10);
+            const recurrenceUntil = (document.getElementById('formRecurrenceUntil')?.value || '').trim();
             const place = document.getElementById('formPlace').value.trim();
             const notificationAdvance = document.getElementById('formNotificationAdvance').value;
             const personalTimer = document.getElementById('formPersonalTimer').value;
@@ -8601,6 +8750,7 @@ function ghOpenSetup() {
                 recurrence,
                 recurrenceDays,
                 recurrenceWeekday,
+                recurrenceUntil,
                 place,
                 notificationAdvance,
                 personalTimer,
@@ -9356,40 +9506,41 @@ function ghOpenSetup() {
             }
         };
 
-        window.downloadRev20File = function() {
+        window.downloadRev21File = function() {
             const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
             const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'agenda_famiglia_rev.20.html';
+            a.download = 'agenda_famiglia_rev.21.html';
             document.body.appendChild(a);
             a.click();
             a.remove();
             URL.revokeObjectURL(url);
-            showToast("File agenda_famiglia_rev.20.html scaricato con successo!");
+            showToast("File agenda_famiglia_rev.21.html scaricato con successo!");
         };
-        window.downloadRev19File = window.downloadRev20File;
-        window.downloadRev18File = window.downloadRev20File;
-        window.downloadRev17File = window.downloadRev20File;
-        window.downloadRev16File = window.downloadRev20File;
-        window.downloadRev15File = window.downloadRev20File;
-        window.downloadRev14File = window.downloadRev20File;
-        window.downloadRev13File = window.downloadRev20File;
+        window.downloadRev20File = window.downloadRev21File;
+        window.downloadRev19File = window.downloadRev21File;
+        window.downloadRev18File = window.downloadRev21File;
+        window.downloadRev17File = window.downloadRev21File;
+        window.downloadRev16File = window.downloadRev21File;
+        window.downloadRev15File = window.downloadRev21File;
+        window.downloadRev14File = window.downloadRev21File;
+        window.downloadRev13File = window.downloadRev21File;
 
         window.patrizioConfirmVersion = async function() {
             state.versionControl = {
-                approvedVersion: 'rev.20',
+                approvedVersion: 'rev.21',
                 approvedBy: 'Patrizio',
                 approvedAt: new Date().toISOString()
             };
             renderFooterProfileAndVersion();
-            showToast("rev.20 confermata ufficialmente da Patrizio!");
+            showToast("rev.21 confermata ufficialmente da Patrizio!");
         };
 
         window.exportDataJson = function() {
             const backup = {
-                version: 'rev.20',
+                version: 'rev.21',
                 exportedAt: new Date().toISOString(),
                 events: state.events,
                 shoppingList: state.shoppingList,
@@ -9871,18 +10022,26 @@ function ghOpenSetup() {
             if (recRow && recTxt) {
                 if (ev.recurrence && ev.recurrence !== 'none') {
                     recRow.classList.remove('hidden');
+                    let ruleStr = '';
                     if (ev.recurrence === 'in_x_days') {
-                        recTxt.textContent = `Fra ${ev.recurrenceDays || 1} giorni`;
+                        ruleStr = `Fra ${ev.recurrenceDays || 1} giorni`;
                     } else if (ev.recurrence === 'specific_weekday') {
                         const dayNames = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
                         const dayIdx = Number(ev.recurrenceWeekday !== undefined ? ev.recurrenceWeekday : 1);
-                        recTxt.textContent = `Ripeti ogni ${dayNames[dayIdx]}`;
+                        ruleStr = `Ripeti ogni ${dayNames[dayIdx]}`;
                     } else if (ev.recurrence === 'workdays') {
-                        recTxt.textContent = 'Tutti i giorni feriali (Lun-Ven)';
+                        ruleStr = 'Tutti i giorni feriali (Lun-Ven)';
                     } else {
                         const map = { daily: 'Ogni giorno', weekly: 'Ogni settimana', biweekly: 'Ogni 2 settimane', monthly: 'Ogni mese', yearly: 'Ogni anno' };
-                        recTxt.textContent = map[ev.recurrence] || ev.recurrence;
+                        ruleStr = map[ev.recurrence] || ev.recurrence;
                     }
+                    if (ev.recurrenceUntil) {
+                        const [uy, um, ud] = ev.recurrenceUntil.split('-');
+                        ruleStr += ` • Valido fino al ${ud}/${um}/${uy}`;
+                    } else {
+                        ruleStr += ` • Senza data di fine`;
+                    }
+                    recTxt.textContent = ruleStr;
                 } else {
                     recRow.classList.add('hidden');
                 }
@@ -10031,7 +10190,12 @@ function ghOpenSetup() {
                     const dObj = new Date((ev.date || getTodayIso()) + 'T00:00:00');
                     setRecurrenceWeekday(dObj.getDay());
                 }
+                const recUntilInput = document.getElementById('formRecurrenceUntil');
+                if (recUntilInput) {
+                    recUntilInput.value = ev.recurrenceUntil || '';
+                }
                 onFormRecurrenceChange();
+                updateRecurrenceUntilHint();
 
                 document.getElementById('formPlace').value = ev.place || '';
                 document.getElementById('formNotificationAdvance').value = ev.notificationAdvance || '15m';
@@ -10044,11 +10208,6 @@ function ghOpenSetup() {
                 state.formSubcategory = ev.subcategory || '';
                 state.formPatrizioCategory = ev.patrizioCategory || '';
                 state.formSubActivities = Array.isArray(ev.subActivities) ? JSON.parse(JSON.stringify(ev.subActivities)) : [];
-            state.formSubActivities.forEach((sub, i) => {
-                if (!sub.userId) {
-                    sub.userId = (ev.users && ev.users[i + 1]) || (ev.users && ev.users[0]) || state.activeProfileId || 'u1';
-                }
-            });
                 state.formSubActivities.forEach((sub, i) => {
                     if (!sub.userId) {
                         sub.userId = (ev.users && ev.users[i + 1]) || (ev.users && ev.users[0]) || state.activeProfileId || 'u1';
@@ -10109,9 +10268,14 @@ function ghOpenSetup() {
                 document.getElementById('formRecurrence').value = 'none';
                 const recDays = document.getElementById('formRecurrenceCustomDays') || document.getElementById('formRecurrenceDaysInput');
                 if (recDays) recDays.value = 1;
+                const recUntilInput = document.getElementById('formRecurrenceUntil');
+                if (recUntilInput) {
+                    recUntilInput.value = '';
+                }
                 const stDateObj = new Date(startDateStr + 'T00:00:00');
                 setRecurrenceWeekday(stDateObj.getDay());
                 onFormRecurrenceChange();
+                updateRecurrenceUntilHint();
 
                 document.getElementById('formPlace').value = '';
                 document.getElementById('formNotificationAdvance').value = '15m';
@@ -10158,6 +10322,17 @@ function ghOpenSetup() {
             document.getElementById('formNotes').value = ev.notes || '';
             document.getElementById('formPlace').value = ev.place || '';
             document.getElementById('formRecurrence').value = ev.recurrence || 'none';
+            const recDays = document.getElementById('formRecurrenceCustomDays') || document.getElementById('formRecurrenceDaysInput');
+            if (recDays) recDays.value = ev.recurrenceDays || 1;
+            if (ev.recurrence === 'specific_weekday') {
+                setRecurrenceWeekday(ev.recurrenceWeekday !== undefined ? ev.recurrenceWeekday : 1);
+            }
+            const recUntilInput = document.getElementById('formRecurrenceUntil');
+            if (recUntilInput) {
+                recUntilInput.value = ev.recurrenceUntil || '';
+            }
+            onFormRecurrenceChange();
+            updateRecurrenceUntilHint();
             document.getElementById('formNotificationAdvance').value = ev.notificationAdvance || '15m';
             document.getElementById('formPersonalTimer').value = ev.personalTimer || 'sound_timer';
             document.getElementById('formVisibility').value = ev.visibility || 'admins_only';
@@ -10521,7 +10696,7 @@ function ghOpenSetup() {
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js').then(reg => {
-                    console.log('SW rev.20 registrato con successo.');
+                    console.log('SW rev.21 registrato con successo.');
                     reg.update();
                     reg.addEventListener('updatefound', () => {
                         const newWorker = reg.installing;
