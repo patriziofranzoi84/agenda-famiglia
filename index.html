@@ -701,9 +701,29 @@
                         <i data-lucide="refresh-cw" class="w-4 h-4"></i>
                         <h3 class="text-xs font-black uppercase tracking-wider">Aggiornamento & Versione App</h3>
                     </div>
-                    <span class="text-[10px] font-black bg-white/20 px-2 py-0.5 rounded-full">rev.16 (v5)</span>
+                    <span id="appRevBadge" class="text-[10px] font-black bg-white/20 px-2 py-0.5 rounded-full">rev. 16</span>
                 </div>
-                <div class="p-3.5 space-y-2.5">
+                <div class="p-3.5 space-y-3">
+                    <!-- Box Ultimo Aggiornamento con Data e Ora in evidenza -->
+                    <div class="p-3 bg-gradient-to-br from-emerald-50 to-teal-50/70 rounded-xl border border-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                                <i data-lucide="calendar-clock" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <div class="text-[10px] font-black uppercase tracking-wider text-emerald-800">Ultimo Aggiornamento App</div>
+                                <div class="text-sm font-black text-slate-900 tracking-tight" id="appLastUpdateDateTime">21/10/2026 alle 10:17</div>
+                                <div class="text-[10px] font-bold text-slate-500" id="appDeviceCheckDateTime">Verificato su questo cellulare: 21/10/2026 alle 10:17</div>
+                            </div>
+                        </div>
+                        <div class="self-start sm:self-center">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                Attiva e Aggiornata
+                            </span>
+                        </div>
+                    </div>
+
                     <p class="text-[11px] text-slate-600 leading-relaxed font-medium">
                         Se hai caricato modifiche su GitHub dal computer e il cellulare mostra ancora la versione precedente, tocca il pulsante qui sotto: pulisce la cache temporanea del telefono e scarica subito l'app aggiornata.
                     </p>
@@ -933,6 +953,12 @@
                     </button>
                 </div>
             </div>
+            </div>
+
+            <!-- FOOTER INFO VERSIONE E DATA AGGIORNAMENTO -->
+            <div class="pt-2 pb-6 text-center space-y-0.5">
+                <p class="text-[11px] font-black text-slate-500">Agenda Familiare Condivisa • rev. 16</p>
+                <p class="text-[10px] font-bold text-slate-400" id="altroFooterLastUpdate">Ultimo aggiornamento rilasciato: 21/10/2026 alle 10:17</p>
             </div>
         </div>
 
@@ -2078,6 +2104,10 @@ function ghOpenSetup() {
 
 
         const APP_VERSION = 'rev.16';
+        const APP_BUILD_INFO = {
+            rev: 'rev. 16',
+            dateTime: '21/10/2026 alle 10:17'
+        };
 
         // 1. I 6 PROFILI DELLA FAMIGLIA (CON AUTENTICAZIONE PASSWORD O DATA DI NASCITA)
         const BASE_USERS = [
@@ -4799,6 +4829,25 @@ function ghOpenSetup() {
                 avatarEl.style.backgroundColor = getUserColor(user.id);
             }
             renderAltroCategoriesManager();
+            renderAltroUpdateInfo();
+        }
+
+        function renderAltroUpdateInfo() {
+            const timeEl = document.getElementById('appLastUpdateDateTime');
+            if (timeEl) timeEl.textContent = APP_BUILD_INFO.dateTime;
+            const badgeEl = document.getElementById('appRevBadge');
+            if (badgeEl) badgeEl.textContent = APP_BUILD_INFO.rev;
+            const footerEl = document.getElementById('altroFooterLastUpdate');
+            if (footerEl) footerEl.textContent = 'Ultimo aggiornamento rilasciato: ' + APP_BUILD_INFO.dateTime;
+            const devCheckEl = document.getElementById('appDeviceCheckDateTime');
+            if (devCheckEl) {
+                const lastCheck = localStorage.getItem('agenda_device_last_check');
+                if (lastCheck) {
+                    devCheckEl.textContent = 'Verificato su questo cellulare: ' + lastCheck;
+                } else {
+                    devCheckEl.textContent = 'Verificato su questo cellulare: ' + APP_BUILD_INFO.dateTime;
+                }
+            }
         }
 
         function updateShoppingBadge() {
@@ -6483,6 +6532,11 @@ function ghOpenSetup() {
             }
 
             try {
+                const now = new Date();
+                const pad = n => String(n).padStart(2, '0');
+                const stamp = pad(now.getDate()) + '/' + pad(now.getMonth() + 1) + '/' + now.getFullYear() + ' alle ' + pad(now.getHours()) + ':' + pad(now.getMinutes());
+                try { localStorage.setItem('agenda_device_last_check', stamp); } catch (_) {}
+
                 if ('caches' in window) {
                     const keys = await caches.keys();
                     await Promise.all(keys.map(k => caches.delete(k)));
