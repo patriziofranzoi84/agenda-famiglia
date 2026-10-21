@@ -281,8 +281,15 @@
             <!-- 1. VISTA LISTA INFINITA (Ancorata alle attività di adesso/oggi, scorrevole su e giù) -->
             <section id="listViewSection" class="hidden flex-1 h-full overflow-y-auto thin-scroll p-1">
                 <div class="max-w-4xl mx-auto space-y-2 pb-10">
-                    <div class="flex items-center justify-between gap-2 bg-white px-2.5 py-1.5 rounded-xl border border-slate-200 sticky top-0 z-10 shadow-2xs">
-                    <span class="text-[11px] font-extrabold text-slate-700">Lista Infinita Attività (2 righe)</span>
+                    <div class="flex flex-wrap items-center justify-between gap-2 bg-white px-2.5 py-1.5 rounded-xl border border-slate-200 sticky top-0 z-10 shadow-2xs">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[11px] font-extrabold text-slate-700">Lista Attività (Cronoprogramma)</span>
+                            <div class="inline-flex items-center p-0.5 rounded-lg bg-slate-100 border border-slate-200 text-[10.5px] font-extrabold">
+                                <button type="button" onclick="setListColumnsMode('1col')" id="btnListCol1" class="px-2 py-0.5 rounded transition bg-white text-indigo-700 shadow-2xs">1 Col</button>
+                                <button type="button" onclick="setListColumnsMode('2col')" id="btnListCol2" class="px-2 py-0.5 rounded transition text-slate-600 hover:text-slate-900">2 Col</button>
+                                <button type="button" onclick="setListColumnsMode('compact')" id="btnListColCompact" class="px-2 py-0.5 rounded transition text-slate-600 hover:text-slate-900">Compatto</button>
+                            </div>
+                        </div>
                         <div class="flex items-center gap-1.5">
                             <button type="button" onclick="scrollToTodayInList()" class="px-2 py-0.5 rounded-lg text-[11px] font-extrabold bg-indigo-600 text-white">
                                 Vai a Oggi / Ora
@@ -334,6 +341,15 @@
 
             <!-- 4. VISTA MESE (mese con intestazione giorni sticky fissa in alto quando si scorre) -->
             <section id="monthViewSection" class="hidden flex-1 h-full bg-white rounded-2xl border border-slate-200 shadow-2xs overflow-hidden flex flex-col">
+                <!-- Barra comandi vista mese -->
+                <div class="px-3 py-1.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between gap-2 shrink-0">
+                    <span class="text-xs font-black text-slate-800">Calendario Mensile</span>
+                    <button type="button" onclick="toggleMonthPastEvents()" id="btnToggleMonthPast"
+                            class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-bold border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 shadow-2xs transition">
+                        <i data-lucide="eye-off" class="w-3.5 h-3.5 text-slate-500"></i>
+                        <span id="txtToggleMonthPast">Nascondi passati</span>
+                    </button>
+                </div>
                 <div class="flex-1 overflow-auto thin-scroll flex flex-col">
                     <div class="min-w-[910px] lg:min-w-full flex-1 flex flex-col">
                         <div class="calendar-7-grid text-center text-[10px] font-black uppercase tracking-wider text-slate-600 py-2 bg-slate-100 border-b border-slate-300 shrink-0 sticky top-0 z-20 shadow-xs">
@@ -365,6 +381,11 @@
                         </div>
                     </div>
                     <div class="flex items-center gap-1.5">
+                        <button type="button" onclick="openCasaResocontoModal()"
+                                class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-indigo-900 hover:bg-indigo-950 text-white text-xs font-black shadow-2xs transition">
+                            <i data-lucide="bar-chart-2" class="w-3.5 h-3.5 text-indigo-300"></i>
+                            <span>📊 Resoconto Attività</span>
+                        </button>
                         <button type="button" onclick="openNewChoreModal()"
                                 class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-950 hover:bg-slate-900 text-white text-xs font-black shadow-2xs transition">
                             <i data-lucide="plus" class="w-3.5 h-3.5"></i>
@@ -620,6 +641,18 @@
                             <button type="button" onclick="setBillsFilter('da_pagare')" id="btnBillFilterUnpaid" class="px-2 py-0.5 rounded-lg text-xs font-bold text-rose-700 hover:bg-white">Da pagare</button>
                             <button type="button" onclick="setBillsFilter('pagata')" id="btnBillFilterPaid" class="px-2 py-0.5 rounded-lg text-xs font-bold text-emerald-700 hover:bg-white">Pagate</button>
                         </div>
+
+                        <!-- Tasto Nascondi Pagate e Tasto Riepilogo -->
+                        <button type="button" onclick="toggleHidePaidBills()" id="btnToggleHidePaidBills"
+                                class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-bold border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 shadow-2xs transition">
+                            <i data-lucide="eye-off" class="w-3.5 h-3.5 text-slate-500"></i>
+                            <span id="txtToggleHidePaidBills">Nascondi pagate</span>
+                        </button>
+                        <button type="button" onclick="openBillsSummaryModal()"
+                                class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-black bg-sky-700 hover:bg-sky-800 text-white shadow-2xs transition">
+                            <i data-lucide="bar-chart-3" class="w-3.5 h-3.5"></i>
+                            <span>Riepilogo Bollette</span>
+                        </button>
                     </div>
                 </div>
 
@@ -729,8 +762,8 @@
                             </div>
                             <div>
                                 <div class="text-[10px] font-black uppercase tracking-wider text-emerald-800">Ultimo Aggiornamento App</div>
-                                <div class="text-sm font-black text-slate-900 tracking-tight" id="appLastUpdateDateTime">21/10/2026 alle 18:14</div>
-                                <div class="text-[10px] font-bold text-slate-500" id="appDeviceCheckDateTime">Verificato su questo cellulare: 21/10/2026 alle 18:14</div>
+                                <div class="text-sm font-black text-slate-900 tracking-tight" id="appLastUpdateDateTime">21/10/2026 alle 21:29</div>
+                                <div class="text-[10px] font-bold text-slate-500" id="appDeviceCheckDateTime">Verificato su questo cellulare: 21/10/2026 alle 21:29</div>
                             </div>
                         </div>
                         <div class="self-start sm:self-center">
@@ -975,7 +1008,7 @@
             <!-- FOOTER INFO VERSIONE E DATA AGGIORNAMENTO -->
             <div class="pt-2 pb-6 text-center space-y-0.5">
                 <p class="text-[11px] font-black text-slate-500">Agenda Familiare Condivisa • rev. 16</p>
-                <p class="text-[10px] font-bold text-slate-400" id="altroFooterLastUpdate">Ultimo aggiornamento rilasciato: 21/10/2026 alle 18:14</p>
+                <p class="text-[10px] font-bold text-slate-400" id="altroFooterLastUpdate">Ultimo aggiornamento rilasciato: 21/10/2026 alle 21:29</p>
             </div>
         </div>
 
@@ -1371,8 +1404,13 @@
 
                 <!-- Luogo / Indirizzo (se presente) -->
                 <div id="summaryPlaceBox" class="hidden p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-start gap-2 text-slate-800 text-xs">
-                    <i data-lucide="map-pin" class="w-4 h-4 text-slate-500 shrink-0 mt-0.5"></i>
-                    <span id="summaryPlaceText" class="font-bold"></span>
+                    <i data-lucide="map-pin" class="w-4 h-4 text-indigo-600 shrink-0 mt-0.5"></i>
+                    <a id="summaryPlaceLink" href="#" target="_blank" rel="noopener noreferrer"
+                       class="font-extrabold text-indigo-700 hover:text-indigo-900 underline flex items-center gap-1.5 break-words">
+                        <span id="summaryPlaceText" class="font-bold"></span>
+                        <i data-lucide="external-link" class="w-3.5 h-3.5 shrink-0 text-indigo-500"></i>
+                        <span class="text-[10px] font-bold text-slate-500 ml-0.5">(Apri Maps)</span>
+                    </a>
                 </div>
 
                 <!-- Note (se presenti) -->
@@ -1525,18 +1563,6 @@
                         <div class="text-[10px] font-black uppercase text-slate-400 pb-1 border-b border-slate-100">Seleziona Categoria</div>
                         <div id="formCategoriesGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-1.5"></div>
 
-                        <!-- Categorie Personali Patrizio (sezione rapida) -->
-                        <div id="patrizioPersonalSection" class="p-2 rounded-xl border border-blue-200 bg-blue-50/70 space-y-1.5 mt-2">
-                            <div class="flex items-center justify-between">
-                                <span class="text-[10px] font-black uppercase text-blue-950 flex items-center gap-1">
-                                    <i data-lucide="user-check" class="w-3 h-3 text-blue-600"></i>
-                                    <span>Personali Patrizio (A-Z)</span>
-                                </span>
-                                <span id="patrizioCatSelectedLabel" class="text-[10px] text-blue-700 font-bold">Nessuna</span>
-                            </div>
-                            <div id="patrizioCategoriesList" class="flex flex-wrap gap-1 items-center"></div>
-                        </div>
-
                         <!-- Sottocategorie categoria attiva -->
                         <div id="formSubcategoriesSection" class="p-2 rounded-xl border border-indigo-200 bg-indigo-50/70 space-y-1.5 mt-2">
                             <div class="flex items-center justify-between">
@@ -1557,90 +1583,128 @@
                     </div>
                 </div>
 
-                <!-- 4. DATA, ORARI E DURATA (SINGOLO O ORARI DIFFERENTI / PIÙ VISITE) -->
+                <!-- 4. DATA, ORARI E DURATA (RIFATTI SU STESSA RIGA, DROPDOWN 2 COLONNE E ALTRE ATTIVITA) -->
                 <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 space-y-2.5">
-                    <div>
-                        <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-0.5">Data *</label>
-                        <input type="date" id="formDate" required class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold">
-                    </div>
-
-                    <!-- Toggle Orari identici o Differenti -->
-                    <div class="flex items-center justify-between p-2 rounded-xl bg-white border border-slate-200 shadow-2xs">
-                        <label class="flex items-center gap-2 cursor-pointer select-none">
-                            <input type="checkbox" id="formSameTimeCheckbox" checked onchange="toggleSameTimeMode()"
-                                   class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer">
-                            <span class="text-xs font-black text-slate-800">Orari identici per tutti (Singolo orario)</span>
-                        </label>
-                        <span id="formScheduleModeBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">Standard</span>
-                    </div>
-
-                    <!-- SEZIONE 4A: ORARIO SINGOLO STANDARD (Attivo quando formSameTimeCheckbox è spuntato) -->
-                    <div id="formSingleTimeSection" class="space-y-2.5">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                            <div>
-                                <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-0.5">Ora Inizio</label>
-                                <input type="time" id="formTime" onchange="onFormStartTimeChange()" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-0.5">Ora Fine (automatica)</label>
-                                <input type="time" id="formEndTime" onchange="onFormEndTimeChange()" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold">
-                            </div>
-                        </div>
-
-                        <!-- Tasti rapidi Durata -->
+                    <!-- RIGA 1: DATA INIZIO E FINE SULLA STESSA RIGA -->
+                    <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <div class="flex items-center justify-between mb-1">
-                                <label class="text-[10px] font-extrabold uppercase text-slate-500">Durata Impegno</label>
-                                <span id="calculatedDurationHint" class="text-[11px] font-black text-indigo-600"></span>
-                            </div>
-                            <div class="flex flex-wrap gap-1" id="durationQuickButtons"></div>
-
-                            <!-- Casella durata personalizzata: ore e minuti -->
-                            <div class="flex items-center gap-1.5 mt-2 pt-1.5 border-t border-slate-200 text-xs">
-                                <span class="text-[10.5px] font-bold text-slate-500">Personalizzata:</span>
-                                <input type="number" id="formCustomHours" min="0" max="23" placeholder="0" class="w-12 px-2 py-1 rounded-lg border border-slate-300 bg-white text-center font-bold">
-                                <span class="text-[11px] font-bold text-slate-600">ore</span>
-                                <input type="number" id="formCustomMinutes" min="0" max="59" step="5" placeholder="30" class="w-12 px-2 py-1 rounded-lg border border-slate-300 bg-white text-center font-bold">
-                                <span class="text-[11px] font-bold text-slate-600">min</span>
-                                <button type="button" onclick="applyCustomDurationInputs()" class="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[11px] shadow-2xs transition">Applica</button>
-                            </div>
-                            <input type="hidden" id="formDuration">
+                            <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-0.5">Data Inizio *</label>
+                            <input type="date" id="formDate" required onchange="onFormStartDateChange()"
+                                   class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-0.5">Data Fine *</label>
+                            <input type="date" id="formEndDate" required
+                                   class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold">
                         </div>
                     </div>
 
-                    <!-- SEZIONE 4B: ORARI DIFFERENTI PER PERSONA / PIÙ VISITE (Attivo quando formSameTimeCheckbox NON è spuntato) -->
-                    <div id="formDifferentiatedScheduleSection" class="hidden space-y-2.5 pt-1">
-                        <div class="p-2 rounded-xl bg-indigo-50 border border-indigo-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5">
-                            <div class="text-[10.5px] font-bold text-indigo-900 leading-tight">
-                                Imposta orari differenti per persona (es. Twirling) o più visite nello stesso giorno (es. Mediche: Analisi ore 8, Cardiologo ore 9).
-                            </div>
-                            <span id="formOverallScheduleSpan" class="text-[10px] font-black px-2 py-0.5 rounded-lg bg-white text-indigo-700 shrink-0 border border-indigo-200 self-start sm:self-auto"></span>
+                    <!-- RIGA 2: ORARIO INIZIO, DURATA E FINE SULLA STESSA RIGA -->
+                    <div class="grid grid-cols-3 gap-1.5 items-end">
+                        <div>
+                            <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-0.5">Ora Inizio</label>
+                            <input type="time" id="formTime" onchange="onFormStartTimeChange()"
+                                   class="w-full px-2 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold">
                         </div>
-
-                        <!-- Elenco righe orari/visite -->
-                        <div id="formScheduleRowsContainer" class="space-y-2"></div>
-
-                        <!-- Bottone per aggiungere riga -->
-                        <div class="flex items-center justify-between pt-1">
-                            <button type="button" onclick="addNewScheduleRow()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black shadow-2xs transition">
-                                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-                                <span>Aggiungi visita / orario</span>
+                        <div class="relative">
+                            <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-0.5">Durata</label>
+                            <button type="button" id="btnToggleDurationDropdown" onclick="toggleDurationDropdown(event)"
+                                    class="w-full px-1.5 py-1.5 rounded-xl border border-indigo-300 bg-indigo-50 hover:bg-indigo-100 text-indigo-950 font-black text-xs flex items-center justify-between shadow-2xs transition">
+                                <span id="formDurationButtonText" class="truncate">30''</span>
+                                <i data-lucide="chevron-down" class="w-3 h-3 text-indigo-600 shrink-0"></i>
                             </button>
-                            <span class="text-[10px] text-slate-400 font-semibold">Unico appuntamento nel calendario</span>
+                            <!-- Menu a discesa 2 colonne durata (minuti e ore) -->
+                            <div id="formDurationDropdownMenu" class="hidden absolute left-0 sm:left-auto right-0 sm:right-auto sm:w-64 w-56 mt-1 p-2 bg-white rounded-2xl border border-slate-200 shadow-2xl z-50 animate-in fade-in">
+                                <div class="text-[9.5px] font-black uppercase text-slate-400 pb-1 mb-1.5 border-b border-slate-100 flex items-center justify-between">
+                                    <span>Seleziona durata</span>
+                                    <button type="button" onclick="closeDurationDropdown()" class="text-slate-400 hover:text-slate-700 font-black">&times;</button>
+                                </div>
+                                <div class="grid grid-cols-2 gap-1.5 max-h-52 overflow-y-auto thin-scroll">
+                                    <div>
+                                        <div class="text-[9px] font-extrabold text-indigo-700 uppercase mb-1">Minuti</div>
+                                        <div class="space-y-1">
+                                            <button type="button" onclick="setQuickDurationFrom2Col(5, '5\'\'')" class="w-full text-left px-2 py-1 rounded-lg text-xs font-bold hover:bg-indigo-50 hover:text-indigo-700 transition">5''</button>
+                                            <button type="button" onclick="setQuickDurationFrom2Col(10, '10\'\'')" class="w-full text-left px-2 py-1 rounded-lg text-xs font-bold hover:bg-indigo-50 hover:text-indigo-700 transition">10''</button>
+                                            <button type="button" onclick="setQuickDurationFrom2Col(15, '15\'\'')" class="w-full text-left px-2 py-1 rounded-lg text-xs font-bold hover:bg-indigo-50 hover:text-indigo-700 transition">15''</button>
+                                            <button type="button" onclick="setQuickDurationFrom2Col(20, '20\'\'')" class="w-full text-left px-2 py-1 rounded-lg text-xs font-bold hover:bg-indigo-50 hover:text-indigo-700 transition">20''</button>
+                                            <button type="button" onclick="setQuickDurationFrom2Col(30, '30\'\'')" class="w-full text-left px-2 py-1 rounded-lg text-xs font-bold hover:bg-indigo-50 hover:text-indigo-700 transition">30''</button>
+                                            <button type="button" onclick="setQuickDurationFrom2Col(40, '40\'\'')" class="w-full text-left px-2 py-1 rounded-lg text-xs font-bold hover:bg-indigo-50 hover:text-indigo-700 transition">40''</button>
+                                            <button type="button" onclick="setQuickDurationFrom2Col(45, '45\'\'')" class="w-full text-left px-2 py-1 rounded-lg text-xs font-bold hover:bg-indigo-50 hover:text-indigo-700 transition">45''</button>
+                                            <button type="button" onclick="setQuickDurationFrom2Col(50, '50\'\'')" class="w-full text-left px-2 py-1 rounded-lg text-xs font-bold hover:bg-indigo-50 hover:text-indigo-700 transition">50''</button>
+                                        </div>
+                                    </div>
+                                    <div class="border-l border-slate-100 pl-1.5">
+                                        <div class="text-[9px] font-extrabold text-indigo-700 uppercase mb-1">Ore</div>
+                                        <div class="space-y-1">
+                                            <button type="button" onclick="setQuickDurationFrom2Col(60, '1\'00\'\'')" class="w-full text-left px-2 py-1 rounded-lg text-xs font-bold hover:bg-indigo-50 hover:text-indigo-700 transition">1'00''</button>
+                                            <button type="button" onclick="setQuickDurationFrom2Col(90, '1\'30\'\'')" class="w-full text-left px-2 py-1 rounded-lg text-xs font-bold hover:bg-indigo-50 hover:text-indigo-700 transition">1'30''</button>
+                                            <button type="button" onclick="setQuickDurationFrom2Col(120, '2\'00\'\'')" class="w-full text-left px-2 py-1 rounded-lg text-xs font-bold hover:bg-indigo-50 hover:text-indigo-700 transition">2'00''</button>
+                                            <button type="button" onclick="setQuickDurationFrom2Col(150, '2\'30\'\'')" class="w-full text-left px-2 py-1 rounded-lg text-xs font-bold hover:bg-indigo-50 hover:text-indigo-700 transition">2'30''</button>
+                                            <button type="button" onclick="setQuickDurationFrom2Col(180, '3\'00\'\'')" class="w-full text-left px-2 py-1 rounded-lg text-xs font-bold hover:bg-indigo-50 hover:text-indigo-700 transition">3'00''</button>
+                                            <button type="button" onclick="setQuickDurationFrom2Col(240, '4\'00\'\'')" class="w-full text-left px-2 py-1 rounded-lg text-xs font-bold hover:bg-indigo-50 hover:text-indigo-700 transition">4'00''</button>
+                                            <button type="button" onclick="setQuickDurationFrom2Col(300, '5\'00\'\'')" class="w-full text-left px-2 py-1 rounded-lg text-xs font-bold hover:bg-indigo-50 hover:text-indigo-700 transition">5'00''</button>
+                                            <button type="button" onclick="setQuickDurationFrom2Col(360, '6\'00\'\'')" class="w-full text-left px-2 py-1 rounded-lg text-xs font-bold hover:bg-indigo-50 hover:text-indigo-700 transition">6'00''</button>
+                                            <button type="button" onclick="setQuickDurationFrom2Col(420, '7\'00\'\'')" class="w-full text-left px-2 py-1 rounded-lg text-xs font-bold hover:bg-indigo-50 hover:text-indigo-700 transition">7'00''</button>
+                                            <button type="button" onclick="setQuickDurationFrom2Col(480, '8\'00\'\'')" class="w-full text-left px-2 py-1 rounded-lg text-xs font-bold hover:bg-indigo-50 hover:text-indigo-700 transition">8'00''</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="formDuration" value="30 min">
                         </div>
+                        <div>
+                            <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-0.5">Ora Fine</label>
+                            <input type="time" id="formEndTime" onchange="onFormEndTimeChange()"
+                                   class="w-full px-2 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold">
+                        </div>
+                    </div>
+
+                    <!-- SEZIONE ALTRE ATTIVITA AGGIUNTIVE (FINO A 5) -->
+                    <div id="formSubActivitiesContainer" class="space-y-2.5 pt-1"></div>
+
+                    <div class="flex items-center justify-between pt-1">
+                        <button type="button" id="btnAddSubActivity" onclick="addNewSubActivityRow()"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 text-xs font-black shadow-2xs transition">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                            <span>+ Altra attività (fino a 5)</span>
+                        </button>
+                        <span id="subActivitiesCountLabel" class="text-[10px] font-bold text-slate-400">0/5 aggiuntive</span>
                     </div>
 
                     <!-- Ripetizione appuntamento -->
-                    <div>
+                    <div class="pt-1 border-t border-slate-200">
                         <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-0.5">Ripetizione appuntamento</label>
-                        <select id="formRecurrence" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold text-slate-800">
-                            <option value="none">Nessuna ripetizione (singolo)</option>
+                        <select id="formRecurrence" onchange="onFormRecurrenceChange()" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold text-slate-800">
+                            <option value="none" selected>Nessuna ripetizione (singolo)</option>
+                            <option value="in_x_days">Fra X giorni...</option>
                             <option value="daily">Ogni giorno</option>
                             <option value="weekly">Ogni settimana (stesso giorno)</option>
                             <option value="biweekly">Ogni 2 settimane</option>
                             <option value="monthly">Ogni mese (stesso giorno del mese)</option>
                             <option value="yearly">Ogni anno (compleanni, ricorrenze)</option>
                         </select>
+                        <!-- Box configurazione Fra X giorni -->
+                        <div id="recurrenceInXDaysBox" class="hidden mt-2 p-2 rounded-xl bg-indigo-50/80 border border-indigo-200 space-y-1.5">
+                            <div class="flex items-center justify-between text-[10px] font-black uppercase text-indigo-950">
+                                <span>Ripeti fra quanti giorni:</span>
+                                <span id="recurrenceTargetDateHint" class="text-indigo-600 font-extrabold"></span>
+                            </div>
+                            <div class="flex flex-wrap gap-1 items-center">
+                                <button type="button" onclick="setRecurrenceDaysQuick(2)" class="px-2 py-0.5 rounded-lg text-xs font-bold bg-white border border-indigo-200 hover:bg-indigo-100 text-indigo-900 shadow-2xs">2 gg</button>
+                                <button type="button" onclick="setRecurrenceDaysQuick(3)" class="px-2 py-0.5 rounded-lg text-xs font-bold bg-white border border-indigo-200 hover:bg-indigo-100 text-indigo-900 shadow-2xs">3 gg</button>
+                                <button type="button" onclick="setRecurrenceDaysQuick(5)" class="px-2 py-0.5 rounded-lg text-xs font-bold bg-white border border-indigo-200 hover:bg-indigo-100 text-indigo-900 shadow-2xs">5 gg</button>
+                                <button type="button" onclick="setRecurrenceDaysQuick(7)" class="px-2 py-0.5 rounded-lg text-xs font-bold bg-white border border-indigo-200 hover:bg-indigo-100 text-indigo-900 shadow-2xs">7 gg</button>
+                                <button type="button" onclick="setRecurrenceDaysQuick(10)" class="px-2 py-0.5 rounded-lg text-xs font-bold bg-white border border-indigo-200 hover:bg-indigo-100 text-indigo-900 shadow-2xs">10 gg</button>
+                                <button type="button" onclick="setRecurrenceDaysQuick(14)" class="px-2 py-0.5 rounded-lg text-xs font-bold bg-white border border-indigo-200 hover:bg-indigo-100 text-indigo-900 shadow-2xs">14 gg</button>
+                                <button type="button" onclick="setRecurrenceDaysQuick(30)" class="px-2 py-0.5 rounded-lg text-xs font-bold bg-white border border-indigo-200 hover:bg-indigo-100 text-indigo-900 shadow-2xs">30 gg</button>
+                            </div>
+                            <div class="flex items-center gap-1.5 pt-0.5">
+                                <span class="text-xs font-bold text-slate-600">Oppure inserisci:</span>
+                                <input type="number" id="formRecurrenceCustomDays" min="1" max="365" placeholder="7" oninput="updateRecurrenceTargetHint()"
+                                       class="w-16 px-2 py-1 rounded-lg border border-slate-300 bg-white text-center font-bold text-xs">
+                                <span class="text-xs font-bold text-slate-600">giorni</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -1671,10 +1735,10 @@
                     </div>
 
                     <div class="sm:col-span-2">
-                        <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-0.5">VisibilitÃ  Impegno</label>
+                        <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-0.5">Visibilità Impegno</label>
                         <select id="formVisibility" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold text-slate-800">
-                            <option value="all" selected>Visibile a tutti i familiari</option>
-                            <option value="admins_only">Solo Patrizio e Manuela</option>
+                            <option value="admins_only" selected>Solo Patrizio e Manuela (Predefinito)</option>
+                            <option value="all">Visibile a tutti i familiari</option>
                             <option value="assigned_only">Visibile solo alle persone interessate</option>
                             <option value="private_patrizio">Riservato solo a Patrizio</option>
                         </select>
@@ -1684,7 +1748,14 @@
                 <!-- 6. LUOGO E NOTE (OPZIONALI) -->
                 <div class="space-y-2">
                     <div>
-                        <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-0.5">Luogo / Indirizzo</label>
+                        <div class="flex items-center justify-between mb-0.5">
+                            <label class="block text-[10px] font-extrabold uppercase text-slate-500">Luogo / Indirizzo</label>
+                            <button type="button" onclick="openMapsFromForm()" title="Apri indirizzo su Google Maps"
+                                    class="text-[10px] font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1">
+                                <i data-lucide="map-pin" class="w-3 h-3 text-indigo-500"></i>
+                                <span>Apri Maps</span>
+                            </button>
+                        </div>
                         <input type="text" id="formPlace" placeholder="Es. Palestra Comunale, Via Roma 12..."
                                class="w-full px-3 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold focus:outline-indigo-500 shadow-2xs">
                     </div>
@@ -1733,6 +1804,8 @@
                         <option value="Elettricità" selected>Elettricità</option>
                         <option value="Internet e telefono">Internet e telefono</option>
                         <option value="Consorzio">Consorzio</option>
+                        <option value="Spese manutenzione casa">Spese manutenzione casa</option>
+                        <option value="Spese condominiali">Spese condominiali</option>
                         <option value="Altre utenze">Altre utenze (personalizzata)</option>
                     </select>
                 </div>
@@ -1755,6 +1828,23 @@
                     <div>
                         <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">Importo (€) *</label>
                         <input type="number" step="0.01" min="0" id="formBillAmount" required placeholder="Es. 84.50" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 font-bold">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 bg-slate-50 p-2 rounded-xl border border-slate-200">
+                    <div>
+                        <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">Consumo (opzionale)</label>
+                        <input type="number" step="any" min="0" id="formBillConsumption" placeholder="Es. 120 (mc o kWh)" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">Unità di misura</label>
+                        <select id="formBillConsumptionUnit" class="w-full px-2 py-1.5 rounded-xl border border-slate-300 bg-white font-bold text-xs">
+                            <option value="">Nessuna</option>
+                            <option value="mc">mc (Gas / Acqua)</option>
+                            <option value="kWh">kWh (Enel / Luce)</option>
+                            <option value="kW">kW</option>
+                            <option value="Altro">Altro</option>
+                        </select>
                     </div>
                 </div>
 
@@ -1910,6 +2000,73 @@
                     <button type="submit" class="px-4 py-1.5 rounded-xl text-xs font-black bg-indigo-600 hover:bg-indigo-700 text-white shadow-2xs">Registra nello Storico</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- MODALE RESOCONTO ATTIVITA CASA PER UTENTE E PERIODO (GIORNO/SETT/MESE/TUTTO) -->
+    <!-- ======================================================== -->
+    <div id="casaResocontoModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4">
+        <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl border border-slate-200 max-h-[92dvh] flex flex-col overflow-hidden">
+            <div class="px-4 py-3 bg-indigo-900 text-white flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="bar-chart-2" class="w-5 h-5 text-indigo-300"></i>
+                    <h3 class="text-sm sm:text-base font-black">Resoconto Faccende & Attività Casa</h3>
+                </div>
+                <button type="button" onclick="closeCasaResocontoModal()" class="p-1 rounded-lg text-indigo-200 hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <!-- Controlli Periodo Resoconto -->
+            <div class="p-3 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2 shrink-0">
+                <div class="inline-flex items-center gap-1 p-0.5 rounded-xl bg-slate-200/80 text-xs font-bold">
+                    <button type="button" onclick="setResocontoPeriod('day')" id="btnResocontoDay" class="px-2.5 py-1 rounded-lg font-black bg-white text-indigo-700 shadow-2xs">Giorno</button>
+                    <button type="button" onclick="setResocontoPeriod('week')" id="btnResocontoWeek" class="px-2.5 py-1 rounded-lg text-slate-700 hover:text-slate-900">Settimana</button>
+                    <button type="button" onclick="setResocontoPeriod('month')" id="btnResocontoMonth" class="px-2.5 py-1 rounded-lg text-slate-700 hover:text-slate-900">Mese</button>
+                    <button type="button" onclick="setResocontoPeriod('all')" id="btnResocontoAll" class="px-2.5 py-1 rounded-lg text-slate-700 hover:text-slate-900">Tutto lo storico</button>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <button type="button" onclick="navigateResocontoDate(-1)" class="p-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 shadow-2xs">
+                        <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                    </button>
+                    <span id="resocontoCurrentPeriodLabel" class="text-xs font-black text-slate-800 px-2 min-w-[130px] text-center">Oggi</span>
+                    <button type="button" onclick="navigateResocontoDate(1)" class="p-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 shadow-2xs">
+                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- Contenuto Griglia Resoconto Utenti e Lavori svolti -->
+            <div id="casaResocontoContent" class="p-4 overflow-y-auto thin-scroll space-y-3 flex-1 text-xs">
+                <!-- Popolato dinamicamente da JS -->
+            </div>
+            <div class="p-3 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
+                <span class="text-[11px] text-slate-500 font-bold" id="resocontoTotalCompletedSummary">Totale: 0 faccende registrate</span>
+                <button type="button" onclick="closeCasaResocontoModal()" class="px-4 py-1.5 rounded-xl bg-slate-800 text-white font-black text-xs hover:bg-slate-900 shadow-2xs">Chiudi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- MODALE RIEPILOGO BOLLETTE PER TIPOLOGIA, COSTO MENSILE E CONSUMO -->
+    <!-- ======================================================== -->
+    <div id="billsSummaryModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4">
+        <div class="bg-white w-full max-w-xl rounded-2xl shadow-2xl border border-slate-200 max-h-[92dvh] flex flex-col overflow-hidden">
+            <div class="px-4 py-3 bg-sky-900 text-white flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="receipt" class="w-5 h-5 text-sky-300"></i>
+                    <h3 class="text-sm sm:text-base font-extrabold">Riepilogo Bollette per Tipologia & Consumi</h3>
+                </div>
+                <button type="button" onclick="closeBillsSummaryModal()" class="p-1 rounded-lg text-sky-200 hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div id="billsSummaryContent" class="p-4 overflow-y-auto thin-scroll space-y-3 flex-1 text-xs">
+                <!-- Popolato dinamicamente da JS -->
+            </div>
+            <div class="p-3 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
+                <span class="text-[11px] text-slate-500 font-bold" id="billsSummaryGrandTotal">Totale Generale: € 0,00</span>
+                <button type="button" onclick="closeBillsSummaryModal()" class="px-4 py-1.5 rounded-xl bg-slate-800 text-white font-black text-xs hover:bg-slate-900 shadow-2xs">Chiudi</button>
+            </div>
         </div>
     </div>
 
@@ -2301,7 +2458,7 @@ function ghOpenSetup() {
         const APP_VERSION = 'rev.16';
         const APP_BUILD_INFO = {
             rev: 'rev. 16',
-            dateTime: '21/10/2026 alle 18:14'
+            dateTime: '21/10/2026 alle 21:29'
         };
 
         // 1. I 6 PROFILI DELLA FAMIGLIA (CON AUTENTICAZIONE PASSWORD O DATA DI NASCITA)
@@ -2314,14 +2471,14 @@ function ghOpenSetup() {
             { id: 'u6', name: 'Clara',    role: 'Figlia',        hex: '#0e7490', isAdmin: false, pwd: '',      birthdate: '12032019' }
         ];
 
-        // 2. LE 8 CATEGORIE CONDIVISE: Famiglia, Personali, Scuola, Lavoro, Sport, Visite, Pagamenti, Altro
+        // 2. LE 8 CATEGORIE CONDIVISE: Famiglia, Personali, Scuola, Lavoro, Sport, Mediche, Pagamenti, Altro
         const BASE_CATEGORIES = {
             famiglia:  { id: 'famiglia',  label: 'Famiglia',  bgHex: '#fef08a', borderHex: '#eab308', textHex: '#713f12' },
             personali: { id: 'personali', label: 'Personali', bgHex: '#f5d0fe', borderHex: '#c026d3', textHex: '#701a75' },
             scuola:    { id: 'scuola',    label: 'Scuola',    bgHex: '#bae6fd', borderHex: '#0284c7', textHex: '#082f49' },
             lavoro:    { id: 'lavoro',    label: 'Lavoro',    bgHex: '#c7d2fe', borderHex: '#4f46e5', textHex: '#1e1b4b' },
             sport:     { id: 'sport',     label: 'Sport',     bgHex: '#a7f3d0', borderHex: '#10b981', textHex: '#064e3b' },
-            visite:    { id: 'visite',    label: 'Visite',    bgHex: '#fecdd3', borderHex: '#e11d48', textHex: '#4c0519' },
+            mediche:   { id: 'mediche',   label: 'Mediche',   bgHex: '#fecdd3', borderHex: '#e11d48', textHex: '#4c0519' },
             pagamenti: { id: 'pagamenti', label: 'Pagamenti', bgHex: '#e0e7ff', borderHex: '#6366f1', textHex: '#312e81' },
             altro:     { id: 'altro',     label: 'Altro',     bgHex: '#e2e8f0', borderHex: '#64748b', textHex: '#1e293b' }
         };
@@ -2334,7 +2491,7 @@ function ghOpenSetup() {
             if (c === 'scolastici' || c === 'scuola') return 'scuola';
             if (c === 'lavorativi' || c === 'lavoro') return 'lavoro';
             if (c === 'sportivi' || c === 'sport') return 'sport';
-            if (c === 'medici' || c === 'visite' || c === 'visita') return 'visite';
+            if (c === 'medici' || c === 'visite' || c === 'visita' || c === 'medica' || c === 'mediche') return 'mediche';
             if (c === 'pagamenti' || c === 'pagamento') return 'pagamenti';
             if (c === 'auto' || c === 'altro') return 'altro';
             return BASE_CATEGORIES[c] ? c : 'altro';
@@ -2355,9 +2512,11 @@ function ghOpenSetup() {
                 'lavoro': 'lavoro',
                 'sportivi': 'sport',
                 'sport': 'sport',
-                'medici': 'visite',
-                'visite': 'visite',
-                'visita': 'visite',
+                'medici': 'mediche',
+                'mediche': 'mediche',
+                'medica': 'mediche',
+                'visite': 'mediche',
+                'visita': 'mediche',
                 'pagamenti': 'pagamenti',
                 'pagamento': 'pagamenti',
                 'altro': 'altro'
@@ -2392,29 +2551,18 @@ function ghOpenSetup() {
 
         // 3. SOTTO-CATEGORIE PREDEFINITE CONDIVISE
         const DEFAULT_SUBCATEGORIES = {
-            famiglia:  ['Spesa', 'Famiglia', 'Casa', 'Commissioni', 'Cena', 'Compleanno', 'Altro'],
-            personali: ['Personali', 'Tempo libero', 'Hobby', 'Acquisti', 'Viaggi', 'Altro'],
-            scuola:    ['Scuola', 'Compiti', 'Riunione docenti', 'Colloquio', 'Gita', 'Altro'],
-            lavoro:    ['Multites', 'Sicurezza', 'Uff. Isola', 'Uff. Monticello', 'Sopralluogo', 'Riunione', 'Altro'],
-            sport:     ['Twirling', 'Yoga', 'Calcio', 'Palestra', 'Corsa', 'Basket', 'Nuoto', 'Altro'],
-            visite:    ['Visita medica', 'Controllo', 'Dentista', 'Esami sangue', 'Specialista', 'Fisioterapia', 'Altro'],
-            pagamenti: ['Bollette', 'Inarcassa', 'Bollo auto', 'Assicurazione', 'F24 / Tasse', 'Spese casa', 'Altro'],
-            altro:     ['Auto', 'Tagliando', 'Revisione', 'Varie', 'Promemoria', 'Altro']
+            famiglia:  ['Nessuna', 'Spesa', 'Famiglia', 'Casa', 'ADS', 'Commissioni', 'Cena', 'Compleanno', 'Altro'],
+            personali: ['Nessuna', 'Personali', 'Tempo libero', 'Hobby', 'Acquisti', 'Viaggi', 'Altro'],
+            scuola:    ['Nessuna', 'Scuola', 'Compiti', 'Riunione docenti', 'Colloquio', 'Gita', 'Altro'],
+            lavoro:    ['Nessuna', 'Multites', 'Sicurezza', 'Aggiornamento CFP', 'Ripetizioni', 'Uff. Isola', 'Uff. Monticello', 'Sopralluogo', 'Riunione', 'Altro'],
+            sport:     ['Nessuna', 'Twirling', 'Yoga', 'Calcio', 'Palestra', 'Corsa', 'Basket', 'Nuoto', 'Altro'],
+            mediche:   ['Nessuna', 'Visita medica', 'Controllo', 'Dentista', 'Esami sangue', 'Specialista', 'Fisioterapia', 'Altro'],
+            pagamenti: ['Nessuna', 'Bollette', 'Spese condominio', 'Inarcassa', 'Bollo auto', 'Assicurazione', 'F24 / Tasse', 'Spese casa', 'Altro'],
+            altro:     ['Nessuna', 'Auto', 'Tagliando', 'Revisione', 'Varie', 'Promemoria', 'Altro']
         };
 
-        // 4. CATEGORIE PERSONALI PATRIZIO (IN ORDINE ALFABETICO)
-        const PATRIZIO_PERSONAL_CATEGORIES = [
-            'A.D.S.',
-            'CFP',
-            'Famiglia',
-            'Lavoro ufficio',
-            'Multites',
-            'Personali',
-            'Pranzo/Cena',
-            'Ripetizioni',
-            'Sopralluogo',
-            'Ufficio Giulio'
-        ];
+        // Sottocategorie personali Patrizio rimosse su richiesta utente (integrate in DEFAULT_SUBCATEGORIES: ADS in Famiglia, Aggiornamento CFP e Ripetizioni in Lavoro, Spese condominio in Pagamenti)
+        const PATRIZIO_PERSONAL_CATEGORIES = [];
 
         // 5. ATTIVITÀ DOMESTICHE PREDEFINITE (SEZIONE CASA - ORDINE CRONOLOGICO)
         // FLUSSO: tutti -> da_fare -> da_confermare (con timestamp effettivo) -> confermate
@@ -2430,7 +2578,11 @@ function ghOpenSetup() {
             { id: 'chore_8',  title: 'Olio',             order: 9,  status: 'tutti', assignedTo: [], executedBy: '', executedAt: '', confirmedBy: '', confirmedAt: '' },
             { id: 'chore_9',  title: 'Pulizia cucina',   order: 10,  status: 'tutti', assignedTo: [], executedBy: '', executedAt: '', confirmedBy: '', confirmedAt: '' },
             { id: 'chore_10', title: 'Pavimenti',        order: 11, status: 'tutti', assignedTo: [], executedBy: '', executedAt: '', confirmedBy: '', confirmedAt: '' },
-            { id: 'chore_11', title: 'Lavastoviglie',    order: 12, status: 'tutti', assignedTo: [], executedBy: '', executedAt: '', confirmedBy: '', confirmedAt: '' }
+            { id: 'chore_11', title: 'Lavastoviglie',    order: 12, status: 'tutti', assignedTo: [], executedBy: '', executedAt: '', confirmedBy: '', confirmedAt: '' },
+            { id: 'chore_12', title: 'Lavare per terra', order: 13, status: 'tutti', assignedTo: [], executedBy: '', executedAt: '', confirmedBy: '', confirmedAt: '' },
+            { id: 'chore_13', title: 'Scale condominio', order: 14, status: 'tutti', assignedTo: [], executedBy: '', executedAt: '', confirmedBy: '', confirmedAt: '' },
+            { id: 'chore_14', title: 'Ritiro secco',     order: 15, status: 'tutti', assignedTo: [], executedBy: '', executedAt: '', confirmedBy: '', confirmedAt: '' },
+            { id: 'chore_15', title: 'Ritiro plastica',  order: 16, status: 'tutti', assignedTo: [], executedBy: '', executedAt: '', confirmedBy: '', confirmedAt: '' }
         ];
 
         // 6. CATALOGO PRODOTTI COMUNI USO SPESA (20 VOCI RICHIESTE IN ORDINE ALFABETICO)
@@ -2837,8 +2989,19 @@ function ghOpenSetup() {
                     if (Array.isArray(parsed) && parsed.length > 0) {
                         if (!parsed.some(c => c.title && c.title.toLowerCase().includes("bottiglie di plastica"))) {
                             parsed.splice(6, 0, { id: "chore_bottiglie_plastica", title: "Bottiglie di plastica", order: 7, status: "tutti", assignedTo: [], executedBy: "", executedAt: "", confirmedBy: "", confirmedAt: "" });
-                            parsed.forEach((c, idx) => { c.order = idx + 1; });
                         }
+                        const reqChores = [
+                            { id: 'chore_12', title: 'Lavare per terra' },
+                            { id: 'chore_13', title: 'Scale condominio' },
+                            { id: 'chore_14', title: 'Ritiro secco' },
+                            { id: 'chore_15', title: 'Ritiro plastica' }
+                        ];
+                        reqChores.forEach(rc => {
+                            if (!parsed.some(c => c.title && c.title.toLowerCase() === rc.title.toLowerCase())) {
+                                parsed.push({ id: rc.id, title: rc.title, order: parsed.length + 1, status: 'tutti', assignedTo: [], executedBy: '', executedAt: '', confirmedBy: '', confirmedAt: '' });
+                            }
+                        });
+                        parsed.forEach((c, idx) => { c.order = idx + 1; });
                         return parsed;
                     }
                 }
@@ -3130,7 +3293,7 @@ function ghOpenSetup() {
             items.push({
                 id: 'visite_mediche_demo',
                 title: 'Visite Mediche',
-                category: 'visite',
+                category: 'mediche',
                 subcategory: 'Controllo Generale',
                 date: '2026-10-28',
                 time: '08:00',
@@ -3227,10 +3390,15 @@ function ghOpenSetup() {
             },
             selectedUsers: BASE_USERS.map(u => u.id), // Tutti i 6
             selectedCategories: Object.keys(BASE_CATEGORIES),
-            selectedBillsUtenze: ['Acqua', 'Gas', 'Elettricità', 'Internet e telefono', 'Consorzio', 'Altre utenze'], // Tutte le 7
+            selectedBillsUtenze: ['Acqua', 'Gas', 'Elettricità', 'Internet e telefono', 'Consorzio', 'Spese manutenzione casa', 'Spese condominiali', 'Altre utenze'],
             showRoutineSchool: false, // NON spuntata di default
             viewMode: 'day', // Apertura di default in vista giornaliera (gg)
             showPast: false, // Default: nascondi passati
+            monthHidePast: false, // Tasto nascondi passati nel mese
+            listColumnsMode: localStorage.getItem('agenda_famiglia_list_cols') || '1col',
+            billsHidePaid: false,
+            resocontoPeriod: 'day',
+            resocontoDate: getTodayIso(),
             singleDayDate: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()),
             weekStartDate: getMondayOfWeek(new Date()),
             calendarYear: new Date().getFullYear(),
@@ -3238,7 +3406,8 @@ function ghOpenSetup() {
             popupDate: null,
             timelineZoomHours: 4,
             formCategory: 'famiglia',
-            formUsers: ['u1'],
+            formUsers: ['u1', 'u2'], // Di default Patrizio e Manuela
+            formSubActivities: [],
             formAttachments: [],
             shoppingList: loadPersistedShoppingList(),
             shoppingTab: 'active',
@@ -3288,7 +3457,10 @@ function ghOpenSetup() {
             res['scolastici'] = res['scuola'];
             res['lavorativi'] = res['lavoro'];
             res['sportivi']   = res['sport'];
-            res['medici']     = res['visite'];
+            res['medici']     = res['mediche'];
+            res['visite']     = res['mediche'];
+            res['visita']     = res['mediche'];
+            res['medica']     = res['mediche'];
             res['auto']       = res['altro'];
             return res;
         }
@@ -3555,7 +3727,35 @@ function ghOpenSetup() {
         function getEventsForDate(dateStr) {
             const evs = [];
             state.events.forEach(e => {
-                if (e.date !== dateStr) return;
+                let matchesDate = (e.date === dateStr) || (e.endDate && e.date <= dateStr && e.endDate >= dateStr);
+                if (!matchesDate && e.recurrence && e.date && dateStr >= e.date) {
+                    if (e.recurrence === 'in_x_days' && e.recurrenceDays > 0) {
+                        const dStart = new Date(e.date + 'T00:00:00');
+                        const dCur = new Date(dateStr + 'T00:00:00');
+                        const diffDays = Math.round((dCur - dStart) / (1000 * 60 * 60 * 24));
+                        if (diffDays > 0 && diffDays % e.recurrenceDays === 0) matchesDate = true;
+                    } else if (e.recurrence === 'daily') {
+                        matchesDate = true;
+                    } else if (e.recurrence === 'weekly') {
+                        const dStart = new Date(e.date + 'T00:00:00');
+                        const dCur = new Date(dateStr + 'T00:00:00');
+                        matchesDate = (dStart.getDay() === dCur.getDay());
+                    } else if (e.recurrence === 'biweekly') {
+                        const dStart = new Date(e.date + 'T00:00:00');
+                        const dCur = new Date(dateStr + 'T00:00:00');
+                        const diffDays = Math.round((dCur - dStart) / (1000 * 60 * 60 * 24));
+                        matchesDate = (diffDays > 0 && diffDays % 14 === 0);
+                    } else if (e.recurrence === 'monthly') {
+                        const dStart = new Date(e.date + 'T00:00:00');
+                        const dCur = new Date(dateStr + 'T00:00:00');
+                        matchesDate = (dStart.getDate() === dCur.getDate());
+                    } else if (e.recurrence === 'yearly') {
+                        const [sy, sm, sd] = e.date.split('-');
+                        const [cy, cm, cd] = dateStr.split('-');
+                        matchesDate = (sm === cm && sd === cd);
+                    }
+                }
+                if (!matchesDate) return;
                 const hasMatchingUser = (e.users || []).some(uid => state.selectedUsers.includes(uid));
                 if (!hasMatchingUser) return;
                 const catNorm = normalizeCategory(e.category);
@@ -4410,6 +4610,9 @@ function ghOpenSetup() {
 
                         <div class="space-y-0.5 overflow-hidden flex-1">
                             ${(() => {
+                                if (state.monthHidePast && dateStr < today) {
+                                    return '<div class="text-[8px] font-semibold text-slate-300 italic pt-2 text-center select-none">Passato</div>';
+                                }
                                 const { allDayEvents, timedItems } = groupDayEventsForTimeline(dayEvs);
                                 const monthItems = [
                                     ...allDayEvents.map(ev => ({ isAllDay: true, title: ev.title, category: ev.category, ev })),
@@ -4568,75 +4771,8 @@ function ghOpenSetup() {
                         `;
                     });
 
-                    // Timed items: 2 columns when multiple items, Stepped Groups span full width
-                                        const hasOverlaps = timedItems.length > 1 && timedItems.some((itA, idxA) =>
-                        timedItems.some((itB, idxB) => idxA !== idxB && itA.startMin < (itB.startMin + itB.durMin) && itB.startMin < (itA.startMin + itA.durMin))
-                    );
-
-                    if (hasOverlaps) {
-                        const minStart = Math.min(...timedItems.map(it => it.startMin));
-                        const maxEnd = Math.max(...timedItems.map(it => it.startMin + it.durMin));
-                        const spanMin = Math.max(90, maxEnd - minStart);
-                        const scaleHeight = Math.max(140, Math.min(320, spanMin * 1.3));
-                        const pxPerMin = scaleHeight / spanMin;
-                        const laidOut = computeOverlappingEventLayout(timedItems);
-
-                        itemsHtml += `
-                            <div class="col-span-full bg-slate-50 border border-slate-200 rounded-2xl p-2.5 relative flex items-stretch gap-2 overflow-hidden shadow-2xs" style="height:${scaleHeight + 20}px;">
-                                <!-- Scala orari a sinistra -->
-                                <div class="w-12 border-r border-slate-200 pr-1.5 flex flex-col justify-between text-[9.5px] font-black text-slate-500 shrink-0 select-none">
-                                    <span>${String(Math.floor(minStart/60)).padStart(2,'0')}:${String(minStart%60).padStart(2,'0')}</span>
-                                    <span>${String(Math.floor((minStart+spanMin/2)/60)).padStart(2,'0')}:${String(Math.floor((minStart+spanMin/2)%60)).padStart(2,'0')}</span>
-                                    <span>${String(Math.floor(maxEnd/60)).padStart(2,'0')}:${String(maxEnd%60).padStart(2,'0')}</span>
-                                </div>
-                                <!-- Area barre verticali affiancate -->
-                                <div class="flex-1 relative overflow-hidden h-full">
-                                    ${laidOut.map(item => {
-                                        const topPx = (item.startMin - minStart) * pxPerMin;
-                                        const heightPx = Math.max(34, item.durMin * pxPerMin);
-                                        const totalCols = item.clusterCols || 1;
-                                        const col = item.colIndex || 0;
-                                        const leftPct = (col / totalCols) * 100;
-                                        const widthPct = 100 / totalCols;
-                                        const ev = item.ev || (item.isSteppedGroup ? item.events[0] : null);
-                                        const itemTitle = (item.title || (ev ? ev.title : '') || 'Impegno').trim();
-                                        const itemCat = item.category || (ev ? ev.category : 'famiglia');
-                                        const cat = catsMap[itemCat] || catsMap.sport || catsMap.famiglia;
-                                        const evId = item.isSteppedGroup ? item.events[0].id : (ev ? ev.id : '');
-                                        const uBadges = (item.isSteppedGroup ? item.participants.map(p => usersList.find(x => x.id === p.userId)) : (ev?.users || []).map(uid => usersList.find(x => x.id === uid))).filter(Boolean);
-                                        const itemTime = item.time || (ev ? (ev.time || '18:00') : '18:00');
-                                        const itemEndTime = item.endTime || (ev ? (ev.endTime || '') : '');
-                                        const timeRange = itemEndTime ? `${itemTime}-${itemEndTime}` : itemTime;
-                                        const itemSub = item.subcategory || (ev ? (ev.subcategory || ev.notes || '') : '');
-                                        const clickAttr = item.isSteppedGroup
-                                            ? `onclick="event.stopPropagation(); openActivityDetailModal(JSON.parse(this.dataset.item))" data-item="${escapeHtml(JSON.stringify(item))}"`
-                                            : `onclick="openEventModal('${evId}')"`;
-
-                                        return `
-                                            <div ${clickAttr}
-                                                 title="${escapeHtml(itemTitle)}: ${timeRange}"
-                                                 style="top:${topPx}px; height:${heightPx}px; left:calc(${leftPct}% + 1px); width:calc(${widthPct}% - 2px); background-color:${cat.bgHex}; border-color:${cat.borderHex}; color:${cat.textHex};"
-                                                 class="absolute rounded-xl border-2 p-1.5 shadow-2xs overflow-hidden flex flex-col justify-between cursor-pointer hover:brightness-95 transition z-10">
-                                                <div class="leading-tight truncate">
-                                                    <div class="text-[10px] font-black uppercase truncate flex items-center gap-1">
-                                                        <span>${escapeHtml(itemTitle)}</span>
-                                                        ${item.ev ? getRecategorizeBadgeHtml(item.ev, true) : ''}
-                                                    </div>
-                                                    <div class="text-[9px] font-bold opacity-85 truncate">${timeRange}</div>
-                                                </div>
-                                                <div class="flex items-center gap-1 mt-auto pt-0.5 truncate">
-                                                    ${uBadges.map(u => `<span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color:${u.hex}" title="${u.name}"></span>`).join('')}
-                                                    <span class="text-[8.5px] font-bold opacity-80 truncate">${escapeHtml(itemSub)}</span>
-                                                </div>
-                                            </div>
-                                        `;
-                                    }).join('')}
-                                </div>
-                            </div>
-                        `;
-                    } else {
-                        timedItems.forEach(item => {
-                
+                    // Timed items: cronoprogramma sequenziale con fascia oraria sotto
+                    timedItems.forEach(item => {
                         if (item.isSteppedGroup) {
                             const cat = catsMap[item.category] || catsMap.sport;
                             itemsHtml += `
@@ -4655,7 +4791,7 @@ function ghOpenSetup() {
                                             </span>
                                         </div>
                                         <span class="text-[11px] sm:text-xs font-black bg-white/90 px-2.5 py-0.5 rounded-lg border border-black/10 shadow-2xs">
-                                            ${item.time}-${item.endTime} (${Math.floor(item.durMin/60)}h ${item.durMin%60 > 0 ? (item.durMin%60 + 'm') : ''})
+                                            ${item.time}-${item.endTime} (${formatDurationNotation(item.durMin)})
                                         </span>
                                     </div>
                                     ${renderSteppedBandsHtml(item, usersList)}
@@ -4669,31 +4805,61 @@ function ghOpenSetup() {
                                 return `<span class="px-2 py-0.5 rounded text-[10px] font-black text-white" style="background-color:${u.hex}">${u.name}</span>`;
                             }).join('');
 
-                            const colSpanClass = totalItemsCount > 1 ? "col-span-1" : "col-span-full";
+                            const mapUrl = ev.place ? formatGoogleMapsUrl(ev.place) : '';
 
                             itemsHtml += `
                                 <div onclick="openEventModal('${ev.id}')"
                                      style="background-color:${cat.bgHex}; border-color:${cat.borderHex}; color:${cat.textHex}"
-                                     class="${colSpanClass} rounded-xl border p-2.5 flex items-center justify-between gap-2 shadow-2xs cursor-pointer hover:brightness-95 transition">
-                                    <div class="truncate">
-                                        <div class="text-xs font-black uppercase truncate flex items-center gap-1.5">
-                                            <span>${escapeHtml(ev.title)}</span>
-                                            ${getRecategorizeBadgeHtml(ev, false)}
-                                            ${ev.isCompleted ? `<i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i>` : ''}
+                                     class="col-span-1 rounded-xl border p-2.5 flex flex-col justify-between shadow-2xs cursor-pointer hover:brightness-95 transition space-y-1.5">
+                                    <div class="flex items-start justify-between gap-2">
+                                        <div class="min-w-0">
+                                            <div class="text-xs font-black uppercase truncate flex items-center gap-1.5">
+                                                <span>${escapeHtml(ev.title)}</span>
+                                                ${getRecategorizeBadgeHtml(ev, false)}
+                                                ${ev.isCompleted ? `<i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i>` : ''}
+                                            </div>
+                                            ${ev.subcategory || ev.notes ? `
+                                                <div class="text-[10.5px] font-bold opacity-80 truncate mt-0.5">
+                                                    ${escapeHtml(ev.subcategory ? ev.subcategory : '')}${ev.subcategory && ev.notes ? ' • ' : ''}${escapeHtml(ev.notes || '')}
+                                                </div>
+                                            ` : ''}
+                                            ${ev.place ? `
+                                                <div class="text-[10px] font-bold mt-1">
+                                                    <a href="${mapUrl}" target="_blank" rel="noopener noreferrer"
+                                                       onclick="event.stopPropagation()"
+                                                       title="Apri indicazioni stradali in Google Maps"
+                                                       class="inline-flex items-center gap-1 text-indigo-800 hover:underline">
+                                                        <span>📍</span>
+                                                        <span class="truncate">${escapeHtml(ev.place)}</span>
+                                                        <i data-lucide="external-link" class="w-2.5 h-2.5 opacity-60 shrink-0"></i>
+                                                    </a>
+                                                </div>
+                                            ` : ''}
                                         </div>
-                                        <div class="text-[10px] font-bold opacity-80 truncate">
-                                            ${ev.time || 'Tutto il giorno'}${ev.endTime ? ` - ${ev.endTime}` : ''}${ev.subcategory || ev.notes ? ` - ` : ''}${escapeHtml(ev.subcategory || ev.notes || '')}
-                                        </div>
+                                        <div class="flex items-center gap-1 shrink-0 flex-wrap justify-end">${uBadges}</div>
                                     </div>
-                                    <div class="flex items-center gap-1 shrink-0">${uBadges}</div>
+
+                                    <!-- Cronoprogramma: Fascia oraria sotto con orario inizio, freccia, ora fine e durata -->
+                                    <div class="mt-1.5 pt-1.5 border-t border-black/10 flex items-center justify-between text-[10px] font-black opacity-90">
+                                        <div class="flex items-center gap-1">
+                                            <i data-lucide="clock" class="w-3 h-3 opacity-70"></i>
+                                            <span>${ev.time || '18:00'}${ev.endTime ? ` ──► ${ev.endTime}` : ''}</span>
+                                        </div>
+                                        <span class="px-1.5 py-0.2 rounded bg-black/10 text-[9.5px] font-bold">
+                                            ${item.durMin ? formatDurationNotation(item.durMin) : (formatEventDuration(ev) || '')}
+                                        </span>
+                                    </div>
                                 </div>
                             `;
                         }
                     });
                 }
 
-                
-                    }html += `
+                let colsClass = 'grid-cols-1';
+                if (state.listColumnsMode === '2col') colsClass = 'grid-cols-1 sm:grid-cols-2';
+                else if (state.listColumnsMode === 'compact') colsClass = 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3';
+
+                html += `
                     <div id="listDate_${ds}" class="bg-white rounded-2xl border ${isToday ? 'border-indigo-400 shadow-md ring-2 ring-indigo-400/20' : 'border-slate-200 shadow-2xs'} p-3 space-y-2">
                         <div class="flex items-center justify-between pb-1.5 border-b border-slate-100">
                             <div class="flex items-center gap-2">
@@ -4706,7 +4872,7 @@ function ghOpenSetup() {
                             <button type="button" onclick="openEventModal(null, '${ds}')" class="text-xs font-bold text-indigo-600 hover:underline">+ Aggiungi</button>
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div class="grid ${colsClass} gap-2">
                             ${itemsHtml}
                         </div>
                     </div>
@@ -5560,10 +5726,15 @@ function ghOpenSetup() {
                 lblUtenze.textContent = (count === 6) ? 'Utenze: Tutte (6)' : (count === 0) ? 'Utenze: Nessuna' : `Utenze: ${count}`;
             }
 
-            // Filtro bollette: per stato e per utenza selezionata
+            // Filtro bollette: per stato, nascondi pagate e per utenza selezionata
             let filtered = state.bills;
-            if (state.billsFilter === 'da_pagare') filtered = unpaidBills;
-            else if (state.billsFilter === 'pagata') filtered = paidBills;
+            if (state.billsHidePaid) {
+                filtered = filtered.filter(b => !b.isPaid);
+            } else if (state.billsFilter === 'da_pagare') {
+                filtered = unpaidBills;
+            } else if (state.billsFilter === 'pagata') {
+                filtered = paidBills;
+            }
 
             if (state.selectedBillsUtenze && state.selectedBillsUtenze.length > 0) {
                 filtered = filtered.filter(b => {
@@ -5590,9 +5761,10 @@ function ghOpenSetup() {
                                 <i data-lucide="receipt" class="w-5 h-5"></i>
                             </div>
                             <div>
-                                <div class="flex items-center gap-2">
+                                <div class="flex items-center gap-2 flex-wrap">
                                     <h4 class="text-xs sm:text-sm font-extrabold text-slate-900">${escapeHtml(b.provider)}</h4>
                                     <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-slate-100 text-slate-700">${escapeHtml(b.utilityType)}</span>
+                                    ${b.consumption ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-sky-50 text-sky-800 border border-sky-200">Consumo: ${escapeHtml(b.consumption)} ${escapeHtml(b.consumptionUnit || '')}</span>` : ''}
                                     ${isLate ? `<span class="px-1.5 py-0.2 rounded text-[9.5px] font-black bg-rose-600 text-white animate-pulse">SCADUTA</span>` : ''}
                                 </div>
                                 <div class="text-[11px] text-slate-500 font-medium mt-0.5">
@@ -5911,7 +6083,6 @@ function ghOpenSetup() {
                 const year = d.getFullYear();
                 const hours = String(d.getHours()).padStart(2, '0');
                 const mins = String(d.getMinutes()).padStart(2, '0');
-                const secs = String(d.getSeconds()).padStart(2, '0');
 
                 const now = new Date();
                 const isToday = d.toDateString() === now.toDateString();
@@ -5920,38 +6091,41 @@ function ghOpenSetup() {
                 const isYesterday = d.toDateString() === yesterday.toDateString();
 
                 if (isToday) {
-                    return `Oggi (${day}/${month}/${year}) alle ${hours}:${mins}:${secs}`;
+                    return `Oggi alle ${hours}:${mins}`;
                 } else if (isYesterday) {
-                    return `Ieri (${day}/${month}/${year}) alle ${hours}:${mins}:${secs}`;
+                    return `Ieri alle ${hours}:${mins}`;
                 } else {
-                    return `Giorno: ${day}/${month}/${year} - Ora: ${hours}:${mins}:${secs}`;
+                    return `${day}/${month}/${year} alle ${hours}:${mins}`;
                 }
             } catch (e) {
                 return isoStr;
             }
         }
 
-        function recordUserLogin(userId) {
-            if (!userId) return;
+        window.recordUserActivity = function(userId = null) {
+            const uid = userId || state.activeProfileId || state.loggedUserId;
+            if (!uid) return;
             if (!state.userLogins) state.userLogins = {};
-            state.userLogins[userId] = new Date().toISOString();
+            const nowIso = new Date().toISOString();
+            state.userLogins[uid] = nowIso;
             try {
                 localStorage.setItem('agenda_famiglia_user_logins', JSON.stringify(state.userLogins));
             } catch (e) {}
-            if (typeof GH !== 'undefined' && GH.setDoc) {
-                GH.setDoc(GH.doc(null, 'settings/user_logins'), {
+
+            // Scrittura diretta nella collection che onSnapshot ascolta (family_settings_rev16)
+            try {
+                setDoc(doc(null, 'artifacts', appId, 'public', 'data', 'family_settings_rev16', 'user_logins'), {
                     logins: state.userLogins,
-                    lastUpdated: new Date().toISOString()
+                    lastUpdated: nowIso
                 });
+            } catch (e) {
+                console.warn('Sync user logins warning:', e);
             }
-            if (db && currentUser) {
-                setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_settings_rev16', 'user_logins'), {
-                    logins: state.userLogins,
-                    lastUpdated: new Date().toISOString()
-                }).catch(e => console.warn(e));
-            }
+
             if (window.renderDevUserLogins) renderDevUserLogins();
-        }
+        };
+
+        const recordUserLogin = window.recordUserActivity;
 
         window.renderDevUserLogins = function() {
             const container = document.getElementById('devUserLoginsList');
@@ -6500,6 +6674,7 @@ function ghOpenSetup() {
             chore.executedAt = `${dateStr} ore ${timeStr}`;
 
             persistChores();
+            recordUserActivity(curUser.id);
             renderCasaScreen();
             showToast(`Lavoro "${chore.title}" eseguito da ${curUser.name}! In attesa di verifica genitori.`);
         };
@@ -6539,6 +6714,7 @@ function ghOpenSetup() {
             });
 
             persistChores();
+            recordUserActivity(curUser.id);
             renderCasaScreen();
             showToast(`Lavoro "${chore.title}" confermato e archiviato nello storico!`);
         };
@@ -7894,8 +8070,271 @@ function ghOpenSetup() {
         };
 
         window.selectSubcategory = function(sub) {
-            state.formSubcategory = state.formSubcategory === sub ? '' : sub;
+            if (sub === 'Nessuna') {
+                state.formSubcategory = '';
+            } else {
+                state.formSubcategory = state.formSubcategory === sub ? '' : sub;
+            }
             renderFormSubcategories();
+            // Chiudi il menu categorie/sottocategorie per ridurre lo scorrimento
+            const catDrop = document.getElementById('formCategoryDropdown');
+            if (catDrop) catDrop.classList.add('hidden');
+            renderFormControls();
+        };
+
+        // ========================================================
+        // FORMATO DURATA (15'' e 1'30'') E SELETTORE 2 COLONNE
+        // ========================================================
+        function formatDurationNotation(totalMinutes) {
+            if (!totalMinutes || totalMinutes <= 0) return "30''";
+            const h = Math.floor(totalMinutes / 60);
+            const m = totalMinutes % 60;
+            if (h === 0) return `${m}''`;
+            return `${h}'${String(m).padStart(2, '0')}''`;
+        }
+        window.formatDurationNotation = formatDurationNotation;
+
+        window.setQuickDurationFrom2Col = function(min, label) {
+            const stInput = document.getElementById('formTime');
+            const etInput = document.getElementById('formEndTime');
+            const durInput = document.getElementById('formDuration');
+            const btnText = document.getElementById('formDurationButtonText');
+
+            const notation = label || formatDurationNotation(min);
+            if (durInput) durInput.value = notation;
+            if (btnText) btnText.textContent = notation;
+
+            const startTime = stInput?.value || '18:00';
+            if (stInput && !stInput.value) stInput.value = startTime;
+
+            const [sh, sm] = startTime.split(':').map(Number);
+            const startTotal = (isNaN(sh) ? 18 : sh) * 60 + (isNaN(sm) ? 0 : sm);
+            const endTotal = (startTotal + min) % 1440;
+            const endH = Math.floor(endTotal / 60);
+            const endM = endTotal % 60;
+
+            if (etInput) etInput.value = `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`;
+            closeDurationDropdown();
+            updateCalculatedDurationHint();
+        };
+
+        window.toggleDurationDropdown = function(e) {
+            if (e) e.stopPropagation();
+            const dd = document.getElementById('formDurationDropdownMenu');
+            if (dd) dd.classList.toggle('hidden');
+        };
+
+        window.closeDurationDropdown = function() {
+            const dd = document.getElementById('formDurationDropdownMenu');
+            if (dd) dd.classList.add('hidden');
+        };
+
+        window.onFormStartDateChange = function() {
+            const stD = document.getElementById('formDate')?.value;
+            const endD = document.getElementById('formEndDate');
+            if (stD && endD && !endD.value) {
+                endD.value = stD;
+            }
+            updateRecurrenceTargetHint();
+        };
+
+        // ========================================================
+        // RIPETIZIONE "FRA X GIORNI"
+        // ========================================================
+        window.onFormRecurrenceChange = function() {
+            const sel = document.getElementById('formRecurrence')?.value;
+            const box = document.getElementById('recurrenceInXDaysBox');
+            if (box) {
+                if (sel === 'in_x_days') {
+                    box.classList.remove('hidden');
+                    updateRecurrenceTargetHint();
+                } else {
+                    box.classList.add('hidden');
+                }
+            }
+        };
+
+        window.setRecurrenceDaysQuick = function(days) {
+            const input = document.getElementById('formRecurrenceDaysInput');
+            if (input) {
+                input.value = days;
+                updateRecurrenceTargetHint();
+            }
+        };
+
+        window.updateRecurrenceTargetHint = function() {
+            const input = document.getElementById('formRecurrenceDaysInput');
+            const hint = document.getElementById('recurrenceTargetDateHint');
+            const startDate = document.getElementById('formDate')?.value || getTodayIso();
+            if (!input || !hint) return;
+            const days = parseInt(input.value || '1', 10);
+            if (days > 0 && startDate) {
+                const d = new Date(startDate + 'T00:00:00');
+                d.setDate(d.getDate() + days);
+                const dayNames = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
+                const dayStr = String(d.getDate()).padStart(2, '0');
+                const monthStr = String(d.getMonth() + 1).padStart(2, '0');
+                hint.textContent = `Prossima data: ${dayNames[d.getDay()]} ${dayStr}/${monthStr}/${d.getFullYear()}`;
+            } else {
+                hint.textContent = '';
+            }
+        };
+
+        // ========================================================
+        // GESTIONE ATTIVITÀ AGGIUNTIVE (FINO A 5) NEL FORM
+        // ========================================================
+        window.addNewSubActivityRow = function() {
+            if (!state.formSubActivities) state.formSubActivities = [];
+            if (state.formSubActivities.length >= 5) {
+                showToast('Puoi inserire al massimo 5 attività aggiuntive');
+                return;
+            }
+            const parentDate = document.getElementById('formDate')?.value || getTodayIso();
+            const parentEndDate = document.getElementById('formEndDate')?.value || parentDate;
+            state.formSubActivities.push({
+                title: '',
+                date: parentDate,
+                endDate: parentEndDate,
+                time: '18:00',
+                duration: "30''",
+                endTime: '18:30'
+            });
+            renderSubActivities();
+        };
+
+        window.removeSubActivityRow = function(idx) {
+            if (!state.formSubActivities) return;
+            state.formSubActivities.splice(idx, 1);
+            renderSubActivities();
+        };
+
+        window.updateSubActivity = function(idx, field, val) {
+            if (!state.formSubActivities || !state.formSubActivities[idx]) return;
+            state.formSubActivities[idx][field] = val;
+        };
+
+        window.updateSubActivityTime = function(idx, field, val) {
+            if (!state.formSubActivities || !state.formSubActivities[idx]) return;
+            const item = state.formSubActivities[idx];
+            item[field] = val;
+            if (item.time && item.endTime) {
+                const [sh, sm] = item.time.split(':').map(Number);
+                const [eh, em] = item.endTime.split(':').map(Number);
+                let diff = (eh * 60 + em) - (sh * 60 + sm);
+                if (diff < 0) diff += 1440;
+                item.duration = formatDurationNotation(diff);
+            }
+            renderSubActivities();
+        };
+
+        window.updateSubActivityDuration = function(idx, minutes) {
+            if (!state.formSubActivities || !state.formSubActivities[idx]) return;
+            const item = state.formSubActivities[idx];
+            item.duration = formatDurationNotation(minutes);
+            const [sh, sm] = (item.time || '18:00').split(':').map(Number);
+            const startMin = (isNaN(sh) ? 18 : sh) * 60 + (isNaN(sm) ? 0 : sm);
+            const endTotal = (startMin + minutes) % 1440;
+            item.endTime = `${String(Math.floor(endTotal / 60)).padStart(2, '0')}:${String(endTotal % 60).padStart(2, '0')}`;
+            renderSubActivities();
+        };
+
+        window.renderSubActivities = function() {
+            const container = document.getElementById('formSubActivitiesContainer');
+            const btnAdd = document.getElementById('btnAddSubActivity');
+            const countLbl = document.getElementById('subActivitiesCountLabel');
+            if (!container) return;
+            if (!state.formSubActivities) state.formSubActivities = [];
+
+            if (countLbl) {
+                countLbl.textContent = `${state.formSubActivities.length}/5 aggiuntive`;
+            }
+
+            if (btnAdd) {
+                btnAdd.style.display = state.formSubActivities.length >= 5 ? 'none' : 'inline-flex';
+            }
+
+            if (state.formSubActivities.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+
+            container.innerHTML = state.formSubActivities.map((sub, idx) => `
+                <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2 relative shadow-2xs">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-[11px] font-black text-indigo-700">Attività ${idx + 1}</span>
+                        <button type="button" onclick="removeSubActivityRow(${idx})" class="text-xs text-rose-500 hover:text-rose-700 font-black px-1.5 py-0.5 rounded hover:bg-rose-50">
+                            &times; Rimuovi
+                        </button>
+                    </div>
+                    <!-- Riga 1: Descrizione attività -->
+                    <div>
+                        <input type="text" value="${escapeHtml(sub.title || '')}"
+                               oninput="updateSubActivity(${idx}, 'title', this.value)"
+                               placeholder="Descrizione attività ${idx + 1}..."
+                               class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white">
+                    </div>
+                    <!-- Riga 2: Data inizio e Data fine -->
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Data Inizio</label>
+                            <input type="date" value="${sub.date || ''}"
+                                   onchange="updateSubActivity(${idx}, 'date', this.value)"
+                                   class="w-full px-2 py-1 rounded-lg border border-slate-300 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Data Fine</label>
+                            <input type="date" value="${sub.endDate || sub.date || ''}"
+                                   onchange="updateSubActivity(${idx}, 'endDate', this.value)"
+                                   class="w-full px-2 py-1 rounded-lg border border-slate-300 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white">
+                        </div>
+                    </div>
+                    <!-- Riga 3: Orario inizio, Durata e Fine -->
+                    <div class="grid grid-cols-3 gap-2">
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Ora Inizio</label>
+                            <input type="time" value="${sub.time || '18:00'}"
+                                   onchange="updateSubActivityTime(${idx}, 'time', this.value)"
+                                   class="w-full px-2 py-1 rounded-lg border border-slate-300 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Durata</label>
+                            <select onchange="updateSubActivityDuration(${idx}, parseInt(this.value, 10))"
+                                    class="w-full px-1.5 py-1 rounded-lg border border-slate-300 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white">
+                                <option value="15" ${sub.duration === "15''" ? 'selected' : ''}>15''</option>
+                                <option value="30" ${sub.duration === "30''" || !sub.duration ? 'selected' : ''}>30''</option>
+                                <option value="45" ${sub.duration === "45''" ? 'selected' : ''}>45''</option>
+                                <option value="60" ${sub.duration === "1'00''" ? 'selected' : ''}>1'00''</option>
+                                <option value="90" ${sub.duration === "1'30''" ? 'selected' : ''}>1'30''</option>
+                                <option value="120" ${sub.duration === "2'00''" ? 'selected' : ''}>2'00''</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Ora Fine</label>
+                            <input type="time" value="${sub.endTime || '18:30'}"
+                                   onchange="updateSubActivityTime(${idx}, 'endTime', this.value)"
+                                   class="w-full px-2 py-1 rounded-lg border border-slate-300 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white">
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        };
+
+        // ========================================================
+        // GOOGLE MAPS LINK HELPER
+        // ========================================================
+        function formatGoogleMapsUrl(place) {
+            if (!place || !place.trim()) return '';
+            return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(place.trim());
+        }
+        window.formatGoogleMapsUrl = formatGoogleMapsUrl;
+
+        window.openMapsFromForm = function() {
+            const p = (document.getElementById('formPlace')?.value || '').trim();
+            if (!p) {
+                showToast('Inserisci prima un indirizzo o luogo');
+                return;
+            }
+            window.open(formatGoogleMapsUrl(p), '_blank', 'noopener,noreferrer');
         };
 
         window.addNewCustomSubcategory = function() {
@@ -7920,12 +8359,14 @@ function ghOpenSetup() {
             const id = document.getElementById('formEventId').value || ('ev_' + Date.now());
             const title = document.getElementById('formTitle').value.trim();
             const date = document.getElementById('formDate').value;
+            const endDate = document.getElementById('formEndDate')?.value || date;
             const notes = document.getElementById('formNotes').value.trim();
             const recurrence = document.getElementById('formRecurrence').value;
+            const recurrenceDays = parseInt(document.getElementById('formRecurrenceDaysInput')?.value || '1', 10);
             const place = document.getElementById('formPlace').value.trim();
             const notificationAdvance = document.getElementById('formNotificationAdvance').value;
             const personalTimer = document.getElementById('formPersonalTimer').value;
-            const visibility = document.getElementById('formVisibility').value;
+            const visibility = document.getElementById('formVisibility').value || 'admins_only';
             const isCompleted = !!(document.getElementById('formCompleted')?.checked);
 
             if (!title || !date || state.formUsers.length === 0) {
@@ -7943,7 +8384,7 @@ function ghOpenSetup() {
             if (isSameTime) {
                 finalTime = document.getElementById('formTime').value;
                 finalEndTime = document.getElementById('formEndTime').value;
-                finalDuration = document.getElementById('formDuration').value || '1 ora';
+                finalDuration = document.getElementById('formDuration').value || "30''";
                 finalSchedule = [];
             } else {
                 // Modalità orari differenti / visite multiple
@@ -7960,7 +8401,7 @@ function ghOpenSetup() {
                         userName: slot.userName || u.name,
                         time: slot.time || '18:00',
                         endTime: slot.endTime || '19:00',
-                        duration: slot.duration || '1 ora',
+                        duration: slot.duration || "30''",
                         notes: (slot.notes || '').trim()
                     };
                 });
@@ -7986,18 +8427,20 @@ function ghOpenSetup() {
                 const diff = maxEnd - minStart;
                 finalTime = `${sh}:${sm}`;
                 finalEndTime = `${eh}:${em}`;
-                finalDuration = `${Math.floor(diff / 60)}h ${diff % 60 > 0 ? (diff % 60 + 'm') : ''}`.trim() || '1 ora';
+                finalDuration = formatDurationNotation(diff);
             }
 
             const payload = {
                 id,
                 title,
                 date,
+                endDate,
                 time: finalTime,
                 endTime: finalEndTime,
                 duration: finalDuration,
                 hasDifferentTimes: !isSameTime,
                 schedule: finalSchedule,
+                subActivities: state.formSubActivities || [],
                 category: state.formCategory,
                 users: finalUsers,
                 subcategory: state.formSubcategory,
@@ -8005,6 +8448,7 @@ function ghOpenSetup() {
                 patrizioFamilyMember: state.formPatrizioFamilyMember,
                 notes,
                 recurrence,
+                recurrenceDays,
                 place,
                 notificationAdvance,
                 personalTimer,
@@ -8019,6 +8463,7 @@ function ghOpenSetup() {
             else state.events.push(payload);
 
             persistEventsLocally();
+            recordUserActivity(state.activeProfileId);
             closeEventModal();
             renderApp();
             if (window.renderRecategorizeList) renderRecategorizeList();
@@ -8032,6 +8477,7 @@ function ghOpenSetup() {
             if (!id) return;
             state.events = state.events.filter(x => x.id !== id);
             persistEventsLocally();
+            recordUserActivity(state.activeProfileId);
             closeEventModal();
             renderApp();
 
@@ -8073,6 +8519,10 @@ function ghOpenSetup() {
                 document.getElementById('formBillNotes').value = b.notes || '';
                 document.getElementById('radioBillPaid').checked = !!b.isPaid;
                 document.getElementById('radioBillUnpaid').checked = !b.isPaid;
+                const consInput = document.getElementById('formBillConsumption');
+                if (consInput) consInput.value = b.consumption || '';
+                const consUnit = document.getElementById('formBillConsumptionUnit');
+                if (consUnit) consUnit.value = b.consumptionUnit || 'mc';
             } else {
                 title.textContent = 'Nuova Bolletta / Utenza';
                 if (btnDel) btnDel.classList.add('hidden');
@@ -8085,6 +8535,10 @@ function ghOpenSetup() {
                 document.getElementById('formBillNotes').value = '';
                 document.getElementById('radioBillPaid').checked = false;
                 document.getElementById('radioBillUnpaid').checked = true;
+                const consInput = document.getElementById('formBillConsumption');
+                if (consInput) consInput.value = '';
+                const consUnit = document.getElementById('formBillConsumptionUnit');
+                if (consUnit) consUnit.value = 'mc';
             }
 
             modal.classList.remove('hidden');
@@ -8114,6 +8568,8 @@ function ghOpenSetup() {
             const amount = parseFloat(document.getElementById('formBillAmount').value) || 0;
             const isPaid = document.getElementById('radioBillPaid').checked;
             const notes = document.getElementById('formBillNotes').value.trim();
+            const consumption = (document.getElementById('formBillConsumption')?.value || '').trim();
+            const consumptionUnit = document.getElementById('formBillConsumptionUnit')?.value || 'mc';
 
             const payload = {
                 id,
@@ -8123,6 +8579,8 @@ function ghOpenSetup() {
                 amount,
                 isPaid,
                 notes,
+                consumption,
+                consumptionUnit,
                 paidAt: isPaid ? (new Date().toISOString()) : ''
             };
 
@@ -8131,6 +8589,7 @@ function ghOpenSetup() {
             else state.bills.push(payload);
 
             persistBills();
+            recordUserActivity(state.activeProfileId);
             closeBillModal();
             renderBolletteScreen();
             renderScadenzeScreen();
@@ -8142,6 +8601,7 @@ function ghOpenSetup() {
             if (!id) return;
             state.bills = state.bills.filter(x => x.id !== id);
             persistBills();
+            recordUserActivity(state.activeProfileId);
             closeBillModal();
             renderBolletteScreen();
             renderScadenzeScreen();
@@ -8154,10 +8614,397 @@ function ghOpenSetup() {
                 b.isPaid = !b.isPaid;
                 b.paidAt = b.isPaid ? new Date().toISOString() : '';
                 persistBills();
+                recordUserActivity(state.activeProfileId);
                 renderBolletteScreen();
                 renderScadenzeScreen();
                 showToast(b.isPaid ? "Segnata come pagata" : "Rimessa in da pagare");
             }
+        };
+
+        // ========================================================
+        // RIEPILOGO BOLLETTE PER TIPOLOGIA, COSTO MENSILE E CONSUMO
+        // ========================================================
+        window.openBillsSummaryModal = function() {
+            renderBillsSummary();
+            const modal = document.getElementById('billsSummaryModal');
+            if (modal) modal.classList.remove('hidden');
+            if (window.lucide) lucide.createIcons();
+        };
+
+        window.closeBillsSummaryModal = function() {
+            const modal = document.getElementById('billsSummaryModal');
+            if (modal) modal.classList.add('hidden');
+        };
+
+        window.renderBillsSummary = function() {
+            const container = document.getElementById('billsSummaryContent');
+            const grandTotalEl = document.getElementById('billsSummaryGrandTotal');
+            if (!container) return;
+
+            if (!state.bills || state.bills.length === 0) {
+                container.innerHTML = '<div class="text-center text-slate-400 py-8">Nessuna bolletta registrata.</div>';
+                if (grandTotalEl) grandTotalEl.textContent = 'Totale Generale: € 0,00';
+                return;
+            }
+
+            const byType = {};
+            let grandTotal = 0;
+
+            state.bills.forEach(b => {
+                const type = b.utilityType || 'Altro';
+                if (!byType[type]) {
+                    byType[type] = {
+                        type,
+                        bills: [],
+                        totalAmount: 0,
+                        paidAmount: 0,
+                        unpaidAmount: 0,
+                        consumptions: {}
+                    };
+                }
+                const amt = parseFloat(b.amount) || 0;
+                byType[type].bills.push(b);
+                byType[type].totalAmount += amt;
+                grandTotal += amt;
+                if (b.isPaid) byType[type].paidAmount += amt;
+                else byType[type].unpaidAmount += amt;
+
+                if (b.consumption) {
+                    const cVal = parseFloat(b.consumption);
+                    const unit = b.consumptionUnit || 'mc';
+                    if (!isNaN(cVal)) {
+                        byType[type].consumptions[unit] = (byType[type].consumptions[unit] || 0) + cVal;
+                    }
+                }
+            });
+
+            if (grandTotalEl) {
+                grandTotalEl.textContent = `Totale Generale: € ${grandTotal.toFixed(2)}`;
+            }
+
+            const typeIcons = {
+                'Elettricità': 'zap',
+                'Gas': 'flame',
+                'Acqua': 'droplet',
+                'Internet e telefono': 'wifi',
+                'Spese condominiali': 'building',
+                'Spese manutenzione casa': 'wrench',
+                'Consorzio': 'landmark'
+            };
+
+            container.innerHTML = Object.values(byType).map(group => {
+                const icon = typeIcons[group.type] || 'receipt';
+                const monthsSet = new Set(group.bills.map(b => (b.dueDate || '').substring(0, 7)).filter(Boolean));
+                const numMonths = Math.max(1, monthsSet.size);
+                const monthlyAvg = group.totalAmount / numMonths;
+
+                const consKeys = Object.keys(group.consumptions);
+                const consStr = consKeys.length > 0
+                    ? consKeys.map(u => `<strong>${group.consumptions[u].toFixed(1)} ${u}</strong>`).join(', ')
+                    : '<span class="text-slate-400 italic font-normal">Nessun dato consumo</span>';
+
+                return `
+                    <div class="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-2.5">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center font-bold">
+                                    <i data-lucide="${icon}" class="w-4 h-4"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-xs font-black text-slate-900">${escapeHtml(group.type)}</h4>
+                                    <span class="text-[10px] text-slate-500 font-bold">${group.bills.length} bollett${group.bills.length === 1 ? 'a' : 'e'}</span>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-sm font-black text-slate-900">€ ${group.totalAmount.toFixed(2)}</div>
+                                <div class="text-[10px] font-bold text-sky-700">~ € ${monthlyAvg.toFixed(2)} / mese</div>
+                            </div>
+                        </div>
+
+                        <div class="p-2 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between text-[11px]">
+                            <span class="text-slate-600 font-bold flex items-center gap-1">
+                                <i data-lucide="gauge" class="w-3.5 h-3.5 text-slate-400"></i>
+                                Consumo Totale:
+                            </span>
+                            <span class="text-slate-800">${consStr}</span>
+                        </div>
+
+                        <div class="divide-y divide-slate-100 border-t border-slate-100 pt-1">
+                            ${group.bills.map(b => `
+                                <div class="py-1.5 flex items-center justify-between text-[11px]">
+                                    <div class="min-w-0">
+                                        <span class="font-bold text-slate-800">${escapeHtml(b.provider || group.type)}</span>
+                                        <span class="text-[10px] text-slate-400 font-semibold ml-1">(${b.dueDate})</span>
+                                        ${b.consumption ? `<span class="ml-1.5 px-1.5 py-0.2 rounded bg-sky-50 text-sky-700 font-bold text-[9.5px]">${b.consumption} ${b.consumptionUnit || ''}</span>` : ''}
+                                    </div>
+                                    <div class="flex items-center gap-2 shrink-0">
+                                        <span class="font-black ${b.isPaid ? 'text-emerald-600' : 'text-slate-900'}">€ ${Number(b.amount).toFixed(2)}</span>
+                                        <span class="px-1.5 py-0.5 rounded text-[9.5px] font-black ${b.isPaid ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                                            ${b.isPaid ? 'Pagata' : 'Da pagare'}
+                                        </span>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            if (window.lucide) lucide.createIcons();
+        };
+
+        window.toggleHidePaidBills = function() {
+            state.billsHidePaid = !state.billsHidePaid;
+            const btn = document.getElementById('btnToggleHidePaidBills');
+            if (btn) {
+                if (state.billsHidePaid) {
+                    btn.className = 'inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-bold border border-sky-400 bg-sky-50 text-sky-700 shadow-2xs transition';
+                    btn.innerHTML = '<i data-lucide="eye" class="w-3.5 h-3.5 text-sky-600"></i> Mostra pagate';
+                } else {
+                    btn.className = 'inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-bold border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 shadow-2xs transition';
+                    btn.innerHTML = '<i data-lucide="eye-off" class="w-3.5 h-3.5 text-slate-500"></i> Nascondi pagate';
+                }
+                if (window.lucide) lucide.createIcons();
+            }
+            renderBolletteScreen();
+        };
+
+        // ========================================================
+        // RESOCONTO FACCENDE CASA PER UTENTE E PERIODO
+        // ========================================================
+        window.openCasaResocontoModal = function() {
+            state.resocontoPeriod = 'day';
+            state.resocontoDate = getTodayIso();
+            updateResocontoControls();
+            renderCasaResoconto();
+            const modal = document.getElementById('casaResocontoModal');
+            if (modal) modal.classList.remove('hidden');
+            if (window.lucide) lucide.createIcons();
+        };
+
+        window.closeCasaResocontoModal = function() {
+            const modal = document.getElementById('casaResocontoModal');
+            if (modal) modal.classList.add('hidden');
+        };
+
+        window.setResocontoPeriod = function(period) {
+            state.resocontoPeriod = period;
+            updateResocontoControls();
+            renderCasaResoconto();
+        };
+
+        window.navigateResocontoDate = function(dir) {
+            if (state.resocontoPeriod === 'all') return;
+            const d = new Date(state.resocontoDate + 'T00:00:00');
+            if (state.resocontoPeriod === 'day') {
+                d.setDate(d.getDate() + dir);
+            } else if (state.resocontoPeriod === 'week') {
+                d.setDate(d.getDate() + (dir * 7));
+            } else if (state.resocontoPeriod === 'month') {
+                d.setMonth(d.getMonth() + dir);
+            }
+            state.resocontoDate = toIsoDate(d);
+            updateResocontoControls();
+            renderCasaResoconto();
+        };
+
+        function updateResocontoControls() {
+            const pMap = {
+                'day': document.getElementById('btnResocontoDay'),
+                'week': document.getElementById('btnResocontoWeek'),
+                'month': document.getElementById('btnResocontoMonth'),
+                'all': document.getElementById('btnResocontoAll')
+            };
+            Object.keys(pMap).forEach(p => {
+                const btn = pMap[p];
+                if (btn) {
+                    if (state.resocontoPeriod === p) {
+                        btn.className = 'px-2.5 py-1 rounded-lg font-black bg-white text-indigo-700 shadow-2xs';
+                    } else {
+                        btn.className = 'px-2.5 py-1 rounded-lg text-slate-700 hover:text-slate-900';
+                    }
+                }
+            });
+
+            const lbl = document.getElementById('resocontoCurrentPeriodLabel');
+            if (!lbl) return;
+
+            if (state.resocontoPeriod === 'all') {
+                lbl.textContent = 'Tutto lo storico';
+                return;
+            }
+
+            const curD = new Date(state.resocontoDate + 'T00:00:00');
+            const today = getTodayIso();
+
+            if (state.resocontoPeriod === 'day') {
+                if (state.resocontoDate === today) {
+                    lbl.textContent = 'Oggi (' + state.resocontoDate.split('-').reverse().slice(0, 2).join('/') + ')';
+                } else {
+                    lbl.textContent = curD.toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric', month: 'short' });
+                }
+            } else if (state.resocontoPeriod === 'week') {
+                const mon = getMondayOfWeek(curD);
+                const sun = new Date(mon);
+                sun.setDate(mon.getDate() + 6);
+                lbl.textContent = `${mon.getDate()}/${mon.getMonth()+1} - ${sun.getDate()}/${sun.getMonth()+1}`;
+            } else if (state.resocontoPeriod === 'month') {
+                lbl.textContent = curD.toLocaleDateString('it-IT', { month: 'long', year: 'numeric' });
+            }
+        }
+
+        window.renderCasaResoconto = function() {
+            const container = document.getElementById('casaResocontoContent');
+            const totalEl = document.getElementById('resocontoTotalCompletedSummary');
+            if (!container) return;
+
+            const history = state.choresHistory || [];
+            let filtered = [];
+
+            const curD = new Date(state.resocontoDate + 'T00:00:00');
+
+            if (state.resocontoPeriod === 'all') {
+                filtered = [...history];
+            } else if (state.resocontoPeriod === 'day') {
+                filtered = history.filter(h => h.date === state.resocontoDate);
+            } else if (state.resocontoPeriod === 'week') {
+                const mon = getMondayOfWeek(curD);
+                const sun = new Date(mon);
+                sun.setDate(mon.getDate() + 6);
+                const monIso = toIsoDate(mon);
+                const sunIso = toIsoDate(sun);
+                filtered = history.filter(h => h.date >= monIso && h.date <= sunIso);
+            } else if (state.resocontoPeriod === 'month') {
+                const monthPrefix = state.resocontoDate.substring(0, 7);
+                filtered = history.filter(h => (h.date || '').startsWith(monthPrefix));
+            }
+
+            if (totalEl) {
+                totalEl.textContent = `Totale: ${filtered.length} faccend${filtered.length === 1 ? 'a registrata' : 'e registrate'}`;
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="py-12 text-center text-slate-400">
+                        <i data-lucide="clipboard-check" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+                        <div class="font-bold text-xs">Nessuna attività registrata per questo periodo.</div>
+                    </div>
+                `;
+                if (window.lucide) lucide.createIcons();
+                return;
+            }
+
+            const userGroups = {};
+            BASE_USERS.forEach(u => {
+                userGroups[u.id] = { user: u, total: 0, choresMap: {} };
+            });
+
+            filtered.forEach(h => {
+                let uid = h.executedByUid;
+                if (!uid && h.executedBy) {
+                    const found = BASE_USERS.find(x => x.name.toLowerCase() === h.executedBy.toLowerCase());
+                    if (found) uid = found.id;
+                }
+                if (!uid || !userGroups[uid]) {
+                    uid = 'u1';
+                }
+                userGroups[uid].total++;
+                const title = h.title || 'Faccenda';
+                userGroups[uid].choresMap[title] = (userGroups[uid].choresMap[title] || 0) + 1;
+            });
+
+            const sorted = Object.values(userGroups).sort((a, b) => b.total - a.total);
+
+            container.innerHTML = sorted.map(g => {
+                const u = g.user;
+                const choreEntries = Object.entries(g.choresMap).sort((a, b) => b[1] - a[1]);
+                const color = getUserColor(u.id);
+
+                return `
+                    <div class="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-2.5">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-8 h-8 rounded-xl flex items-center justify-center text-white text-xs font-black shadow-xs" style="background-color:${color}">
+                                    ${u.name.charAt(0)}
+                                </span>
+                                <div>
+                                    <h4 class="text-xs font-black text-slate-900">${escapeHtml(u.name)}</h4>
+                                    <span class="text-[10px] text-slate-400 font-bold">${u.role || ''}</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="px-2.5 py-1 rounded-xl text-xs font-black text-white" style="background-color:${color}">
+                                    ${g.total} ${g.total === 1 ? 'volta' : 'volte'}
+                                </span>
+                            </div>
+                        </div>
+
+                        ${choreEntries.length > 0 ? `
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 pt-1">
+                                ${choreEntries.map(([choreTitle, count]) => `
+                                    <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-slate-100 text-[11px]">
+                                        <span class="font-bold text-slate-700 truncate pr-2">• ${escapeHtml(choreTitle)}</span>
+                                        <span class="font-black text-indigo-700 shrink-0 bg-white px-2 py-0.5 rounded-lg border border-slate-200 shadow-3xs">
+                                            ${count} ${count === 1 ? 'volta' : 'volte'}
+                                        </span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : `
+                            <div class="text-[11px] text-slate-400 italic pt-1">Nessuna faccenda completata in questo periodo.</div>
+                        `}
+                    </div>
+                `;
+            }).join('');
+
+            if (window.lucide) lucide.createIcons();
+        };
+
+        // ========================================================
+        // SWITCHER COLONNE VISTA LISTA
+        // ========================================================
+        window.setListColumnsMode = function(mode) {
+            state.listColumnsMode = mode;
+            try { localStorage.setItem('agenda_famiglia_list_cols', mode); } catch(e){}
+            updateListColumnsSwitcherUi();
+            renderListView();
+        };
+
+        function updateListColumnsSwitcherUi() {
+            const map = {
+                '1col': document.getElementById('btnListCol1'),
+                '2col': document.getElementById('btnListCol2'),
+                'compact': document.getElementById('btnListColCompact')
+            };
+            Object.keys(map).forEach(key => {
+                const btn = map[key];
+                if (btn) {
+                    if (state.listColumnsMode === key) {
+                        btn.className = 'px-2 py-0.5 rounded transition bg-white text-indigo-700 shadow-2xs font-black';
+                    } else {
+                        btn.className = 'px-2 py-0.5 rounded transition text-slate-600 hover:text-slate-900 font-bold';
+                    }
+                }
+            });
+        }
+
+        // ========================================================
+        // TOGGLE NASCONDI PASSATI VISTA MESE
+        // ========================================================
+        window.toggleMonthPastEvents = function() {
+            state.monthHidePast = !state.monthHidePast;
+            const btn = document.getElementById('btnToggleMonthPast');
+            if (btn) {
+                if (state.monthHidePast) {
+                    btn.className = 'inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-bold border border-indigo-400 bg-indigo-50 text-indigo-700 shadow-2xs transition';
+                    btn.innerHTML = '<i data-lucide="eye" class="w-3.5 h-3.5 text-indigo-600"></i> Mostra passati';
+                } else {
+                    btn.className = 'inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-bold border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 shadow-2xs transition';
+                    btn.innerHTML = '<i data-lucide="eye-off" class="w-3.5 h-3.5 text-slate-500"></i> Nascondi passati';
+                }
+                if (window.lucide) lucide.createIcons();
+            }
+            renderMonthView();
         };
 
         // ========================================================
@@ -8701,6 +9548,7 @@ function ghOpenSetup() {
             const ev = state.events.find(x => x.id === eventId);
             if (!ev) return;
             currentSummaryEventId = eventId;
+            recordUserActivity(state.activeProfileId);
 
             const modal = document.getElementById('eventSummaryModal');
             if (!modal) return;
@@ -8753,7 +9601,12 @@ function ghOpenSetup() {
             const dateEl = document.getElementById('summaryDateStr');
             if (dateEl && ev.date) {
                 const d = new Date(ev.date + 'T00:00:00');
-                dateEl.textContent = d.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+                let dtText = d.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+                if (ev.endDate && ev.endDate !== ev.date) {
+                    const dEnd = new Date(ev.endDate + 'T00:00:00');
+                    dtText += ' fino a ' + dEnd.toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' });
+                }
+                dateEl.textContent = dtText;
             }
 
             // Orario e Durata tra parentesi
@@ -8770,12 +9623,27 @@ function ghOpenSetup() {
                 }
             }
 
-            // Dettaglio Orari e Visite (se orari differenti o visite multiple)
+            // Dettaglio Orari, Attività Multiple o Attività Aggiuntive
             const schedBox = document.getElementById('summaryScheduleBox');
             const schedList = document.getElementById('summaryScheduleList');
             const schedCount = document.getElementById('summaryScheduleCountBadge');
             if (schedBox && schedList) {
-                if (ev.hasDifferentTimes && Array.isArray(ev.schedule) && ev.schedule.length > 0) {
+                if (Array.isArray(ev.subActivities) && ev.subActivities.length > 0) {
+                    schedBox.classList.remove('hidden');
+                    if (schedCount) schedCount.textContent = `${ev.subActivities.length} attività correlate`;
+                    schedList.innerHTML = ev.subActivities.map((sub, idx) => `
+                        <div class="p-2 rounded-xl bg-white border border-indigo-100 flex items-start justify-between gap-2 shadow-2xs">
+                            <div class="min-w-0">
+                                <div class="text-xs font-black text-slate-900">${idx + 1}. ${escapeHtml(sub.title || 'Attività ' + (idx + 1))}</div>
+                                <div class="text-[10px] font-semibold text-slate-500 mt-0.5">${sub.date || ''}${sub.endDate && sub.endDate !== sub.date ? ` fino a ${sub.endDate}` : ''}</div>
+                            </div>
+                            <div class="text-right shrink-0">
+                                <div class="text-xs font-black text-indigo-700">${sub.time || ''} - ${sub.endTime || ''}</div>
+                                <div class="text-[10px] font-bold text-slate-400">(${sub.duration || ''})</div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else if (ev.hasDifferentTimes && Array.isArray(ev.schedule) && ev.schedule.length > 0) {
                     schedBox.classList.remove('hidden');
                     if (schedCount) schedCount.textContent = `${ev.schedule.length} voci/orari`;
                     schedList.innerHTML = ev.schedule.map(s => {
@@ -8811,8 +9679,12 @@ function ghOpenSetup() {
             if (recRow && recTxt) {
                 if (ev.recurrence && ev.recurrence !== 'none') {
                     recRow.classList.remove('hidden');
-                    const map = { daily: 'Ogni giorno', weekly: 'Ogni settimana', biweekly: 'Ogni 2 settimane', monthly: 'Ogni mese', yearly: 'Ogni anno' };
-                    recTxt.textContent = map[ev.recurrence] || ev.recurrence;
+                    if (ev.recurrence === 'in_x_days') {
+                        recTxt.textContent = `Fra ${ev.recurrenceDays || 1} giorni`;
+                    } else {
+                        const map = { daily: 'Ogni giorno', weekly: 'Ogni settimana', biweekly: 'Ogni 2 settimane', monthly: 'Ogni mese', yearly: 'Ogni anno' };
+                        recTxt.textContent = map[ev.recurrence] || ev.recurrence;
+                    }
                 } else {
                     recRow.classList.add('hidden');
                 }
@@ -8840,13 +9712,17 @@ function ghOpenSetup() {
                 }
             }
 
-            // Luogo
+            // Luogo con link diretto a Google Maps
             const placeBox = document.getElementById('summaryPlaceBox');
             const placeTxt = document.getElementById('summaryPlaceText');
+            const placeLink = document.getElementById('summaryPlaceLink');
             if (placeBox && placeTxt) {
                 if (ev.place) {
                     placeBox.classList.remove('hidden');
                     placeTxt.textContent = ev.place;
+                    if (placeLink) {
+                        placeLink.href = formatGoogleMapsUrl(ev.place);
+                    }
                 } else {
                     placeBox.classList.add('hidden');
                 }
@@ -8931,6 +9807,7 @@ function ghOpenSetup() {
             const modal = document.getElementById('eventModal');
             const header = document.getElementById('eventModalHeader');
             const btnDel = document.getElementById('btnDeleteEvent');
+            const btnDurText = document.getElementById('formDurationButtonText');
 
             if (id) {
                 const ev = state.events.find(x => x.id === id);
@@ -8941,21 +9818,28 @@ function ghOpenSetup() {
                 document.getElementById('formEventId').value = ev.id;
                 document.getElementById('formTitle').value = ev.title || '';
                 document.getElementById('formDate').value = ev.date || '';
+                document.getElementById('formEndDate').value = ev.endDate || ev.date || '';
                 document.getElementById('formTime').value = ev.time || '';
                 document.getElementById('formEndTime').value = ev.endTime || '';
-                document.getElementById('formDuration').value = ev.duration || '';
+                document.getElementById('formDuration').value = ev.duration || "30''";
+                if (btnDurText) btnDurText.textContent = ev.duration || "30''";
                 document.getElementById('formNotes').value = ev.notes || '';
                 document.getElementById('formRecurrence').value = ev.recurrence || 'none';
+                const recDays = document.getElementById('formRecurrenceDaysInput');
+                if (recDays) recDays.value = ev.recurrenceDays || 1;
+                onFormRecurrenceChange();
+
                 document.getElementById('formPlace').value = ev.place || '';
                 document.getElementById('formNotificationAdvance').value = ev.notificationAdvance || '15m';
                 document.getElementById('formPersonalTimer').value = ev.personalTimer || 'sound_timer';
-                document.getElementById('formVisibility').value = ev.visibility || 'all';
+                document.getElementById('formVisibility').value = ev.visibility || 'admins_only';
 
                 const compElEdit1 = document.getElementById('formCompleted'); if (compElEdit1) compElEdit1.checked = !!ev.isCompleted;
                 state.formCategory = normalizeCategory(ev.category || 'famiglia');
-                state.formUsers = Array.isArray(ev.users) && ev.users.length > 0 ? [...ev.users] : [state.activeProfileId];
+                state.formUsers = Array.isArray(ev.users) && ev.users.length > 0 ? [...ev.users] : ['u1', 'u2'];
                 state.formSubcategory = ev.subcategory || '';
                 state.formPatrizioCategory = ev.patrizioCategory || '';
+                state.formSubActivities = Array.isArray(ev.subActivities) ? JSON.parse(JSON.stringify(ev.subActivities)) : [];
 
                 // Avviso categoria dismessa da riclassificare
                 const recatNotice = document.getElementById('formRecategorizeNotice');
@@ -8991,29 +9875,41 @@ function ghOpenSetup() {
 
                 document.getElementById('formEventId').value = '';
                 document.getElementById('formTitle').value = '';
-                document.getElementById('formDate').value = defaultDate || toIsoDate(state.singleDayDate);
+                const startDateStr = defaultDate || toIsoDate(state.singleDayDate);
+                document.getElementById('formDate').value = startDateStr;
+                document.getElementById('formEndDate').value = startDateStr;
                 const startTime = defaultTime || '18:00';
                 document.getElementById('formTime').value = startTime;
                 
-                // Default 1 ora: calcola ora fine in automatico
+                // Default attività di mezzora: 30 min (30'')
                 const [sh, sm] = startTime.split(':').map(Number);
-                const endH = (sh + 1) % 24;
-                document.getElementById('formEndTime').value = `${String(endH).padStart(2, '0')}:${String(sm).padStart(2, '0')}`;
-                document.getElementById('formDuration').value = '1 h';
+                const startMin = (isNaN(sh) ? 18 : sh) * 60 + (isNaN(sm) ? 0 : sm);
+                const endMin = (startMin + 30) % 1440;
+                const endH = Math.floor(endMin / 60);
+                const endM = endMin % 60;
+                document.getElementById('formEndTime').value = `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`;
+                document.getElementById('formDuration').value = "30''";
+                if (btnDurText) btnDurText.textContent = "30''";
                 
                 document.getElementById('formNotes').value = '';
                 document.getElementById('formRecurrence').value = 'none';
+                const recDays = document.getElementById('formRecurrenceDaysInput');
+                if (recDays) recDays.value = 1;
+                onFormRecurrenceChange();
+
                 document.getElementById('formPlace').value = '';
                 document.getElementById('formNotificationAdvance').value = '15m';
                 document.getElementById('formPersonalTimer').value = 'sound_timer';
-                document.getElementById('formVisibility').value = 'all';
+                
+                // Default: visibile solo a Patrizio e Manuela
+                document.getElementById('formVisibility').value = 'admins_only';
                 const compElEdit2 = document.getElementById('formCompleted'); if (compElEdit2) compElEdit2.checked = false;
 
                 state.formCategory = 'famiglia';
-                // Di default l'account che sta utilizzando l'app
-                state.formUsers = [state.activeProfileId];
+                state.formUsers = ['u1', 'u2'];
                 state.formSubcategory = '';
                 state.formPatrizioCategory = '';
+                state.formSubActivities = [];
 
                 state.formSchedule = [];
                 const chk = document.getElementById('formSameTimeCheckbox');
@@ -9024,6 +9920,7 @@ function ghOpenSetup() {
             renderFormControls();
             renderPatrizioPersonalCategories();
             renderFormSubcategories();
+            renderSubActivities();
             updateCalculatedDurationHint();
             modal.classList.remove('hidden');
             if (window.lucide) lucide.createIcons();
@@ -9035,19 +9932,23 @@ function ghOpenSetup() {
             openEventEditModal(null, ev.date, ev.time);
             document.getElementById('eventModalHeader').textContent = 'Duplica Impegno';
             document.getElementById('formTitle').value = (ev.title || '') + ' (Copia)';
+            document.getElementById('formEndDate').value = ev.endDate || ev.date || '';
             document.getElementById('formEndTime').value = ev.endTime || '';
-            document.getElementById('formDuration').value = ev.duration || '';
+            document.getElementById('formDuration').value = ev.duration || "30''";
+            const btnDurText = document.getElementById('formDurationButtonText');
+            if (btnDurText) btnDurText.textContent = ev.duration || "30''";
             document.getElementById('formNotes').value = ev.notes || '';
             document.getElementById('formPlace').value = ev.place || '';
             document.getElementById('formRecurrence').value = ev.recurrence || 'none';
             document.getElementById('formNotificationAdvance').value = ev.notificationAdvance || '15m';
             document.getElementById('formPersonalTimer').value = ev.personalTimer || 'sound_timer';
-            document.getElementById('formVisibility').value = ev.visibility || 'all';
+            document.getElementById('formVisibility').value = ev.visibility || 'admins_only';
 
             state.formCategory = normalizeCategory(ev.category || 'famiglia');
-            state.formUsers = Array.isArray(ev.users) ? [...ev.users] : [state.activeProfileId];
+            state.formUsers = Array.isArray(ev.users) ? [...ev.users] : ['u1', 'u2'];
             state.formSubcategory = ev.subcategory || '';
             state.formPatrizioCategory = ev.patrizioCategory || '';
+            state.formSubActivities = Array.isArray(ev.subActivities) ? JSON.parse(JSON.stringify(ev.subActivities)) : [];
 
             if (ev.hasDifferentTimes && Array.isArray(ev.schedule) && ev.schedule.length > 0) {
                 state.formSchedule = JSON.parse(JSON.stringify(ev.schedule));
@@ -9062,6 +9963,7 @@ function ghOpenSetup() {
             }
 
             renderFormControls();
+            renderSubActivities();
             updateCalculatedDurationHint();
         };
 
@@ -9369,6 +10271,7 @@ function ghOpenSetup() {
             renderApp();
             initAuth();
             initFirebaseSync();
+            recordUserActivity(state.activeProfileId);
 
             // Supporto tasti freccia sinistra/destra per navigare nel tempo
             document.addEventListener('keydown', (e) => {
