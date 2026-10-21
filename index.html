@@ -16,7 +16,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Agenda Familiare Condivisa rev.23</title>
+    <title>Agenda Familiare Condivisa rev.24</title>
     <script>
         // Applicazione immediata grandezza caratteri salvata per questo dispositivo
         (function() {
@@ -715,7 +715,7 @@
                         <i data-lucide="user" class="w-5 h-5 text-indigo-400"></i>
                         <h2 class="text-sm sm:text-base font-black">Account e Profilo Famiglia</h2>
                     </div>
-                    <span class="text-[10px] font-bold text-indigo-400 font-black">rev.23</span>
+                    <span class="text-[10px] font-bold text-indigo-400 font-black">rev.24</span>
                 </div>
                 <div class="p-4 space-y-3">
                     <div class="flex items-center justify-between gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200">
@@ -764,8 +764,8 @@
                             </div>
                             <div>
                                 <div class="text-[10px] font-black uppercase tracking-wider text-emerald-800">Ultimo Aggiornamento App</div>
-                                <div class="text-sm font-black text-slate-900 tracking-tight" id="appLastUpdateDateTime">21/10/2026 alle 23:20</div>
-                                <div class="text-[10px] font-bold text-slate-500" id="appDeviceCheckDateTime">Verificato su questo cellulare: 21/10/2026 alle 23:20</div>
+                                <div class="text-sm font-black text-slate-900 tracking-tight" id="appLastUpdateDateTime">21/10/2026 alle 23:44</div>
+                                <div class="text-[10px] font-bold text-slate-500" id="appDeviceCheckDateTime">Verificato su questo cellulare: 21/10/2026 alle 23:44</div>
                             </div>
                         </div>
                         <div class="self-start sm:self-center">
@@ -920,14 +920,14 @@
                 </div>
             </div>
 
-            <!-- Backup, Esportazione e Scaricamento rev.23 -->
+            <!-- Backup, Esportazione e Scaricamento rev.24 -->
             <div class="bg-white rounded-2xl border border-slate-200 shadow-2xs p-4 space-y-3">
                 <h3 class="text-xs font-black uppercase text-slate-400 tracking-wider">Gestione Dati & Download</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                    <button type="button" onclick="downloadRev23File()"
+                    <button type="button" onclick="downloadRev24File()"
                             class="flex flex-col items-center justify-center p-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-center transition shadow-2xs">
                         <i data-lucide="download" class="w-5 h-5 mb-1"></i>
-                        <span class="text-xs font-black">Scarica rev.23</span>
+                        <span class="text-xs font-black">Scarica rev.24</span>
                         <span class="text-[9.5px] opacity-80">File HTML completo</span>
                     </button>
 
@@ -1043,12 +1043,12 @@
                 <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
                     <div>
                         <div class="text-xs font-black text-slate-800">Scaricamento File HTML Completo</div>
-                        <div class="text-[10px] text-slate-500 font-medium">Backup e download della versione rev.23</div>
+                        <div class="text-[10px] text-slate-500 font-medium">Backup e download della versione rev.24</div>
                     </div>
-                    <button type="button" onclick="downloadRev23File()"
+                    <button type="button" onclick="downloadRev24File()"
                             class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black shadow-2xs transition">
                         <i data-lucide="download" class="w-3.5 h-3.5"></i>
-                        <span>Scarica rev.23</span>
+                        <span>Scarica rev.24</span>
                     </button>
                 </div>
             </div>
@@ -1056,8 +1056,8 @@
 
             <!-- FOOTER INFO VERSIONE E DATA AGGIORNAMENTO -->
             <div class="pt-2 pb-6 text-center space-y-0.5">
-                <p class="text-[11px] font-black text-slate-500">Agenda Familiare Condivisa • rev. 23</p>
-                <p class="text-[10px] font-bold text-slate-400" id="altroFooterLastUpdate">Ultimo aggiornamento rilasciato: 21/10/2026 alle 23:20</p>
+                <p class="text-[11px] font-black text-slate-500">Agenda Familiare Condivisa • rev. 24</p>
+                <p class="text-[10px] font-bold text-slate-400" id="altroFooterLastUpdate">Ultimo aggiornamento rilasciato: 21/10/2026 alle 23:44</p>
             </div>
         </div>
 
@@ -2463,8 +2463,25 @@ function addPending(ref, op) {
     scheduleNotify();
     scheduleFlush(FLUSH_DELAY_MS);
 }
-function setDoc(ref, data) { addPending(ref, { d: clone(data) }); return Promise.resolve(); }
-function deleteDoc(ref) { addPending(ref, { x: 1 }); return Promise.resolve(); }
+function isTombstone(col, id) {
+    return !!(remote && remote[col] && remote[col][id] && remote[col][id].x);
+}
+
+function setDoc(ref, data) {
+    if (!remote) remote = lsGet(LS_CACHE, {}) || {};
+    if (!remote[ref.col]) remote[ref.col] = {};
+    remote[ref.col][ref.id] = { d: clone(data), t: Date.now() };
+    addPending(ref, { d: clone(data) });
+    return Promise.resolve();
+}
+
+function deleteDoc(ref) {
+    if (!remote) remote = lsGet(LS_CACHE, {}) || {};
+    if (!remote[ref.col]) remote[ref.col] = {};
+    remote[ref.col][ref.id] = { d: null, t: Date.now(), x: 1 };
+    addPending(ref, { x: 1 });
+    return Promise.resolve();
+}
 
 function onSnapshot(colRef, cb, errCb) {
     const l = { col: colRef.col, cb, errCb, sig: null };
@@ -2718,15 +2735,15 @@ function ghOpenSetup() {
     }
 }
 
-        return { doc, setDoc, deleteDoc, onSnapshot, collection, ghConfigured, ghStart, ghHasToken, ghOpenSetup, ghApplyDot };
+        return { doc, setDoc, deleteDoc, onSnapshot, collection, isTombstone, ghConfigured, ghStart, ghHasToken, ghOpenSetup, ghApplyDot };
         })();
-        const { doc, setDoc, deleteDoc, onSnapshot, collection, ghConfigured, ghStart, ghHasToken, ghOpenSetup, ghApplyDot } = GH;
+        const { doc, setDoc, deleteDoc, onSnapshot, collection, isTombstone, ghConfigured, ghStart, ghHasToken, ghOpenSetup, ghApplyDot } = GH;
 
 
-        const APP_VERSION = window.APP_VERSION = 'rev.23';
+        const APP_VERSION = window.APP_VERSION = 'rev.24';
         const APP_BUILD_INFO = window.APP_BUILD_INFO = {
-            rev: 'rev. 23',
-            dateTime: '21/10/2026 alle 23:20'
+            rev: 'rev. 24',
+            dateTime: '21/10/2026 alle 23:44'
         };
 
         // 1. I 6 PROFILI DELLA FAMIGLIA (CON AUTENTICAZIONE PASSWORD O DATA DI NASCITA)
@@ -3089,7 +3106,7 @@ function ghOpenSetup() {
             }
         }
 
-        // rev.23: Nessuna eliminazione o blocco automatico degli appuntamenti Twirling.
+        // rev.24: Nessuna eliminazione o blocco automatico degli appuntamenti Twirling.
         // L'utente puo' creare qualsiasi impegno di Twirling (1, 2, 3 persone, orari differenziati, singoli o ricorrenti)
         // e salvarlo/duplicarlo nelle settimane successive senza che venga mai azzerato o cancellato.
         function isAutomaticOrUnwantedTwirlingEvent(e) {
@@ -3108,31 +3125,28 @@ function ghOpenSetup() {
         window.isAutomaticOrUnwantedTwirlingEvent = isAutomaticOrUnwantedTwirlingEvent;
         window.removeAllTwirlingEvents = removeAllTwirlingEvents;
 
-        // Azzeramento una-tantum dei vecchi appuntamenti ripetuti di twirling su richiesta utente per rev.23
-        function performOneTimeTwirlingResetRev23() {
+        // rev.24: Azzeramento sicuro SOLO dei vecchi seed dimostrativi con ID automatici (tw_ o twirling_ o seed_)
+        // NON tocca MAI nessun impegno creato dall'utente (id che inizia per ev_ o qualunque evento con titolo Twirling)
+        function performOneTimeTwirlingResetRev24() {
             try {
-                const key = 'agenda_famiglia_twirling_reset_rev23';
+                const key = 'agenda_famiglia_twirling_reset_rev24';
                 if (!localStorage.getItem(key)) {
                     if (Array.isArray(state.events)) {
                         state.events = state.events.filter(e => {
                             if (!e) return false;
-                            const t = String(e.title || '').toLowerCase();
-                            const sub = String(e.subcategory || '').toLowerCase();
                             const id = String(e.id || '').toLowerCase();
-                            const n = String(e.notes || '').toLowerCase();
-                            const isOldTwirling = t.includes('twirling') || sub.includes('twirling') || id.startsWith('twirling_') || id.startsWith('tw_') || n.includes('allenamenti twirling');
-                            return !isOldTwirling;
+                            const isOldSeed = id.startsWith('twirling_') || id.startsWith('tw_') || id.startsWith('seed_emma_tw') || id.startsWith('seed_clara_tw') || id.startsWith('seed_asia_tw');
+                            return !isOldSeed;
                         });
                         persistEventsLocally();
                     }
                     localStorage.setItem(key, 'true');
-                    console.log('Vecchi impegni Twirling delle versioni precedenti azzerati una tantum per rev.23');
                 }
             } catch(err) {
-                console.warn('One-time twirling reset warning:', err);
+                console.warn('One-time reset warning:', err);
             }
         }
-        window.performOneTimeTwirlingResetRev23 = performOneTimeTwirlingResetRev23;
+        window.performOneTimeTwirlingResetRev24 = performOneTimeTwirlingResetRev24;
 
         function loadPersistedEvents() {
             let list = null;
@@ -3491,7 +3505,7 @@ function ghOpenSetup() {
             },
             personalColorsByProfile: {},
             versionControl: {
-                approvedVersion: 'rev.23',
+                approvedVersion: 'rev.24',
                 approvedBy: 'Patrizio',
                 approvedAt: ''
             },
@@ -3614,7 +3628,29 @@ function ghOpenSetup() {
                     list.push({ id: d.id, ...data });
                 });
                 migrateEventCategories(list);
-                state.events = list;
+
+                // Merging intelligente rev.24: non sovrascrivere mai a vuoto gli eventi locali
+                const remoteMap = new Map();
+                list.forEach(item => {
+                    if (item && item.id) remoteMap.set(item.id, item);
+                });
+
+                if (Array.isArray(state.events)) {
+                    state.events.forEach(locEv => {
+                        if (locEv && locEv.id && !remoteMap.has(locEv.id)) {
+                            // Se l'evento locale non è un tombstone cancellato sul cloud, conservalo intatto!
+                            const isDeletedOnRemote = typeof isTombstone === 'function' && isTombstone(eventsCol.col, locEv.id);
+                            if (!isDeletedOnRemote) {
+                                remoteMap.set(locEv.id, locEv);
+                                try {
+                                    setDoc(doc(null, 'artifacts', appId, 'public', 'data', 'family_events_rev16', locEv.id), locEv).catch(() => {});
+                                } catch(e) {}
+                            }
+                        }
+                    });
+                }
+
+                state.events = Array.from(remoteMap.values());
                 persistEventsLocally();
                 renderApp();
                 if (state.popupDate) renderDayTimelinePopup(false);
@@ -8965,7 +9001,11 @@ function ghOpenSetup() {
             renderApp();
             if (window.renderRecategorizeList) renderRecategorizeList();
 
-            try { if (db && currentUser) { await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_events_rev16', id), payload); } } catch (syncErr) { console.warn('Sync warning (salvato in locale):', syncErr); }
+            try {
+                if (typeof setDoc === 'function') {
+                    await setDoc(doc(null, 'artifacts', appId, 'public', 'data', 'family_events_rev16', id), payload);
+                }
+            } catch (syncErr) { console.warn('Sync warning (salvato in locale):', syncErr); }
             showToast("Impegno salvato con successo!");
         };
 
@@ -8978,9 +9018,11 @@ function ghOpenSetup() {
             closeEventModal();
             renderApp();
 
-            if (db && currentUser) {
-                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_events_rev16', id));
-            }
+            try {
+                if (typeof deleteDoc === 'function') {
+                    await deleteDoc(doc(null, 'artifacts', appId, 'public', 'data', 'family_events_rev16', id));
+                }
+            } catch(e) {}
             showToast("Impegno eliminato.");
         };
 
@@ -9701,43 +9743,44 @@ function ghOpenSetup() {
             }
         };
 
-        window.downloadRev23File = function() {
+        window.downloadRev24File = function() {
             const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
             const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'agenda_famiglia_rev.23.html';
+            a.download = 'agenda_famiglia_rev.24.html';
             document.body.appendChild(a);
             a.click();
             a.remove();
             URL.revokeObjectURL(url);
-            showToast("File agenda_famiglia_rev.23.html scaricato con successo!");
+            showToast("File agenda_famiglia_rev.24.html scaricato con successo!");
         };
-        window.downloadRev22File = window.downloadRev23File;
-        window.downloadRev21File = window.downloadRev23File;
-        window.downloadRev20File = window.downloadRev23File;
-        window.downloadRev19File = window.downloadRev23File;
-        window.downloadRev18File = window.downloadRev23File;
-        window.downloadRev17File = window.downloadRev23File;
-        window.downloadRev16File = window.downloadRev23File;
-        window.downloadRev15File = window.downloadRev23File;
-        window.downloadRev14File = window.downloadRev23File;
-        window.downloadRev13File = window.downloadRev23File;
+        window.downloadRev23File = window.downloadRev24File;
+        window.downloadRev22File = window.downloadRev24File;
+        window.downloadRev21File = window.downloadRev24File;
+        window.downloadRev20File = window.downloadRev24File;
+        window.downloadRev19File = window.downloadRev24File;
+        window.downloadRev18File = window.downloadRev24File;
+        window.downloadRev17File = window.downloadRev24File;
+        window.downloadRev16File = window.downloadRev24File;
+        window.downloadRev15File = window.downloadRev24File;
+        window.downloadRev14File = window.downloadRev24File;
+        window.downloadRev13File = window.downloadRev24File;
 
         window.patrizioConfirmVersion = async function() {
             state.versionControl = {
-                approvedVersion: 'rev.23',
+                approvedVersion: 'rev.24',
                 approvedBy: 'Patrizio',
                 approvedAt: new Date().toISOString()
             };
             renderFooterProfileAndVersion();
-            showToast("rev.23 confermata ufficialmente da Patrizio!");
+            showToast("rev.24 confermata ufficialmente da Patrizio!");
         };
 
         window.exportDataJson = function() {
             const backup = {
-                version: 'rev.23',
+                version: 'rev.24',
                 exportedAt: new Date().toISOString(),
                 events: state.events,
                 shoppingList: state.shoppingList,
@@ -10341,11 +10384,11 @@ function ghOpenSetup() {
             persistEventsLocally();
             renderApp();
 
-            if (db && currentUser) {
-                try {
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_events_rev16', newId), newEvent);
-                } catch(e) { console.warn('Sync warning:', e); }
-            }
+            try {
+                if (typeof setDoc === 'function') {
+                    await setDoc(doc(null, 'artifacts', appId, 'public', 'data', 'family_events_rev16', newId), newEvent);
+                }
+            } catch(e) { console.warn('Sync warning:', e); }
 
             closeEventSummaryModal();
             showToast(`📅 Appuntamento copiato alla settimana successiva: ${nextDate}!`);
@@ -10378,9 +10421,11 @@ function ghOpenSetup() {
                     updatedAt: new Date().toISOString()
                 };
                 state.events.push(newEvent);
-                if (db && currentUser) {
-                    setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_events_rev16', newId), newEvent).catch(() => {});
-                }
+                try {
+                    if (typeof setDoc === 'function') {
+                        setDoc(doc(null, 'artifacts', appId, 'public', 'data', 'family_events_rev16', newId), newEvent).catch(() => {});
+                    }
+                } catch(e) {}
             }
 
             persistEventsLocally();
@@ -10673,9 +10718,11 @@ function ghOpenSetup() {
             persistEventsLocally();
             renderApp();
             showToast("Impegno eliminato!");
-            if (db && currentUser) {
-                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_events_rev16', id));
-            }
+            try {
+                if (typeof deleteDoc === 'function') {
+                    await deleteDoc(doc(null, 'artifacts', appId, 'public', 'data', 'family_events_rev16', id));
+                }
+            } catch(e) {}
         };
 
         // ========================================================
@@ -11517,8 +11564,8 @@ function ghOpenSetup() {
         };
 
         function bootApp() {
-            // rev.23: azzeramento una tantum dei vecchi impegni twirling residui delle versioni precedenti
-            performOneTimeTwirlingResetRev23();
+            // rev.24: azzeramento sicuro solo dei vecchi seed dimostrativi residui con id automatici
+            performOneTimeTwirlingResetRev24();
 
             renderApp();
             switchView('list');
@@ -11548,7 +11595,7 @@ function ghOpenSetup() {
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js').then(reg => {
-                    console.log('SW rev.23 registrato con successo.');
+                    console.log('SW rev.24 registrato con successo.');
                     reg.update();
                     reg.addEventListener('updatefound', () => {
                         const newWorker = reg.installing;
