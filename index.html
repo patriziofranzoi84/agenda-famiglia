@@ -16,7 +16,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Agenda Familiare Condivisa rev.17</title>
+    <title>Agenda Familiare Condivisa rev.20</title>
     <script>
         // Applicazione immediata grandezza caratteri salvata per questo dispositivo
         (function() {
@@ -715,7 +715,7 @@
                         <i data-lucide="user" class="w-5 h-5 text-indigo-400"></i>
                         <h2 class="text-sm sm:text-base font-black">Account e Profilo Famiglia</h2>
                     </div>
-                    <span class="text-[10px] font-bold text-indigo-400 font-black">rev.17</span>
+                    <span class="text-[10px] font-bold text-indigo-400 font-black">rev.20</span>
                 </div>
                 <div class="p-4 space-y-3">
                     <div class="flex items-center justify-between gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200">
@@ -764,8 +764,8 @@
                             </div>
                             <div>
                                 <div class="text-[10px] font-black uppercase tracking-wider text-emerald-800">Ultimo Aggiornamento App</div>
-                                <div class="text-sm font-black text-slate-900 tracking-tight" id="appLastUpdateDateTime">21/10/2026 alle 21:44</div>
-                                <div class="text-[10px] font-bold text-slate-500" id="appDeviceCheckDateTime">Verificato su questo cellulare: 21/10/2026 alle 21:44</div>
+                                <div class="text-sm font-black text-slate-900 tracking-tight" id="appLastUpdateDateTime">21/10/2026 alle 22:14</div>
+                                <div class="text-[10px] font-bold text-slate-500" id="appDeviceCheckDateTime">Verificato su questo cellulare: 21/10/2026 alle 22:14</div>
                             </div>
                         </div>
                         <div class="self-start sm:self-center">
@@ -877,10 +877,10 @@
             <div class="bg-white rounded-2xl border border-slate-200 shadow-2xs p-4 space-y-3">
                 <h3 class="text-xs font-black uppercase text-slate-400 tracking-wider">Gestione Dati & Download</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                    <button type="button" onclick="downloadRev17File()"
+                    <button type="button" onclick="downloadRev20File()"
                             class="flex flex-col items-center justify-center p-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-center transition shadow-2xs">
                         <i data-lucide="download" class="w-5 h-5 mb-1"></i>
-                        <span class="text-xs font-black">Scarica rev.17</span>
+                        <span class="text-xs font-black">Scarica rev.20</span>
                         <span class="text-[9.5px] opacity-80">File HTML completo</span>
                     </button>
 
@@ -996,12 +996,12 @@
                 <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
                     <div>
                         <div class="text-xs font-black text-slate-800">Scaricamento File HTML Completo</div>
-                        <div class="text-[10px] text-slate-500 font-medium">Backup e download della versione rev.17</div>
+                        <div class="text-[10px] text-slate-500 font-medium">Backup e download della versione rev.20</div>
                     </div>
-                    <button type="button" onclick="downloadRev17File()"
+                    <button type="button" onclick="downloadRev20File()"
                             class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black shadow-2xs transition">
                         <i data-lucide="download" class="w-3.5 h-3.5"></i>
-                        <span>Scarica rev.17</span>
+                        <span>Scarica rev.20</span>
                     </button>
                 </div>
             </div>
@@ -1010,7 +1010,7 @@
             <!-- FOOTER INFO VERSIONE E DATA AGGIORNAMENTO -->
             <div class="pt-2 pb-6 text-center space-y-0.5">
                 <p class="text-[11px] font-black text-slate-500">Agenda Familiare Condivisa • rev. 16</p>
-                <p class="text-[10px] font-bold text-slate-400" id="altroFooterLastUpdate">Ultimo aggiornamento rilasciato: 21/10/2026 alle 21:44</p>
+                <p class="text-[10px] font-bold text-slate-400" id="altroFooterLastUpdate">Ultimo aggiornamento rilasciato: 21/10/2026 alle 22:14</p>
             </div>
         </div>
 
@@ -1679,6 +1679,8 @@
                         <select id="formRecurrence" onchange="onFormRecurrenceChange()" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold text-slate-800">
                             <option value="none" selected>Nessuna ripetizione (singolo)</option>
                             <option value="in_x_days">Fra X giorni...</option>
+                            <option value="specific_weekday">Ripeti ogni giorno XX...</option>
+                            <option value="workdays">Tutti i giorni feriali (Lun-Ven)</option>
                             <option value="daily">Ogni giorno</option>
                             <option value="weekly">Ogni settimana (stesso giorno)</option>
                             <option value="biweekly">Ogni 2 settimane</option>
@@ -1705,6 +1707,37 @@
                                 <input type="number" id="formRecurrenceCustomDays" min="1" max="365" placeholder="7" oninput="updateRecurrenceTargetHint()"
                                        class="w-16 px-2 py-1 rounded-lg border border-slate-300 bg-white text-center font-bold text-xs">
                                 <span class="text-xs font-bold text-slate-600">giorni</span>
+                            </div>
+                        </div>
+
+                        <!-- Box configurazione Ripeti ogni giorno XX (giorno della settimana) -->
+                        <div id="recurrenceWeekdayBox" class="hidden mt-2 p-2.5 rounded-xl bg-indigo-50/80 border border-indigo-200 space-y-2">
+                            <div class="flex items-center justify-between text-[10px] font-black uppercase text-indigo-950">
+                                <span>Scegli giorno della settimana (XX):</span>
+                                <span id="recurrenceWeekdayHint" class="text-indigo-600 font-extrabold"></span>
+                            </div>
+                            <!-- Bottoni rapidi Lun-Dom -->
+                            <div class="grid grid-cols-7 gap-1" id="recurrenceWeekdayButtons">
+                                <button type="button" onclick="setRecurrenceWeekday(1)" id="btnRecDay1" class="py-1 rounded-lg text-xs font-black transition border bg-white border-indigo-200 hover:bg-indigo-100 text-indigo-900">Lun</button>
+                                <button type="button" onclick="setRecurrenceWeekday(2)" id="btnRecDay2" class="py-1 rounded-lg text-xs font-black transition border bg-white border-indigo-200 hover:bg-indigo-100 text-indigo-900">Mar</button>
+                                <button type="button" onclick="setRecurrenceWeekday(3)" id="btnRecDay3" class="py-1 rounded-lg text-xs font-black transition border bg-white border-indigo-200 hover:bg-indigo-100 text-indigo-900">Mer</button>
+                                <button type="button" onclick="setRecurrenceWeekday(4)" id="btnRecDay4" class="py-1 rounded-lg text-xs font-black transition border bg-white border-indigo-200 hover:bg-indigo-100 text-indigo-900">Gio</button>
+                                <button type="button" onclick="setRecurrenceWeekday(5)" id="btnRecDay5" class="py-1 rounded-lg text-xs font-black transition border bg-white border-indigo-200 hover:bg-indigo-100 text-indigo-900">Ven</button>
+                                <button type="button" onclick="setRecurrenceWeekday(6)" id="btnRecDay6" class="py-1 rounded-lg text-xs font-black transition border bg-white border-indigo-200 hover:bg-indigo-100 text-indigo-900">Sab</button>
+                                <button type="button" onclick="setRecurrenceWeekday(0)" id="btnRecDay0" class="py-1 rounded-lg text-xs font-black transition border bg-white border-indigo-200 hover:bg-indigo-100 text-indigo-900">Dom</button>
+                            </div>
+                            <!-- Menu a tendina per selezione diretta da elenco -->
+                            <div class="flex items-center gap-1.5 pt-0.5">
+                                <span class="text-xs font-bold text-slate-600 shrink-0">Elenco a discesa:</span>
+                                <select id="formRecurrenceWeekdaySelect" onchange="onRecurrenceWeekdaySelectChange()" class="w-full px-2.5 py-1 rounded-lg border border-slate-300 bg-white text-xs font-bold text-slate-800">
+                                    <option value="1">Lunedì</option>
+                                    <option value="2">Martedì</option>
+                                    <option value="3">Mercoledì</option>
+                                    <option value="4">Giovedì</option>
+                                    <option value="5">Venerdì</option>
+                                    <option value="6">Sabato</option>
+                                    <option value="0">Domenica</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -2457,10 +2490,10 @@ function ghOpenSetup() {
         const { doc, setDoc, deleteDoc, onSnapshot, collection, ghConfigured, ghStart, ghHasToken, ghOpenSetup, ghApplyDot } = GH;
 
 
-        const APP_VERSION = 'rev.17';
+        const APP_VERSION = 'rev.20';
         const APP_BUILD_INFO = {
-            rev: 'rev. 17',
-            dateTime: '21/10/2026 alle 21:44'
+            rev: 'rev. 20',
+            dateTime: '21/10/2026 alle 22:14'
         };
 
         // 1. I 6 PROFILI DELLA FAMIGLIA (CON AUTENTICAZIONE PASSWORD O DATA DI NASCITA)
@@ -2823,120 +2856,26 @@ function ghOpenSetup() {
             }
         }
 
-        function consolidateTwirlingEvents(events) {
-            if (!Array.isArray(events)) return events;
-            const byDate = {};
-            const otherEvents = [];
-
-            events.forEach(e => {
-                const isTw = (e.title || '').toLowerCase().includes('twirling') ||
-                             (e.subcategory || '').toLowerCase().includes('twirling') ||
-                             (e.id || '').startsWith('tw_') ||
-                             (e.id || '').startsWith('twirling_');
-                if (isTw && e.date) {
-                    if (!byDate[e.date]) byDate[e.date] = [];
-                    byDate[e.date].push(e);
-                } else {
-                    otherEvents.push(e);
-                }
-            });
-
-            const consolidatedTwirling = [];
-            Object.keys(byDate).forEach(dateStr => {
-                const list = byDate[dateStr];
-                // Se è già un evento unico consolidato con schedule, mantienilo
-                if (list.length === 1 && list[0].hasDifferentTimes && Array.isArray(list[0].schedule) && list[0].schedule.length > 0) {
-                    consolidatedTwirling.push(list[0]);
-                    return;
-                }
-
-                const d = new Date(dateStr + 'T12:00:00');
-                const dow = d.getDay();
-                let minTime = '18:00';
-                let maxEndTime = '19:30';
-                let dur = '1h 30m';
-                let schedule = [];
-
-                if (dow === 2) {
-                    // Martedì: Asia 16:30-20:00 (Palestra), Emma 18:00-19:30 (Palestra Isola), Clara 18:00-19:00 (Palestra Isola)
-                    minTime = '16:30';
-                    maxEndTime = '20:00';
-                    dur = '3h 30m';
-                    schedule = [
-                        { userId: 'u3', userName: 'Asia', time: '16:30', endTime: '20:00', duration: '3h 30m', notes: 'Palestra' },
-                        { userId: 'u5', userName: 'Emma', time: '18:00', endTime: '19:30', duration: '1h 30m', notes: 'Palestra Isola' },
-                        { userId: 'u6', userName: 'Clara', time: '18:00', endTime: '19:00', duration: '1 ora', notes: 'Palestra Isola' }
-                    ];
-                } else if (dow === 4) {
-                    // Giovedì: Asia 18:00-21:00 (Palestra), Emma 18:00-19:30 (Palestra Isola), Clara 18:00-19:00 (Palestra Isola)
-                    minTime = '18:00';
-                    maxEndTime = '21:00';
-                    dur = '3 ore';
-                    schedule = [
-                        { userId: 'u3', userName: 'Asia', time: '18:00', endTime: '21:00', duration: '3 ore', notes: 'Palestra' },
-                        { userId: 'u5', userName: 'Emma', time: '18:00', endTime: '19:30', duration: '1h 30m', notes: 'Palestra Isola' },
-                        { userId: 'u6', userName: 'Clara', time: '18:00', endTime: '19:00', duration: '1 ora', notes: 'Palestra Isola' }
-                    ];
-                } else {
-                    let minS = 24 * 60, maxE = 0;
-                    list.forEach(item => {
-                        const [sh, sm] = (item.time || '18:00').split(':').map(Number);
-                        const sMin = (isNaN(sh) ? 18 : sh) * 60 + (isNaN(sm) ? 0 : sm);
-                        const [eh, em] = (item.endTime || '19:00').split(':').map(Number);
-                        const eMin = (isNaN(eh) ? 19 : eh) * 60 + (isNaN(em) ? 0 : em);
-                        if (sMin < minS) minS = sMin;
-                        if (eMin > maxE) maxE = eMin;
-                        (item.users || ['u3']).forEach(uid => {
-                            const u = BASE_USERS.find(x => x.id === uid) || { name: uid };
-                            schedule.push({
-                                userId: uid,
-                                userName: u.name,
-                                time: item.time || '18:00',
-                                endTime: item.endTime || '19:00',
-                                duration: item.duration || '1 ora',
-                                notes: item.notes || item.place || ''
-                            });
-                        });
-                    });
-                    const sH = String(Math.floor(minS / 60)).padStart(2, '0');
-                    const sM = String(minS % 60).padStart(2, '0');
-                    const eH = String(Math.floor(maxE / 60)).padStart(2, '0');
-                    const eM = String(maxE % 60).padStart(2, '0');
-                    minTime = `${sH}:${sM}`;
-                    maxEndTime = `${eH}:${eM}`;
-                    const diff = maxE - minS;
-                    dur = `${Math.floor(diff / 60)}h ${diff % 60 > 0 ? (diff % 60 + 'm') : ''}`.trim() || '1 ora';
-                }
-
-                const baseEv = list[0] || {};
-                consolidatedTwirling.push({
-                    id: `twirling_${dateStr}`,
-                    title: 'Twirling',
-                    category: 'sport',
-                    subcategory: 'Twirling',
-                    date: dateStr,
-                    time: minTime,
-                    endTime: maxEndTime,
-                    duration: dur,
-                    hasDifferentTimes: true,
-                    users: ['u3', 'u5', 'u6'],
-                    place: 'Palestra Isola / Palestra',
-                    notes: 'Allenamenti Twirling Asia, Emma e Clara',
-                    schedule: schedule,
-                    recurrence: 'weekly',
-                    notificationAdvance: baseEv.notificationAdvance || '15m',
-                    personalTimer: baseEv.personalTimer || 'sound_timer',
-                    visibility: 'all'
-                });
-            });
-
-            return [...otherEvents, ...consolidatedTwirling];
+        function isPredefinedTwirlingSeed(e) {
+            if (!e) return false;
+            const id = String(e.id || '').toLowerCase();
+            // Elimina solo i vecchi ID seed predefiniti di sistema, MAI gli eventi creati dall'utente
+            return id.startsWith('twirling_') || id.startsWith('tw_seed') || (e.isSeed && String(e.title || '').toLowerCase().includes('twirling'));
         }
+
+        function removePredefinedTwirlingSeeds(events) {
+            if (!Array.isArray(events)) return [];
+            return events.filter(e => !isPredefinedTwirlingSeed(e));
+        }
+
+        const removeAllTwirlingEvents = removePredefinedTwirlingSeeds;
+        const isTwirlingEvent = isPredefinedTwirlingSeed;
+        const consolidateTwirlingEvents = removePredefinedTwirlingSeeds;
 
         function loadPersistedEvents() {
             let list = null;
             try {
-                const raw = localStorage.getItem('agenda_famiglia_events_rev16') || localStorage.getItem('agenda_famiglia_events_rev14') || localStorage.getItem('agenda_famiglia_events_rev13') || localStorage.getItem('agenda_famiglia_events_rev12') || localStorage.getItem('agenda_famiglia_events_rev11') || localStorage.getItem('agenda_famiglia_events_rev10');
+                const raw = localStorage.getItem('agenda_famiglia_events_rev17') || localStorage.getItem('agenda_famiglia_events_rev16') || localStorage.getItem('agenda_famiglia_events_rev14') || localStorage.getItem('agenda_famiglia_events_rev13') || localStorage.getItem('agenda_famiglia_events_rev12') || localStorage.getItem('agenda_famiglia_events_rev11') || localStorage.getItem('agenda_famiglia_events_rev10');
                 if (raw) {
                     const parsed = JSON.parse(raw);
                     if (Array.isArray(parsed) && parsed.length > 0) {
@@ -2946,15 +2885,20 @@ function ghOpenSetup() {
             } catch(e) {}
             if (!list) list = buildRequestedSeedEvents();
             migrateEventCategories(list);
-            return consolidateTwirlingEvents(list);
+            list = removeAllTwirlingEvents(list);
+            return list;
         }
 
         function persistEventsLocally() {
             try {
+                state.events = removeAllTwirlingEvents(state.events);
+                localStorage.setItem('agenda_famiglia_events_rev17', JSON.stringify(state.events));
                 localStorage.setItem('agenda_famiglia_events_rev16', JSON.stringify(state.events));
                 localStorage.setItem('agenda_famiglia_events_rev11', JSON.stringify(state.events));
             } catch(e) {}
         }
+        window.persistEventsLocally = persistEventsLocally;
+        window.loadPersistedEvents = loadPersistedEvents;
 
         const DEFAULT_SHOPPING_ITEMS = [];
 
@@ -3187,109 +3131,10 @@ function ghOpenSetup() {
             updateBillsBadge();
         }
 
-        // DATI DI PROVA INIZIALI: INCLUDE TWIRLING UNIFICATO A SCALINI E VISITE MEDICHE MULTIPLE
+        // DATI DI PROVA INIZIALI: VISITE MEDICHE MULTIPLE E DEMO
         function buildRequestedSeedEvents() {
             const items = [];
-            // Genera impegni Twirling richiesti per tutto l'anno sportivo (settembre 2026 - luglio 2027)
-            const startD = new Date(2026, 8, 1);
-            const endD = new Date(2027, 6, 31);
-            for (let d = new Date(startD); d <= endD; d.setDate(d.getDate() + 1)) {
-                const dow = d.getDay();
-                const dt = toIsoDate(d);
-                if (dow === 2) {
-                    // MARTEDI: Singolo appuntamento Twirling con orari a scalini per Asia, Emma e Clara
-                    items.push({
-                        id: `twirling_mar_${dt}`,
-                        title: 'Twirling',
-                        subcategory: 'Twirling',
-                        date: dt,
-                        time: '16:30',
-                        endTime: '20:00',
-                        duration: '3h 30m',
-                        hasDifferentTimes: true,
-                        category: 'sport',
-                        users: ['u3', 'u5', 'u6'],
-                        place: 'Palestra Isola / Palestra',
-                        notes: 'Allenamenti Twirling Asia, Emma e Clara',
-                        recurrence: 'weekly',
-                        notificationAdvance: '15m',
-                        personalTimer: 'sound_timer',
-                        visibility: 'all',
-                        schedule: [
-                            {
-                                userId: 'u3',
-                                userName: 'Asia',
-                                time: '16:30',
-                                endTime: '20:00',
-                                duration: '3h 30m',
-                                notes: 'Palestra'
-                            },
-                            {
-                                userId: 'u5',
-                                userName: 'Emma',
-                                time: '18:00',
-                                endTime: '19:30',
-                                duration: '1h 30m',
-                                notes: 'Palestra Isola'
-                            },
-                            {
-                                userId: 'u6',
-                                userName: 'Clara',
-                                time: '18:00',
-                                endTime: '19:00',
-                                duration: '1 ora',
-                                notes: 'Palestra Isola'
-                            }
-                        ]
-                    });
-                } else if (dow === 4) {
-                    // GIOVEDI: Singolo appuntamento Twirling con orari a scalini per Asia, Emma e Clara
-                    items.push({
-                        id: `twirling_gio_${dt}`,
-                        title: 'Twirling',
-                        subcategory: 'Twirling',
-                        date: dt,
-                        time: '18:00',
-                        endTime: '21:00',
-                        duration: '3 ore',
-                        hasDifferentTimes: true,
-                        category: 'sport',
-                        users: ['u3', 'u5', 'u6'],
-                        place: 'Palestra Isola / Palestra',
-                        notes: 'Allenamenti Twirling Asia, Emma e Clara',
-                        recurrence: 'weekly',
-                        notificationAdvance: '15m',
-                        personalTimer: 'sound_timer',
-                        visibility: 'all',
-                        schedule: [
-                            {
-                                userId: 'u3',
-                                userName: 'Asia',
-                                time: '18:00',
-                                endTime: '21:00',
-                                duration: '3 ore',
-                                notes: 'Palestra'
-                            },
-                            {
-                                userId: 'u5',
-                                userName: 'Emma',
-                                time: '18:00',
-                                endTime: '19:30',
-                                duration: '1h 30m',
-                                notes: 'Palestra Isola'
-                            },
-                            {
-                                userId: 'u6',
-                                userName: 'Clara',
-                                time: '18:00',
-                                endTime: '19:00',
-                                duration: '1 ora',
-                                notes: 'Palestra Isola'
-                            }
-                        ]
-                    });
-                }
-            }
+            // (Impegni Twirling rimossi come richiesto)
 
             // Esempio Visite Mediche con orari differenti / visite multiple nello stesso giorno (richiesto da utente)
             items.push({
@@ -3386,7 +3231,7 @@ function ghOpenSetup() {
             },
             personalColorsByProfile: {},
             versionControl: {
-                approvedVersion: 'rev.17',
+                approvedVersion: 'rev.20',
                 approvedBy: 'Patrizio',
                 approvedAt: ''
             },
@@ -3408,7 +3253,7 @@ function ghOpenSetup() {
             popupDate: null,
             timelineZoomHours: 4,
             formCategory: 'famiglia',
-            formUsers: ['u1', 'u2'], // Di default Patrizio e Manuela
+            formUsers: [savedLoggedUser || 'u1'], // Di default profilo attivo
             formSubActivities: [],
             formAttachments: [],
             shoppingList: loadPersistedShoppingList(),
@@ -3502,9 +3347,23 @@ function ghOpenSetup() {
                     return;
                 }
                 const list = [];
-                snap.forEach(d => list.push({ id: d.id, ...d.data() }));
+                const twirlingIdsToDelete = [];
+                snap.forEach(d => {
+                    const data = d.data();
+                    const item = { id: d.id, ...data };
+                    if (isTwirlingEvent(item)) {
+                        twirlingIdsToDelete.push(d.id);
+                    } else {
+                        list.push(item);
+                    }
+                });
+                if (twirlingIdsToDelete.length > 0 && db && currentUser) {
+                    twirlingIdsToDelete.forEach(twId => {
+                        deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_events_rev16', twId)).catch(() => {});
+                    });
+                }
                 migrateEventCategories(list);
-                state.events = consolidateTwirlingEvents(list);
+                state.events = removeAllTwirlingEvents(list);
                 persistEventsLocally();
                 renderApp();
                 if (state.popupDate) renderDayTimelinePopup(false);
@@ -3729,46 +3588,74 @@ function ghOpenSetup() {
         function getEventsForDate(dateStr) {
             const evs = [];
             state.events.forEach(e => {
-                let matchesDate = (e.date === dateStr) || (e.endDate && e.date <= dateStr && e.endDate >= dateStr);
-                if (!matchesDate && e.recurrence && e.date && dateStr >= e.date) {
-                    if (e.recurrence === 'in_x_days' && e.recurrenceDays > 0) {
-                        const dStart = new Date(e.date + 'T00:00:00');
+                let matchesDate = false;
+                if (e.recurrence === 'specific_weekday') {
+                    if (e.date && dateStr >= e.date) {
                         const dCur = new Date(dateStr + 'T00:00:00');
-                        const diffDays = Math.round((dCur - dStart) / (1000 * 60 * 60 * 24));
-                        if (diffDays > 0 && diffDays % e.recurrenceDays === 0) matchesDate = true;
-                    } else if (e.recurrence === 'daily') {
-                        matchesDate = true;
-                    } else if (e.recurrence === 'weekly') {
-                        const dStart = new Date(e.date + 'T00:00:00');
+                        const targetDay = Number(e.recurrenceWeekday !== undefined ? e.recurrenceWeekday : 1);
+                        matchesDate = (dCur.getDay() === targetDay);
+                    }
+                } else if (e.recurrence === 'workdays') {
+                    if (e.date && dateStr >= e.date) {
                         const dCur = new Date(dateStr + 'T00:00:00');
-                        matchesDate = (dStart.getDay() === dCur.getDay());
-                    } else if (e.recurrence === 'biweekly') {
-                        const dStart = new Date(e.date + 'T00:00:00');
-                        const dCur = new Date(dateStr + 'T00:00:00');
-                        const diffDays = Math.round((dCur - dStart) / (1000 * 60 * 60 * 24));
-                        matchesDate = (diffDays > 0 && diffDays % 14 === 0);
-                    } else if (e.recurrence === 'monthly') {
-                        const dStart = new Date(e.date + 'T00:00:00');
-                        const dCur = new Date(dateStr + 'T00:00:00');
-                        matchesDate = (dStart.getDate() === dCur.getDate());
-                    } else if (e.recurrence === 'yearly') {
-                        const [sy, sm, sd] = e.date.split('-');
-                        const [cy, cm, cd] = dateStr.split('-');
-                        matchesDate = (sm === cm && sd === cd);
+                        const day = dCur.getDay();
+                        // 1 = Lun, 2 = Mar, 3 = Mer, 4 = Gio, 5 = Ven
+                        matchesDate = (day >= 1 && day <= 5);
+                    }
+                } else {
+                    matchesDate = (e.date === dateStr) || (e.endDate && e.date <= dateStr && e.endDate >= dateStr);
+                    if (!matchesDate && e.recurrence && e.date && dateStr >= e.date) {
+                        if (e.recurrence === 'in_x_days' && e.recurrenceDays > 0) {
+                            const dStart = new Date(e.date + 'T00:00:00');
+                            const dCur = new Date(dateStr + 'T00:00:00');
+                            const diffDays = Math.round((dCur - dStart) / (1000 * 60 * 60 * 24));
+                            if (diffDays > 0 && diffDays % e.recurrenceDays === 0) matchesDate = true;
+                        } else if (e.recurrence === 'daily') {
+                            matchesDate = true;
+                        } else if (e.recurrence === 'weekly') {
+                            const dStart = new Date(e.date + 'T00:00:00');
+                            const dCur = new Date(dateStr + 'T00:00:00');
+                            matchesDate = (dStart.getDay() === dCur.getDay());
+                        } else if (e.recurrence === 'biweekly') {
+                            const dStart = new Date(e.date + 'T00:00:00');
+                            const dCur = new Date(dateStr + 'T00:00:00');
+                            const diffDays = Math.round((dCur - dStart) / (1000 * 60 * 60 * 24));
+                            matchesDate = (diffDays > 0 && diffDays % 14 === 0);
+                        } else if (e.recurrence === 'monthly') {
+                            const dStart = new Date(e.date + 'T00:00:00');
+                            const dCur = new Date(dateStr + 'T00:00:00');
+                            matchesDate = (dStart.getDate() === dCur.getDate());
+                        } else if (e.recurrence === 'yearly') {
+                            const [sy, sm, sd] = e.date.split('-');
+                            const [cy, cm, cd] = dateStr.split('-');
+                            matchesDate = (sm === cm && sd === cd);
+                        }
                     }
                 }
+                if (!matchesDate && Array.isArray(e.subActivities)) {
+                    matchesDate = e.subActivities.some(sub => (sub.date === dateStr) || (sub.endDate && sub.date <= dateStr && sub.endDate >= dateStr));
+                }
                 if (!matchesDate) return;
-                const hasMatchingUser = (e.users || []).some(uid => state.selectedUsers.includes(uid));
+
+                const eventUsers = Array.isArray(e.users) ? [...e.users] : [];
+                if (Array.isArray(e.subActivities)) {
+                    e.subActivities.forEach(sub => {
+                        if (sub.userId && sub.userId !== 'all' && !eventUsers.includes(sub.userId)) {
+                            eventUsers.push(sub.userId);
+                        }
+                    });
+                }
+                const hasMatchingUser = eventUsers.some(uid => state.selectedUsers.includes(uid));
                 if (!hasMatchingUser) return;
                 const catNorm = normalizeCategory(e.category);
                 if (!state.selectedCategories.includes(catNorm) && !state.selectedCategories.includes(e.category)) return;
 
                 // Visibilità
-                if (e.visibility === 'assigned_only' && !(e.users || []).includes(state.activeProfileId)) return;
+                if (e.visibility === 'assigned_only' && !eventUsers.includes(state.activeProfileId)) return;
                 if (e.visibility === 'private_patrizio' && state.activeProfileId !== 'u1') return;
                 if (e.visibility === 'admins_only') {
                     const isParent = (state.activeProfileId === 'u1' || state.activeProfileId === 'u2');
-                    const isAssigned = (e.users || []).includes(state.activeProfileId);
+                    const isAssigned = eventUsers.includes(state.activeProfileId);
                     if (!isParent && !isAssigned) return;
                 }
 
@@ -3779,6 +3666,7 @@ function ghOpenSetup() {
             const routines = getRoutineSchoolEventsForDate(dateStr);
             return evs.concat(routines);
         }
+        window.getEventsForDate = getEventsForDate;
 
         // RAGGRUPPAMENTO ATTIVITÀ STESSA DISCIPLINA A SCALINI (ES. TWIRLING ASIA, EMMA, CLARA)
         // ========================================================
@@ -7433,6 +7321,18 @@ function ghOpenSetup() {
             if (menu) menu.classList.remove('hidden');
         };
 
+        // Aggiorna visibilità predefinita in base ai partecipanti selezionati
+        // (Per Patrizio e Manuela: default 'admins_only'; se include ragazzi o altri: 'all')
+        function updateDefaultVisibilityForUsers(users) {
+            const visEl = document.getElementById('formVisibility');
+            if (!visEl) return;
+            if (visEl.value === 'admins_only' || visEl.value === 'all') {
+                const isOnlyParents = Array.isArray(users) && users.length > 0 && users.every(id => id === 'u1' || id === 'u2');
+                visEl.value = isOnlyParents ? 'admins_only' : 'all';
+            }
+        }
+        window.updateDefaultVisibilityForUsers = updateDefaultVisibilityForUsers;
+
         // Apertura rapida modale impegno direttamente dal Chi con utente pre-selezionato
         window.openEventModalForUser = function(userId, event) {
             if (event) {
@@ -7441,6 +7341,9 @@ function ghOpenSetup() {
             closeAllDropdowns();
             openEventModal(null, getTodayIso(), '18:00');
             state.formUsers = [userId];
+            const isOnlyParents = (userId === 'u1' || userId === 'u2');
+            const visEl = document.getElementById('formVisibility');
+            if (visEl) visEl.value = isOnlyParents ? 'admins_only' : 'all';
             renderFormControls();
         };
 
@@ -7964,6 +7867,7 @@ function ghOpenSetup() {
             } else {
                 state.formUsers.push(uid);
             }
+            updateDefaultVisibilityForUsers(state.formUsers);
             const chk = document.getElementById('formSameTimeCheckbox');
             if (chk && !chk.checked && Array.isArray(state.formSchedule)) {
                 if (state.formUsers.includes(uid) && !state.formSchedule.some(s => s.userId === uid)) {
@@ -7983,8 +7887,9 @@ function ghOpenSetup() {
         };
 
         window.toggleSelectAllUsersInForm = function() {
-            if (state.formUsers.length === BASE_USERS.length) state.formUsers = [state.activeProfileId];
+            if (state.formUsers.length === BASE_USERS.length) state.formUsers = [state.activeProfileId || 'u1'];
             else state.formUsers = BASE_USERS.map(u => u.id);
+            updateDefaultVisibilityForUsers(state.formUsers);
             const chk = document.getElementById('formSameTimeCheckbox');
             if (chk && !chk.checked && Array.isArray(state.formSchedule)) {
                 initDefaultScheduleFromUsers();
@@ -8191,30 +8096,52 @@ function ghOpenSetup() {
         window.onFormStartDateChange = function() {
             const stD = document.getElementById('formDate')?.value;
             const endD = document.getElementById('formEndDate');
-            if (stD && endD && !endD.value) {
+            if (stD && endD && (!endD.value || endD.value < stD)) {
                 endD.value = stD;
             }
             updateRecurrenceTargetHint();
+            if (stD) {
+                const sel = document.getElementById('formRecurrence')?.value;
+                if (sel === 'specific_weekday') {
+                    const dObj = new Date(stD + 'T00:00:00');
+                    updateRecurrenceWeekdayUI(Number(document.getElementById('formRecurrenceWeekdaySelect')?.value || dObj.getDay()));
+                }
+            }
         };
 
         // ========================================================
-        // RIPETIZIONE "FRA X GIORNI"
+        // GESTIONE RIPETIZIONE: FRA X GIORNI, RIPETI OGNI GIORNO XX, FERIALI
         // ========================================================
         window.onFormRecurrenceChange = function() {
             const sel = document.getElementById('formRecurrence')?.value;
-            const box = document.getElementById('recurrenceInXDaysBox');
-            if (box) {
+            const xDaysBox = document.getElementById('recurrenceInXDaysBox');
+            const weekdayBox = document.getElementById('recurrenceWeekdayBox');
+
+            if (xDaysBox) {
                 if (sel === 'in_x_days') {
-                    box.classList.remove('hidden');
+                    xDaysBox.classList.remove('hidden');
                     updateRecurrenceTargetHint();
                 } else {
-                    box.classList.add('hidden');
+                    xDaysBox.classList.add('hidden');
+                }
+            }
+
+            if (weekdayBox) {
+                if (sel === 'specific_weekday') {
+                    weekdayBox.classList.remove('hidden');
+                    const startDate = document.getElementById('formDate')?.value || getTodayIso();
+                    const dStart = new Date(startDate + 'T00:00:00');
+                    const curVal = document.getElementById('formRecurrenceWeekdaySelect')?.value;
+                    const defaultDay = (curVal !== undefined && curVal !== '') ? Number(curVal) : dStart.getDay();
+                    setRecurrenceWeekday(defaultDay);
+                } else {
+                    weekdayBox.classList.add('hidden');
                 }
             }
         };
 
         window.setRecurrenceDaysQuick = function(days) {
-            const input = document.getElementById('formRecurrenceDaysInput');
+            const input = document.getElementById('formRecurrenceCustomDays') || document.getElementById('formRecurrenceDaysInput');
             if (input) {
                 input.value = days;
                 updateRecurrenceTargetHint();
@@ -8222,7 +8149,7 @@ function ghOpenSetup() {
         };
 
         window.updateRecurrenceTargetHint = function() {
-            const input = document.getElementById('formRecurrenceDaysInput');
+            const input = document.getElementById('formRecurrenceCustomDays') || document.getElementById('formRecurrenceDaysInput');
             const hint = document.getElementById('recurrenceTargetDateHint');
             const startDate = document.getElementById('formDate')?.value || getTodayIso();
             if (!input || !hint) return;
@@ -8239,8 +8166,42 @@ function ghOpenSetup() {
             }
         };
 
+        window.setRecurrenceWeekday = function(dayNum) {
+            dayNum = Number(dayNum);
+            const sel = document.getElementById('formRecurrenceWeekdaySelect');
+            if (sel) sel.value = String(dayNum);
+            updateRecurrenceWeekdayUI(dayNum);
+        };
+
+        window.onRecurrenceWeekdaySelectChange = function() {
+            const sel = document.getElementById('formRecurrenceWeekdaySelect');
+            if (sel) {
+                updateRecurrenceWeekdayUI(Number(sel.value));
+            }
+        };
+
+        window.updateRecurrenceWeekdayUI = function(dayNum) {
+            const dayNames = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
+            const allDays = [1, 2, 3, 4, 5, 6, 0];
+            allDays.forEach(d => {
+                const btn = document.getElementById(`btnRecDay${d}`);
+                if (btn) {
+                    if (d === dayNum) {
+                        btn.className = 'py-1 rounded-lg text-xs font-black transition border bg-indigo-600 text-white shadow-2xs border-indigo-700';
+                    } else {
+                        btn.className = 'py-1 rounded-lg text-xs font-black transition border bg-white border-indigo-200 hover:bg-indigo-100 text-indigo-900';
+                    }
+                }
+            });
+            const hint = document.getElementById('recurrenceWeekdayHint');
+            if (hint) {
+                hint.textContent = `Ogni ${dayNames[dayNum]}`;
+            }
+        };
+
         // ========================================================
         // GESTIONE ATTIVITÀ AGGIUNTIVE (FINO A 5) NEL FORM
+        // Permette di associare ciascuna attività a un componente con data e orario specifico
         // ========================================================
         window.addNewSubActivityRow = function() {
             if (!state.formSubActivities) state.formSubActivities = [];
@@ -8250,14 +8211,36 @@ function ghOpenSetup() {
             }
             const parentDate = document.getElementById('formDate')?.value || getTodayIso();
             const parentEndDate = document.getElementById('formEndDate')?.value || parentDate;
+            const parentTime = document.getElementById('formTime')?.value || '18:00';
+            const parentEndTime = document.getElementById('formEndTime')?.value || '18:30';
+            const parentDur = document.getElementById('formDuration')?.value || "30''";
+
+            // Scegli in automatico il prossimo componente della famiglia
+            const usersList = getActiveUsersList();
+            const existingSubUids = state.formSubActivities.map(s => s.userId);
+            let targetUid = (state.formUsers || []).find(uid => !existingSubUids.includes(uid));
+            if (!targetUid) {
+                targetUid = usersList.find(u => !existingSubUids.includes(u.id) && !(state.formUsers || []).includes(u.id))?.id || state.activeProfileId || 'u1';
+            }
+
             state.formSubActivities.push({
+                id: 'sub_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
                 title: '',
+                userId: targetUid,
                 date: parentDate,
                 endDate: parentEndDate,
-                time: '18:00',
-                duration: "30''",
-                endTime: '18:30'
+                time: parentTime,
+                duration: parentDur,
+                endTime: parentEndTime
             });
+
+            // Se l'utente non è ancora nella lista "Chi riguarda", aggiungilo
+            if (targetUid && targetUid !== 'all' && !state.formUsers.includes(targetUid)) {
+                state.formUsers.push(targetUid);
+                updateDefaultVisibilityForUsers(state.formUsers);
+                renderFormControls();
+            }
+
             renderSubActivities();
         };
 
@@ -8270,6 +8253,17 @@ function ghOpenSetup() {
         window.updateSubActivity = function(idx, field, val) {
             if (!state.formSubActivities || !state.formSubActivities[idx]) return;
             state.formSubActivities[idx][field] = val;
+        };
+
+        window.updateSubActivityUser = function(idx, uid) {
+            if (!state.formSubActivities || !state.formSubActivities[idx]) return;
+            state.formSubActivities[idx].userId = uid;
+            if (uid && uid !== 'all' && !state.formUsers.includes(uid)) {
+                state.formUsers.push(uid);
+                updateDefaultVisibilityForUsers(state.formUsers);
+                renderFormControls();
+            }
+            renderSubActivities();
         };
 
         window.updateSubActivityTime = function(idx, field, val) {
@@ -8317,65 +8311,107 @@ function ghOpenSetup() {
                 return;
             }
 
-            container.innerHTML = state.formSubActivities.map((sub, idx) => `
-                <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2 relative shadow-2xs">
-                    <div class="flex items-center justify-between gap-2">
-                        <span class="text-[11px] font-black text-indigo-700">Attività ${idx + 1}</span>
-                        <button type="button" onclick="removeSubActivityRow(${idx})" class="text-xs text-rose-500 hover:text-rose-700 font-black px-1.5 py-0.5 rounded hover:bg-rose-50">
-                            &times; Rimuovi
-                        </button>
+            const usersList = getActiveUsersList();
+
+            container.innerHTML = state.formSubActivities.map((sub, idx) => {
+                const curUid = sub.userId || (state.formUsers && state.formUsers[idx]) || state.activeProfileId || 'u1';
+                const uObj = usersList.find(x => x.id === curUid) || { name: 'Componente', hex: '#6366f1' };
+                return `
+                    <div class="p-3 bg-white border-2 border-indigo-200/80 rounded-2xl space-y-2.5 relative shadow-xs">
+                        <div class="flex items-center justify-between gap-2 pb-1.5 border-b border-indigo-100">
+                            <div class="flex items-center gap-2">
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-indigo-600 text-white shadow-2xs">
+                                    Attività ${idx + 1}
+                                </span>
+                                <span class="text-xs font-black text-slate-800">
+                                    ${escapeHtml(uObj.name)}
+                                </span>
+                            </div>
+                            <button type="button" onclick="removeSubActivityRow(${idx})" class="text-xs text-rose-600 hover:text-rose-800 font-black px-2 py-0.5 rounded-lg hover:bg-rose-50 transition">
+                                &times; Rimuovi
+                            </button>
+                        </div>
+
+                        <!-- Riga 1: Chi la fa (Persona) e Descrizione specifica -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] font-extrabold uppercase text-slate-600 mb-0.5 flex items-center gap-1">
+                                    <i data-lucide="user" class="w-3 h-3 text-indigo-600"></i>
+                                    <span>Chi la fa *</span>
+                                </label>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="w-3.5 h-3.5 rounded-full shrink-0 shadow-xs" style="background-color:${uObj.hex}"></span>
+                                    <select onchange="updateSubActivityUser(${idx}, this.value)"
+                                            class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 text-xs font-black text-slate-800 bg-slate-50 focus:bg-white focus:outline-indigo-500 shadow-2xs">
+                                        ${usersList.map(u => `
+                                            <option value="${u.id}" ${u.id === curUid ? 'selected' : ''}>${escapeHtml(u.name)} (${escapeHtml(u.role)})</option>
+                                        `).join('')}
+                                        <option value="all" ${curUid === 'all' ? 'selected' : ''}>Tutta la famiglia</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-[10px] font-extrabold uppercase text-slate-600 mb-0.5">
+                                    Descrizione attività <span class="font-normal text-slate-400">(opzionale: vuoto = stessa attività)</span>
+                                </label>
+                                <input type="text" value="${escapeHtml(sub.title || '')}"
+                                       oninput="updateSubActivity(${idx}, 'title', this.value)"
+                                       placeholder="Es. Stessa attività / Gruppo..."
+                                       class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 text-xs font-semibold focus:outline-indigo-500 bg-white shadow-2xs">
+                            </div>
+                        </div>
+
+                        <!-- Riga 2: Data Inizio e Data Fine -->
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-0.5">Data Inizio</label>
+                                <input type="date" value="${sub.date || ''}"
+                                       onchange="updateSubActivity(${idx}, 'date', this.value)"
+                                       class="w-full px-2.5 py-1 rounded-xl border border-slate-300 text-xs font-bold focus:outline-indigo-500 bg-white shadow-2xs">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-0.5">Data Fine</label>
+                                <input type="date" value="${sub.endDate || sub.date || ''}"
+                                       onchange="updateSubActivity(${idx}, 'endDate', this.value)"
+                                       class="w-full px-2.5 py-1 rounded-xl border border-slate-300 text-xs font-bold focus:outline-indigo-500 bg-white shadow-2xs">
+                            </div>
+                        </div>
+
+                        <!-- Riga 3: Orario inizio, Durata e Fine -->
+                        <div class="grid grid-cols-3 gap-1.5">
+                            <div>
+                                <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-0.5">Ora Inizio</label>
+                                <input type="time" value="${sub.time || '18:00'}"
+                                       onchange="updateSubActivityTime(${idx}, 'time', this.value)"
+                                       class="w-full px-2 py-1 rounded-xl border border-slate-300 text-xs font-bold focus:outline-indigo-500 bg-white shadow-2xs">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-0.5">Durata</label>
+                                <select onchange="updateSubActivityDuration(${idx}, parseInt(this.value, 10))"
+                                        class="w-full px-1.5 py-1 rounded-xl border border-slate-300 text-xs font-bold focus:outline-indigo-500 bg-white shadow-2xs">
+                                    <option value="15" ${sub.duration === "15''" ? 'selected' : ''}>15''</option>
+                                    <option value="30" ${sub.duration === "30''" || !sub.duration ? 'selected' : ''}>30''</option>
+                                    <option value="45" ${sub.duration === "45''" ? 'selected' : ''}>45''</option>
+                                    <option value="60" ${sub.duration === "1'00''" ? 'selected' : ''}>1'00''</option>
+                                    <option value="90" ${sub.duration === "1'30''" ? 'selected' : ''}>1'30''</option>
+                                    <option value="120" ${sub.duration === "2'00''" ? 'selected' : ''}>2'00''</option>
+                                    <option value="150" ${sub.duration === "2'30''" ? 'selected' : ''}>2'30''</option>
+                                    <option value="180" ${sub.duration === "3'00''" ? 'selected' : ''}>3'00''</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-0.5">Ora Fine</label>
+                                <input type="time" value="${sub.endTime || '18:30'}"
+                                       onchange="updateSubActivityTime(${idx}, 'endTime', this.value)"
+                                       class="w-full px-2 py-1 rounded-xl border border-slate-300 text-xs font-bold focus:outline-indigo-500 bg-white shadow-2xs">
+                            </div>
+                        </div>
                     </div>
-                    <!-- Riga 1: Descrizione attività -->
-                    <div>
-                        <input type="text" value="${escapeHtml(sub.title || '')}"
-                               oninput="updateSubActivity(${idx}, 'title', this.value)"
-                               placeholder="Descrizione attività ${idx + 1}..."
-                               class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white">
-                    </div>
-                    <!-- Riga 2: Data inizio e Data fine -->
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Data Inizio</label>
-                            <input type="date" value="${sub.date || ''}"
-                                   onchange="updateSubActivity(${idx}, 'date', this.value)"
-                                   class="w-full px-2 py-1 rounded-lg border border-slate-300 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Data Fine</label>
-                            <input type="date" value="${sub.endDate || sub.date || ''}"
-                                   onchange="updateSubActivity(${idx}, 'endDate', this.value)"
-                                   class="w-full px-2 py-1 rounded-lg border border-slate-300 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white">
-                        </div>
-                    </div>
-                    <!-- Riga 3: Orario inizio, Durata e Fine -->
-                    <div class="grid grid-cols-3 gap-2">
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Ora Inizio</label>
-                            <input type="time" value="${sub.time || '18:00'}"
-                                   onchange="updateSubActivityTime(${idx}, 'time', this.value)"
-                                   class="w-full px-2 py-1 rounded-lg border border-slate-300 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Durata</label>
-                            <select onchange="updateSubActivityDuration(${idx}, parseInt(this.value, 10))"
-                                    class="w-full px-1.5 py-1 rounded-lg border border-slate-300 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white">
-                                <option value="15" ${sub.duration === "15''" ? 'selected' : ''}>15''</option>
-                                <option value="30" ${sub.duration === "30''" || !sub.duration ? 'selected' : ''}>30''</option>
-                                <option value="45" ${sub.duration === "45''" ? 'selected' : ''}>45''</option>
-                                <option value="60" ${sub.duration === "1'00''" ? 'selected' : ''}>1'00''</option>
-                                <option value="90" ${sub.duration === "1'30''" ? 'selected' : ''}>1'30''</option>
-                                <option value="120" ${sub.duration === "2'00''" ? 'selected' : ''}>2'00''</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Ora Fine</label>
-                            <input type="time" value="${sub.endTime || '18:30'}"
-                                   onchange="updateSubActivityTime(${idx}, 'endTime', this.value)"
-                                   class="w-full px-2 py-1 rounded-lg border border-slate-300 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white">
-                        </div>
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
+
+            if (window.lucide) lucide.createIcons();
         };
 
         // ========================================================
@@ -8421,7 +8457,8 @@ function ghOpenSetup() {
             const endDate = document.getElementById('formEndDate')?.value || date;
             const notes = document.getElementById('formNotes').value.trim();
             const recurrence = document.getElementById('formRecurrence').value;
-            const recurrenceDays = parseInt(document.getElementById('formRecurrenceDaysInput')?.value || '1', 10);
+            const recurrenceDays = parseInt(document.getElementById('formRecurrenceCustomDays')?.value || document.getElementById('formRecurrenceDaysInput')?.value || '1', 10);
+            const recurrenceWeekday = parseInt(document.getElementById('formRecurrenceWeekdaySelect')?.value || '1', 10);
             const place = document.getElementById('formPlace').value.trim();
             const notificationAdvance = document.getElementById('formNotificationAdvance').value;
             const personalTimer = document.getElementById('formPersonalTimer').value;
@@ -8434,24 +8471,14 @@ function ghOpenSetup() {
             }
 
             const isSameTime = document.getElementById('formSameTimeCheckbox')?.checked ?? true;
-            let finalTime = '';
-            let finalEndTime = '';
-            let finalDuration = '';
+            let finalTime = document.getElementById('formTime')?.value || '18:00';
+            let finalEndTime = document.getElementById('formEndTime')?.value || '18:30';
+            let finalDuration = document.getElementById('formDuration')?.value || "30''";
             let finalSchedule = [];
             let finalUsers = [...state.formUsers];
 
-            if (isSameTime) {
-                finalTime = document.getElementById('formTime').value;
-                finalEndTime = document.getElementById('formEndTime').value;
-                finalDuration = document.getElementById('formDuration').value || "30''";
-                finalSchedule = [];
-            } else {
-                // Modalità orari differenti / visite multiple
-                if (!Array.isArray(state.formSchedule) || state.formSchedule.length === 0) {
-                    showToast("Aggiungi almeno un orario o visita");
-                    return;
-                }
-
+            if (!isSameTime && Array.isArray(state.formSchedule) && state.formSchedule.length > 0) {
+                // Modalità orari differenti / visite multiple da tabella schedule
                 const usersList = getActiveUsersList();
                 finalSchedule = state.formSchedule.map(slot => {
                     const u = usersList.find(x => x.id === slot.userId) || { name: slot.userName || slot.userId };
@@ -8487,7 +8514,72 @@ function ghOpenSetup() {
                 finalTime = `${sh}:${sm}`;
                 finalEndTime = `${eh}:${em}`;
                 finalDuration = formatDurationNotation(diff);
+            } else if (Array.isArray(state.formSubActivities) && state.formSubActivities.length > 0) {
+                // Integrazione automatica quando sono state aggiunte attività/orari per più persone
+                const usersList = getActiveUsersList();
+                const subUids = state.formSubActivities.map(s => s.userId).filter(uid => uid && uid !== 'all');
+                let primaryUids = state.formUsers.filter(uid => !subUids.includes(uid));
+                if (primaryUids.length === 0) {
+                    primaryUids = [state.formUsers[0] || state.activeProfileId || 'u1'];
+                }
+
+                // Includi tutti i partecipanti a finalUsers
+                subUids.forEach(suid => {
+                    if (!finalUsers.includes(suid)) finalUsers.push(suid);
+                });
+
+                finalSchedule = [];
+                // Orario per i componenti principali
+                primaryUids.forEach(pUid => {
+                    const u = usersList.find(x => x.id === pUid) || { name: pUid };
+                    finalSchedule.push({
+                        userId: pUid,
+                        userName: u.name,
+                        time: finalTime,
+                        endTime: finalEndTime,
+                        duration: finalDuration,
+                        notes: ''
+                    });
+                });
+
+                // Orari per ciascuna altra attività aggiuntiva configurata
+                state.formSubActivities.forEach((sub, sIdx) => {
+                    const sUid = sub.userId || (state.formUsers[sIdx + 1] || 'all');
+                    const u = usersList.find(x => x.id === sUid) || { name: sUid === 'all' ? 'Tutta la famiglia' : sUid };
+                    finalSchedule.push({
+                        userId: sUid,
+                        userName: u.name,
+                        time: sub.time || finalTime,
+                        endTime: sub.endTime || finalEndTime,
+                        duration: sub.duration || finalDuration,
+                        notes: sub.title || ''
+                    });
+                });
+
+                // Calcolo orario globale
+                let minStart = 24 * 60;
+                let maxEnd = 0;
+                finalSchedule.forEach(s => {
+                    const [sh, sm] = (s.time || '18:00').split(':').map(Number);
+                    const [eh, em] = (s.endTime || '18:30').split(':').map(Number);
+                    const sMin = (isNaN(sh) ? 18 : sh) * 60 + (isNaN(sm) ? 0 : sm);
+                    let eMin = (isNaN(eh) ? 18 : eh) * 60 + (isNaN(em) ? 30 : em);
+                    if (eMin <= sMin) eMin = sMin + 30;
+                    if (sMin < minStart) minStart = sMin;
+                    if (eMin > maxEnd) maxEnd = eMin;
+                });
+                if (minStart < maxEnd) {
+                    const sh = String(Math.floor(minStart / 60)).padStart(2, '0');
+                    const sm = String(minStart % 60).padStart(2, '0');
+                    const eh = String(Math.floor(maxEnd / 60)).padStart(2, '0');
+                    const em = String(maxEnd % 60).padStart(2, '0');
+                    finalTime = `${sh}:${sm}`;
+                    finalEndTime = `${eh}:${em}`;
+                    finalDuration = formatDurationNotation(maxEnd - minStart);
+                }
             }
+
+            const hasMultiSchedule = (finalSchedule && finalSchedule.length > 0);
 
             const payload = {
                 id,
@@ -8497,7 +8589,7 @@ function ghOpenSetup() {
                 time: finalTime,
                 endTime: finalEndTime,
                 duration: finalDuration,
-                hasDifferentTimes: !isSameTime,
+                hasDifferentTimes: hasMultiSchedule,
                 schedule: finalSchedule,
                 subActivities: state.formSubActivities || [],
                 category: state.formCategory,
@@ -8508,6 +8600,7 @@ function ghOpenSetup() {
                 notes,
                 recurrence,
                 recurrenceDays,
+                recurrenceWeekday,
                 place,
                 notificationAdvance,
                 personalTimer,
@@ -9263,37 +9356,40 @@ function ghOpenSetup() {
             }
         };
 
-        window.downloadRev17File = function() {
+        window.downloadRev20File = function() {
             const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
             const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'agenda_famiglia_rev.17.html';
+            a.download = 'agenda_famiglia_rev.20.html';
             document.body.appendChild(a);
             a.click();
             a.remove();
             URL.revokeObjectURL(url);
-            showToast("File agenda_famiglia_rev.17.html scaricato con successo!");
+            showToast("File agenda_famiglia_rev.20.html scaricato con successo!");
         };
-        window.downloadRev16File = window.downloadRev17File;
-        window.downloadRev15File = window.downloadRev17File;
-        window.downloadRev14File = window.downloadRev17File;
-        window.downloadRev13File = window.downloadRev17File;
+        window.downloadRev19File = window.downloadRev20File;
+        window.downloadRev18File = window.downloadRev20File;
+        window.downloadRev17File = window.downloadRev20File;
+        window.downloadRev16File = window.downloadRev20File;
+        window.downloadRev15File = window.downloadRev20File;
+        window.downloadRev14File = window.downloadRev20File;
+        window.downloadRev13File = window.downloadRev20File;
 
         window.patrizioConfirmVersion = async function() {
             state.versionControl = {
-                approvedVersion: 'rev.17',
+                approvedVersion: 'rev.20',
                 approvedBy: 'Patrizio',
                 approvedAt: new Date().toISOString()
             };
             renderFooterProfileAndVersion();
-            showToast("rev.17 confermata ufficialmente da Patrizio!");
+            showToast("rev.20 confermata ufficialmente da Patrizio!");
         };
 
         window.exportDataJson = function() {
             const backup = {
-                version: 'rev.17',
+                version: 'rev.20',
                 exportedAt: new Date().toISOString(),
                 events: state.events,
                 shoppingList: state.shoppingList,
@@ -9690,19 +9786,55 @@ function ghOpenSetup() {
             if (schedBox && schedList) {
                 if (Array.isArray(ev.subActivities) && ev.subActivities.length > 0) {
                     schedBox.classList.remove('hidden');
-                    if (schedCount) schedCount.textContent = `${ev.subActivities.length} attività correlate`;
-                    schedList.innerHTML = ev.subActivities.map((sub, idx) => `
-                        <div class="p-2 rounded-xl bg-white border border-indigo-100 flex items-start justify-between gap-2 shadow-2xs">
-                            <div class="min-w-0">
-                                <div class="text-xs font-black text-slate-900">${idx + 1}. ${escapeHtml(sub.title || 'Attività ' + (idx + 1))}</div>
-                                <div class="text-[10px] font-semibold text-slate-500 mt-0.5">${sub.date || ''}${sub.endDate && sub.endDate !== sub.date ? ` fino a ${sub.endDate}` : ''}</div>
+                    if (schedCount) schedCount.textContent = `${ev.subActivities.length + 1} orari/attività`;
+                    
+                    let itemsHtml = '';
+                    // Orario principale
+                    const mainUids = (ev.users || []).filter(u => !ev.subActivities.some(s => s.userId === u));
+                    const primeUid = mainUids[0] || (ev.users && ev.users[0]) || 'u1';
+                    const primeUser = usersList.find(x => x.id === primeUid) || { name: 'Principale', hex: '#4f46e5' };
+                    itemsHtml += `
+                        <div class="p-2.5 rounded-xl bg-white border border-indigo-100 flex items-start justify-between gap-2 shadow-2xs">
+                            <div class="flex items-start gap-2 min-w-0">
+                                <span class="w-6 h-6 rounded-lg flex items-center justify-center text-white text-[11px] font-black shrink-0 mt-0.5 shadow-xs" style="background-color:${primeUser.hex}">
+                                    ${primeUser.name.charAt(0)}
+                                </span>
+                                <div class="min-w-0">
+                                    <div class="text-xs font-black text-slate-900 truncate">${escapeHtml(primeUser.name)}</div>
+                                    <div class="text-[10px] font-semibold text-slate-500 mt-0.5">${escapeHtml(ev.title || 'Attività')}</div>
+                                </div>
                             </div>
                             <div class="text-right shrink-0">
-                                <div class="text-xs font-black text-indigo-700">${sub.time || ''} - ${sub.endTime || ''}</div>
-                                <div class="text-[10px] font-bold text-slate-400">(${sub.duration || ''})</div>
+                                <div class="text-xs font-black text-indigo-700">${ev.time || ''} - ${ev.endTime || ''}</div>
+                                <div class="text-[10px] font-bold text-slate-400">(${ev.duration || ''})</div>
                             </div>
                         </div>
-                    `).join('');
+                    `;
+
+                    // Sotto-attività per i diversi partecipanti
+                    ev.subActivities.forEach((sub, idx) => {
+                        const sUid = sub.userId || (ev.users && ev.users[idx + 1]) || 'all';
+                        const sUser = usersList.find(x => x.id === sUid) || { name: sUid === 'all' ? 'Tutta la famiglia' : sUid, hex: '#6366f1' };
+                        const subTitle = sub.title ? escapeHtml(sub.title) : `${escapeHtml(ev.title || 'Attività')} (stessa attività)`;
+                        itemsHtml += `
+                            <div class="p-2.5 rounded-xl bg-white border border-indigo-100 flex items-start justify-between gap-2 shadow-2xs">
+                                <div class="flex items-start gap-2 min-w-0">
+                                    <span class="w-6 h-6 rounded-lg flex items-center justify-center text-white text-[11px] font-black shrink-0 mt-0.5 shadow-xs" style="background-color:${sUser.hex}">
+                                        ${sUser.name.charAt(0)}
+                                    </span>
+                                    <div class="min-w-0">
+                                        <div class="text-xs font-black text-slate-900 truncate">${escapeHtml(sUser.name)}</div>
+                                        <div class="text-[10px] font-semibold text-slate-500 mt-0.5">${subTitle}</div>
+                                    </div>
+                                </div>
+                                <div class="text-right shrink-0">
+                                    <div class="text-xs font-black text-indigo-700">${sub.time || ''} - ${sub.endTime || ''}</div>
+                                    <div class="text-[10px] font-bold text-slate-400">(${sub.duration || ''})</div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    schedList.innerHTML = itemsHtml;
                 } else if (ev.hasDifferentTimes && Array.isArray(ev.schedule) && ev.schedule.length > 0) {
                     schedBox.classList.remove('hidden');
                     if (schedCount) schedCount.textContent = `${ev.schedule.length} voci/orari`;
@@ -9741,6 +9873,12 @@ function ghOpenSetup() {
                     recRow.classList.remove('hidden');
                     if (ev.recurrence === 'in_x_days') {
                         recTxt.textContent = `Fra ${ev.recurrenceDays || 1} giorni`;
+                    } else if (ev.recurrence === 'specific_weekday') {
+                        const dayNames = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
+                        const dayIdx = Number(ev.recurrenceWeekday !== undefined ? ev.recurrenceWeekday : 1);
+                        recTxt.textContent = `Ripeti ogni ${dayNames[dayIdx]}`;
+                    } else if (ev.recurrence === 'workdays') {
+                        recTxt.textContent = 'Tutti i giorni feriali (Lun-Ven)';
                     } else {
                         const map = { daily: 'Ogni giorno', weekly: 'Ogni settimana', biweekly: 'Ogni 2 settimane', monthly: 'Ogni mese', yearly: 'Ogni anno' };
                         recTxt.textContent = map[ev.recurrence] || ev.recurrence;
@@ -9885,8 +10023,14 @@ function ghOpenSetup() {
                 if (btnDurText) btnDurText.textContent = ev.duration || "30''";
                 document.getElementById('formNotes').value = ev.notes || '';
                 document.getElementById('formRecurrence').value = ev.recurrence || 'none';
-                const recDays = document.getElementById('formRecurrenceDaysInput');
+                const recDays = document.getElementById('formRecurrenceCustomDays') || document.getElementById('formRecurrenceDaysInput');
                 if (recDays) recDays.value = ev.recurrenceDays || 1;
+                if (ev.recurrence === 'specific_weekday') {
+                    setRecurrenceWeekday(ev.recurrenceWeekday !== undefined ? ev.recurrenceWeekday : 1);
+                } else {
+                    const dObj = new Date((ev.date || getTodayIso()) + 'T00:00:00');
+                    setRecurrenceWeekday(dObj.getDay());
+                }
                 onFormRecurrenceChange();
 
                 document.getElementById('formPlace').value = ev.place || '';
@@ -9896,10 +10040,20 @@ function ghOpenSetup() {
 
                 const compElEdit1 = document.getElementById('formCompleted'); if (compElEdit1) compElEdit1.checked = !!ev.isCompleted;
                 state.formCategory = normalizeCategory(ev.category || 'famiglia');
-                state.formUsers = Array.isArray(ev.users) && ev.users.length > 0 ? [...ev.users] : ['u1', 'u2'];
+                state.formUsers = Array.isArray(ev.users) && ev.users.length > 0 ? [...ev.users] : [state.activeProfileId || 'u1'];
                 state.formSubcategory = ev.subcategory || '';
                 state.formPatrizioCategory = ev.patrizioCategory || '';
                 state.formSubActivities = Array.isArray(ev.subActivities) ? JSON.parse(JSON.stringify(ev.subActivities)) : [];
+            state.formSubActivities.forEach((sub, i) => {
+                if (!sub.userId) {
+                    sub.userId = (ev.users && ev.users[i + 1]) || (ev.users && ev.users[0]) || state.activeProfileId || 'u1';
+                }
+            });
+                state.formSubActivities.forEach((sub, i) => {
+                    if (!sub.userId) {
+                        sub.userId = (ev.users && ev.users[i + 1]) || (ev.users && ev.users[0]) || state.activeProfileId || 'u1';
+                    }
+                });
 
                 // Avviso categoria dismessa da riclassificare
                 const recatNotice = document.getElementById('formRecategorizeNotice');
@@ -9953,20 +10107,24 @@ function ghOpenSetup() {
                 
                 document.getElementById('formNotes').value = '';
                 document.getElementById('formRecurrence').value = 'none';
-                const recDays = document.getElementById('formRecurrenceDaysInput');
+                const recDays = document.getElementById('formRecurrenceCustomDays') || document.getElementById('formRecurrenceDaysInput');
                 if (recDays) recDays.value = 1;
+                const stDateObj = new Date(startDateStr + 'T00:00:00');
+                setRecurrenceWeekday(stDateObj.getDay());
                 onFormRecurrenceChange();
 
                 document.getElementById('formPlace').value = '';
                 document.getElementById('formNotificationAdvance').value = '15m';
                 document.getElementById('formPersonalTimer').value = 'sound_timer';
                 
-                // Default: visibile solo a Patrizio e Manuela
-                document.getElementById('formVisibility').value = 'admins_only';
+                // Default: Chi riguarda = utente attivo; Visibilità: Solo Patrizio e Manuela se riguarda loro, altrimenti tutti
+                const defaultUser = state.activeProfileId || 'u1';
+                state.formUsers = [defaultUser];
+                const isOnlyParents = (defaultUser === 'u1' || defaultUser === 'u2');
+                document.getElementById('formVisibility').value = isOnlyParents ? 'admins_only' : 'all';
                 const compElEdit2 = document.getElementById('formCompleted'); if (compElEdit2) compElEdit2.checked = false;
 
                 state.formCategory = 'famiglia';
-                state.formUsers = ['u1', 'u2'];
                 state.formSubcategory = '';
                 state.formPatrizioCategory = '';
                 state.formSubActivities = [];
@@ -10005,10 +10163,15 @@ function ghOpenSetup() {
             document.getElementById('formVisibility').value = ev.visibility || 'admins_only';
 
             state.formCategory = normalizeCategory(ev.category || 'famiglia');
-            state.formUsers = Array.isArray(ev.users) ? [...ev.users] : ['u1', 'u2'];
+            state.formUsers = Array.isArray(ev.users) ? [...ev.users] : [state.activeProfileId || 'u1'];
             state.formSubcategory = ev.subcategory || '';
             state.formPatrizioCategory = ev.patrizioCategory || '';
             state.formSubActivities = Array.isArray(ev.subActivities) ? JSON.parse(JSON.stringify(ev.subActivities)) : [];
+            state.formSubActivities.forEach((sub, i) => {
+                if (!sub.userId) {
+                    sub.userId = (ev.users && ev.users[i + 1]) || (ev.users && ev.users[0]) || state.activeProfileId || 'u1';
+                }
+            });
 
             if (ev.hasDifferentTimes && Array.isArray(ev.schedule) && ev.schedule.length > 0) {
                 state.formSchedule = JSON.parse(JSON.stringify(ev.schedule));
@@ -10328,6 +10491,10 @@ function ghOpenSetup() {
         };
 
         function bootApp() {
+            // Eliminazione completa e definitiva di tutti gli eventi Twirling (richiesta utente)
+            state.events = removeAllTwirlingEvents(state.events);
+            persistEventsLocally();
+
             renderApp();
             initAuth();
             initFirebaseSync();
@@ -10354,7 +10521,7 @@ function ghOpenSetup() {
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js').then(reg => {
-                    console.log('SW rev.17 registrato con successo.');
+                    console.log('SW rev.20 registrato con successo.');
                     reg.update();
                     reg.addEventListener('updatefound', () => {
                         const newWorker = reg.installing;
