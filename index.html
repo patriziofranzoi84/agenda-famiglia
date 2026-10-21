@@ -199,19 +199,6 @@
                             </div>
                         </div>
 
-                        <!-- Tasto Personalizza Colori -->
-                        <button type="button" onclick="openColorsModal()" title="Personalizza Colori Utenti e Attività"
-                                class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 text-slate-700 text-[11px] font-bold transition">
-                            <i data-lucide="palette" class="w-3.5 h-3.5 text-indigo-600"></i>
-                            <span class="hidden sm:inline">Colori</span>
-                        </button>
-
-                        <!-- Tasto Ponti / Feste -->
-                        <button type="button" onclick="openPontiModal()" title="Ponti Scolastici e Feste Nazionali"
-                                class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-900 text-[11px] font-bold transition relative">
-                            <i data-lucide="graduation-cap" class="w-3.5 h-3.5 text-amber-600"></i>
-                            <span class="hidden sm:inline">Ponti</span>
-                        </button>
 
                         <!-- Tasto + Nuovo Impegno -->
                         <button type="button" onclick="openEventModal()" title="Nuovo Impegno"
@@ -222,7 +209,7 @@
                     </div>
                 </div>
                 <!-- RIGA 2: VISTE COLORATE (LISTA, GG, SETT., MESE) + CURSORE TEMPORALE (VISIBILE SOLO SU CALENDARIO) -->
-                <div id="calendarViewsRow" class="flex items-center justify-between gap-1.5 pt-0.5 border-t border-slate-100">
+                <div id="calendarViewsRow" class="flex items-center justify-between gap-1.5 pt-0.5 border-t border-slate-100 overflow-x-auto thin-scroll flex-nowrap shrink-0">
                     <div class="inline-flex items-center gap-1 p-0.5 rounded-xl bg-slate-100 border border-slate-200 shrink-0">
                         <button type="button" onclick="switchView('list')" id="tabListBtn"
                                 class="px-2 sm:px-2.5 py-0.5 rounded-lg text-[11px] font-extrabold transition bg-amber-100/80 text-amber-900 border border-amber-300 hover:bg-amber-200">
@@ -243,7 +230,7 @@
                     </div>
 
                     <div class="flex items-center gap-1 shrink-0">
-                        <div class="flex items-center bg-slate-100 px-1 py-0.5 rounded-xl border border-slate-300 shadow-2xs">
+                        <div id="calendarPeriodNavWrapper" class="flex items-center bg-slate-100 px-1 py-0.5 rounded-xl border border-slate-300 shadow-2xs shrink-0">
                             <button type="button" onclick="navigatePeriod(-1)" title="Indietro nel tempo (Freccia ←)"
                                     class="p-1 rounded-lg hover:bg-white text-slate-800 active:scale-95 transition">
                                 <i data-lucide="chevron-left" class="w-4 h-4"></i>
@@ -257,10 +244,6 @@
                                 <i data-lucide="chevron-right" class="w-4 h-4"></i>
                             </button>
                         </div>
-                        <button type="button" onclick="goToToday()" title="Torna a Oggi"
-                                class="px-2 py-1 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 text-[10px] font-extrabold shadow-2xs transition">
-                            Oggi
-                        </button>
                         <!-- Orologio orario attuale dinamico -->
                         <div id="liveClockBadge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-700 text-[11px] font-black shrink-0">
                             <i data-lucide="clock" class="w-3.5 h-3.5 text-indigo-600"></i>
@@ -291,7 +274,7 @@
                                 Vai a Oggi / Ora
                             </button>
                             <button type="button" onclick="togglePastEvents()" class="px-2 py-0.5 rounded-lg text-[11px] font-bold border border-slate-200 text-slate-600">
-                                <span id="txtTogglePast">Nascondi passati</span>
+                                <span id="txtTogglePast">Mostra passati</span>
                             </button>
                         </div>
                     </div>
@@ -711,6 +694,29 @@
                 </div>
             </div>
 
+            <!-- SCHEDA AGGIORNAMENTO & VERSIONE APP -->
+            <div class="bg-white rounded-2xl border-2 border-emerald-300 shadow-2xs overflow-hidden">
+                <div class="px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-700 text-white flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                        <h3 class="text-xs font-black uppercase tracking-wider">Aggiornamento & Versione App</h3>
+                    </div>
+                    <span class="text-[10px] font-black bg-white/20 px-2 py-0.5 rounded-full">rev.16 (v5)</span>
+                </div>
+                <div class="p-3.5 space-y-2.5">
+                    <p class="text-[11px] text-slate-600 leading-relaxed font-medium">
+                        Se hai caricato modifiche su GitHub dal computer e il cellulare mostra ancora la versione precedente, tocca il pulsante qui sotto: pulisce la cache temporanea del telefono e scarica subito l'app aggiornata.
+                    </p>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button type="button" onclick="forceAppUpdate()" id="btnForceUpdate"
+                                class="w-full sm:w-auto flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-black shadow-md shadow-emerald-600/20 transition">
+                            <i data-lucide="refresh-cw" class="w-4 h-4" id="iconForceUpdate"></i>
+                            <span>Forza Aggiornamento Immediato</span>
+                        </button>
+                    </div>
+                    <div id="updateStatusMsg" class="hidden text-[11px] font-bold text-emerald-700 text-center"></div>
+                </div>
+            </div>
                         <!-- Dimensione Caratteri e Schermo (Zoom dedicato per cellulare) -->
             <div class="bg-white rounded-2xl border border-slate-200 shadow-2xs p-4 space-y-3">
                 <div class="flex items-center justify-between">
@@ -832,38 +838,117 @@
                 <div class="space-y-3" id="screenAltroCategoriesManager">
                     <!-- Popolato dinamicamente da JS per ogni categoria -->
                 </div>
+            <!-- ======================================================== -->
+            <!-- OPZIONI SVILUPPATORE & ADMIN -->
+            <!-- ======================================================== -->
+            <div id="devOptionsSection" class="bg-white rounded-2xl border-2 border-indigo-200 shadow-xs p-4 space-y-4">
+                <div class="flex items-center justify-between pb-2 border-b border-indigo-100">
+                    <div class="flex items-center gap-2">
+                        <div class="p-2 rounded-xl bg-indigo-100 text-indigo-700">
+                            <i data-lucide="terminal" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xs font-black uppercase text-indigo-950 tracking-wider">Opzioni Sviluppatore & Admin</h3>
+                            <p class="text-[10px] text-slate-500 font-medium">Gestione categorie nuove, log accessi orari e credenziali</p>
+                        </div>
+                    </div>
+                    <span class="text-[10px] font-black bg-indigo-600 text-white px-2 py-0.5 rounded-full">DEV</span>
+                </div>
+
+                <!-- SUGGERIMENTO PASSWORD DATA DI NASCITA -->
+                <div class="p-3 rounded-xl bg-amber-50 border border-amber-200 space-y-2">
+                    <div class="flex items-center gap-2 text-amber-900 font-black text-xs">
+                        <i data-lucide="key" class="w-4 h-4 text-amber-600 shrink-0"></i>
+                        <span>Suggerimento Password: la password &egrave; la data di nascita</span>
+                    </div>
+                    <p class="text-[11px] text-amber-800 leading-relaxed font-medium">
+                        Per tutti i familiari la password di accesso corrisponde alla propria <strong>data di nascita</strong> nel formato <code>GGMMAAAA</code> (8 cifre). Per Patrizio la password &egrave; <code>Patry</code>.
+                    </p>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-1.5 pt-1 text-[10.5px]">
+                        <div class="bg-white/80 p-1.5 rounded-lg border border-amber-200"><strong>Patrizio:</strong> <code>Patry</code></div>
+                        <div class="bg-white/80 p-1.5 rounded-lg border border-amber-200"><strong>Manuela:</strong> <code>15051980</code></div>
+                        <div class="bg-white/80 p-1.5 rounded-lg border border-amber-200"><strong>Asia:</strong> <code>12032010</code></div>
+                        <div class="bg-white/80 p-1.5 rounded-lg border border-amber-200"><strong>Mattia:</strong> <code>20072012</code></div>
+                        <div class="bg-white/80 p-1.5 rounded-lg border border-amber-200"><strong>Emma:</strong> <code>15092015</code></div>
+                        <div class="bg-white/80 p-1.5 rounded-lg border border-amber-200"><strong>Clara:</strong> <code>12032019</code></div>
+                    </div>
+                </div>
+
+                <!-- ULTIMI ACCESSI DI TUTTI GLI UTENTI (ORA E GIORNO) -->
+                <div class="space-y-2 pt-1">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-xs font-black uppercase text-slate-700 tracking-wider flex items-center gap-1.5">
+                            <i data-lucide="clock" class="w-4 h-4 text-indigo-600"></i>
+                            <span>Ultimi Accessi Familiari (Ora e Giorno)</span>
+                        </h4>
+                        <span class="text-[10px] font-bold text-slate-400">Tutti i 6 familiari</span>
+                    </div>
+                    <div id="devUserLoginsList" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <!-- Popolato dinamicamente via JS -->
+                    </div>
+                </div>
+
+                <!-- INSERIMENTO CATEGORIE NUOVE -->
+                <div class="space-y-2 pt-2 border-t border-slate-100">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-xs font-black uppercase text-slate-700 tracking-wider flex items-center gap-1.5">
+                            <i data-lucide="folder-plus" class="w-4 h-4 text-indigo-600"></i>
+                            <span>Inserimento Nuove Categorie</span>
+                        </h4>
+                        <span class="text-[10px] font-bold text-indigo-600">Condivisa con tutti</span>
+                    </div>
+                    <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <input type="text" id="devNewCategoryLabelInput" placeholder="Nome nuova categoria (es. Hobby, Spese, Lavoro...)"
+                                   class="flex-1 min-w-[150px] px-3 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold focus:outline-indigo-500 shadow-2xs">
+                            <select id="devNewCategoryColorSelect" class="px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold text-slate-800 shadow-2xs">
+                                <option value="#3b82f6" selected>Blu</option>
+                                <option value="#10b981">Verde</option>
+                                <option value="#f59e0b">Arancione</option>
+                                <option value="#8b5cf6">Viola</option>
+                                <option value="#ec4899">Rosa</option>
+                                <option value="#14b8a6">Turchese</option>
+                                <option value="#64748b">Grigio</option>
+                                <option value="#ef4444">Rosso</option>
+                            </select>
+                            <button type="button" onclick="addNewCategoryFromDev()"
+                                    class="px-3.5 py-1.5 rounded-xl text-xs font-black bg-indigo-600 hover:bg-indigo-700 text-white shadow-2xs transition shrink-0 flex items-center gap-1">
+                                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                                <span>Crea Categoria</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SCARICA FILE HTML COMPLETO (SPOSTATO DALLA SCHERMATA PRINCIPALE QUI) -->
+                <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+                    <div>
+                        <div class="text-xs font-black text-slate-800">Scaricamento File HTML Completo</div>
+                        <div class="text-[10px] text-slate-500 font-medium">Backup e download della versione rev.16</div>
+                    </div>
+                    <button type="button" onclick="downloadRev16File()"
+                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black shadow-2xs transition">
+                        <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                        <span>Scarica rev.16</span>
+                    </button>
+                </div>
+            </div>
             </div>
         </div>
 
     </main>
-    <!-- BARRA INFERIORE (FOOTER): VERSIONE REV.13 + DOWNLOAD + PROFILO ATTIVO + APPROVAZIONE PATRIZIO -->
-    <footer class="bg-slate-900 text-slate-200 px-2 py-1 shrink-0 z-30 flex flex-wrap items-center justify-between gap-1.5 text-[11px]">
+    <!-- BARRA INFERIORE (FOOTER): PROFILO ATTIVO + STATO SYNC -->
+    <footer class="bg-slate-900 text-slate-200 px-3 py-1.5 shrink-0 z-30 flex items-center justify-between text-[11px]">
         <!-- Sinistra: Chi sei sul dispositivo + Sync -->
         <div class="flex items-center gap-1.5">
-            <span id="syncDot" class="w-2 h-2 rounded-full bg-emerald-400 shrink-0" title="Sincronizzato"></span>
+            <span id="syncDot" class="w-2.5 h-2.5 rounded-full bg-emerald-400 shrink-0" title="Sincronizzato"></span>
             <span class="text-[10px] font-bold text-slate-400">Profilo:</span>
             <select id="activeProfileSelect" onchange="changeActiveProfile(this.value)"
-                    class="bg-slate-800 text-white font-extrabold text-[11px] rounded-md px-1.5 py-0.5 border border-slate-700 focus:outline-none">
+                    class="bg-slate-800 text-white font-extrabold text-[11px] rounded-md px-2 py-0.5 border border-slate-700 focus:outline-none">
             </select>
         </div>
-
-        <!-- Centro: Stato versione + Pulsante Approvazione (visibile a Patrizio) -->
-        <div class="flex items-center gap-1.5">
-            <span id="footerApprovalStatus" class="text-[10px] font-bold text-emerald-400"></span>
-            <button type="button" id="btnPatrizioApprove" onclick="patrizioConfirmVersion()"
-                    class="hidden px-2 py-0.5 rounded-md bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-extrabold text-[10px] transition shadow-2xs">
-                ✓ Conferma rev.15 OK per tutti
-            </button>
-        </div>
-
-        <!-- Destra: Tasto Download rev.15 -->
-        <div class="flex items-center gap-1.5 ml-auto sm:ml-0">
-            <button type="button" onclick="downloadRev16File()"
-                    title="Scarica agenda_famiglia_rev.16.html"
-                    class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[10px] font-extrabold bg-indigo-600 hover:bg-indigo-500 text-white transition">
-                <span>rev.16</span>
-                <i data-lucide="download" class="w-3 h-3"></i>
-            </button>
+        <div class="text-[10px] text-slate-400 font-medium">
+            Agenda Familiare Condivisa
         </div>
     </footer>
 
@@ -1264,6 +1349,7 @@
 
             <form id="eventForm" onsubmit="handleSaveEvent(event)" class="p-4 overflow-y-auto thin-scroll space-y-3.5 flex-1 text-xs">
                 <input type="hidden" id="formEventId">
+                <input type="checkbox" id="formCompleted" class="hidden">
 
                 <!-- 1. TITOLO DELL'APPUNTAMENTO -->
                 <div>
@@ -2048,11 +2134,12 @@ function ghOpenSetup() {
             { id: 'chore_4',  title: 'Secco',            order: 4,  status: 'tutti', assignedTo: [], executedBy: '', executedAt: '', confirmedBy: '', confirmedAt: '' },
             { id: 'chore_5',  title: 'Carta',            order: 5,  status: 'tutti', assignedTo: [], executedBy: '', executedAt: '', confirmedBy: '', confirmedAt: '' },
             { id: 'chore_6',  title: 'Plastica',         order: 6,  status: 'tutti', assignedTo: [], executedBy: '', executedAt: '', confirmedBy: '', confirmedAt: '' },
-            { id: 'chore_7',  title: 'Vetro',            order: 7,  status: 'tutti', assignedTo: [], executedBy: '', executedAt: '', confirmedBy: '', confirmedAt: '' },
-            { id: 'chore_8',  title: 'Olio',             order: 8,  status: 'tutti', assignedTo: [], executedBy: '', executedAt: '', confirmedBy: '', confirmedAt: '' },
-            { id: 'chore_9',  title: 'Pulizia cucina',   order: 9,  status: 'tutti', assignedTo: [], executedBy: '', executedAt: '', confirmedBy: '', confirmedAt: '' },
-            { id: 'chore_10', title: 'Pavimenti',        order: 10, status: 'tutti', assignedTo: [], executedBy: '', executedAt: '', confirmedBy: '', confirmedAt: '' },
-            { id: 'chore_11', title: 'Lavastoviglie',    order: 11, status: 'tutti', assignedTo: [], executedBy: '', executedAt: '', confirmedBy: '', confirmedAt: '' }
+            { id: 'chore_bottiglie_plastica', title: 'Bottiglie di plastica', order: 7, status: 'tutti', assignedTo: [], executedBy: '', executedAt: '', confirmedBy: '', confirmedAt: '' },
+            { id: 'chore_7',  title: 'Vetro',            order: 8,  status: 'tutti', assignedTo: [], executedBy: '', executedAt: '', confirmedBy: '', confirmedAt: '' },
+            { id: 'chore_8',  title: 'Olio',             order: 9,  status: 'tutti', assignedTo: [], executedBy: '', executedAt: '', confirmedBy: '', confirmedAt: '' },
+            { id: 'chore_9',  title: 'Pulizia cucina',   order: 10,  status: 'tutti', assignedTo: [], executedBy: '', executedAt: '', confirmedBy: '', confirmedAt: '' },
+            { id: 'chore_10', title: 'Pavimenti',        order: 11, status: 'tutti', assignedTo: [], executedBy: '', executedAt: '', confirmedBy: '', confirmedAt: '' },
+            { id: 'chore_11', title: 'Lavastoviglie',    order: 12, status: 'tutti', assignedTo: [], executedBy: '', executedAt: '', confirmedBy: '', confirmedAt: '' }
         ];
 
         // 6. CATALOGO PRODOTTI COMUNI USO SPESA (20 VOCI RICHIESTE IN ORDINE ALFABETICO)
@@ -2339,7 +2426,13 @@ function ghOpenSetup() {
                 const raw = localStorage.getItem('agenda_famiglia_chores_rev16') || localStorage.getItem('agenda_famiglia_chores_rev13') || localStorage.getItem('agenda_famiglia_chores_rev12') || localStorage.getItem('agenda_famiglia_chores_rev11');
                 if (raw) {
                     const parsed = JSON.parse(raw);
-                    if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        if (!parsed.some(c => c.title && c.title.toLowerCase().includes("bottiglie di plastica"))) {
+                            parsed.splice(6, 0, { id: "chore_bottiglie_plastica", title: "Bottiglie di plastica", order: 7, status: "tutti", assignedTo: [], executedBy: "", executedAt: "", confirmedBy: "", confirmedAt: "" });
+                            parsed.forEach((c, idx) => { c.order = idx + 1; });
+                        }
+                        return parsed;
+                    }
                 }
             } catch(e) {}
             return DEFAULT_CHORES;
@@ -2492,6 +2585,7 @@ function ghOpenSetup() {
             events: loadPersistedEvents(),
             subcategories: loadPersistedSubcategories(),
             chores: loadPersistedChores(),
+            userLogins: loadPersistedUserLogins(),
             choresTab: 'tutti', // 'tutti', 'da_fare', 'da_confermare', 'confermate'
             casaUserFilter: 'all', // Filtro utente per faccende da confermare/confermate
             pendingChoreIdForAssign: null,
@@ -2517,7 +2611,7 @@ function ghOpenSetup() {
             selectedBillsUtenze: ['Acqua', 'Gas', 'Elettricità', 'Internet e telefono', 'Consorzio', 'Altre utenze'], // Tutte le 7
             showRoutineSchool: false, // NON spuntata di default
             viewMode: 'day', // Apertura di default in vista giornaliera (gg)
-            showPast: true,
+            showPast: false, // Default: nascondi passati
             singleDayDate: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()),
             weekStartDate: getMondayOfWeek(new Date()),
             calendarYear: new Date().getFullYear(),
@@ -2668,6 +2762,10 @@ function ghOpenSetup() {
                         });
                     } else if (d.id === 'version_control' && data.approvedVersion) {
                         state.versionControl = data;
+                    } else if ((d.id === 'user_logins' || d.id === 'logins') && data.logins) {
+                        state.userLogins = { ...state.userLogins, ...data.logins };
+                        try { localStorage.setItem('agenda_famiglia_user_logins', JSON.stringify(state.userLogins)); } catch (e) {}
+                        if (window.renderDevUserLogins) renderDevUserLogins();
                     }
                 });
                 renderApp();
@@ -2695,19 +2793,6 @@ function ghOpenSetup() {
             const dot = document.getElementById('syncDot');
             if (dot) {
                 ghApplyDot();
-            }
-            const footerStatus = document.getElementById('footerApprovalStatus');
-            const btnApprove = document.getElementById('btnPatrizioApprove');
-            if (footerStatus) {
-                footerStatus.textContent = state.versionControl.approvedVersion ? `Approvata ${state.versionControl.approvedVersion}` : 'rev.16 Attiva';
-            }
-            if (btnApprove) {
-                const isPat = state.activeProfileId === 'u1';
-                if (isPat && state.versionControl.approvedVersion !== 'rev.16') {
-                    btnApprove.classList.remove('hidden');
-                } else {
-                    btnApprove.classList.add('hidden');
-                }
             }
         }
 
@@ -2765,7 +2850,7 @@ function ghOpenSetup() {
             if (usersBtnLabel) {
                 const totalU = BASE_USERS.length;
                 const selU = state.selectedUsers.length;
-                usersBtnLabel.textContent = (selU === totalU) ? `Chi: Tutti (${totalU})` : (selU === 0) ? `Chi: Nessuno` : `Chi: ${selU}`;
+                usersBtnLabel.textContent = `Chi: ${selU}`;
             }
 
             // Etichetta bottone Cosa in testata
@@ -2773,7 +2858,7 @@ function ghOpenSetup() {
             if (catsBtnLabel) {
                 const totalC = Object.keys(BASE_CATEGORIES).length;
                 const selC = state.selectedCategories.length;
-                catsBtnLabel.textContent = (selC === totalC) ? `Cosa: Tutte (${totalC})` : (selC === 0) ? `Cosa: Nessuna` : `Cosa: ${selC}`;
+                catsBtnLabel.textContent = `Cosa: ${selC}`;
             }
 
             // Contatori badge compatibilità
@@ -4512,6 +4597,7 @@ function ghOpenSetup() {
 
             input.value = '';
             renderAltroCategoriesManager();
+            if (window.renderDevUserLogins) renderDevUserLogins();
             renderFormControls();
             renderFilterDropdowns();
             renderApp();
@@ -4556,6 +4642,151 @@ function ghOpenSetup() {
             }
         };
 
+        function loadPersistedUserLogins() {
+            try {
+                const raw = localStorage.getItem('agenda_famiglia_user_logins');
+                if (raw) return JSON.parse(raw);
+            } catch (e) {}
+            return {};
+        }
+
+        function formatLoginTimestamp(isoStr) {
+            if (!isoStr) return 'Nessun accesso registrato';
+            try {
+                const d = new Date(isoStr);
+                if (isNaN(d.getTime())) return 'Nessun accesso registrato';
+                const day = String(d.getDate()).padStart(2, '0');
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const year = d.getFullYear();
+                const hours = String(d.getHours()).padStart(2, '0');
+                const mins = String(d.getMinutes()).padStart(2, '0');
+                const secs = String(d.getSeconds()).padStart(2, '0');
+
+                const now = new Date();
+                const isToday = d.toDateString() === now.toDateString();
+                const yesterday = new Date(now);
+                yesterday.setDate(now.getDate() - 1);
+                const isYesterday = d.toDateString() === yesterday.toDateString();
+
+                if (isToday) {
+                    return `Oggi (${day}/${month}/${year}) alle ${hours}:${mins}:${secs}`;
+                } else if (isYesterday) {
+                    return `Ieri (${day}/${month}/${year}) alle ${hours}:${mins}:${secs}`;
+                } else {
+                    return `Giorno: ${day}/${month}/${year} - Ora: ${hours}:${mins}:${secs}`;
+                }
+            } catch (e) {
+                return isoStr;
+            }
+        }
+
+        function recordUserLogin(userId) {
+            if (!userId) return;
+            if (!state.userLogins) state.userLogins = {};
+            state.userLogins[userId] = new Date().toISOString();
+            try {
+                localStorage.setItem('agenda_famiglia_user_logins', JSON.stringify(state.userLogins));
+            } catch (e) {}
+            if (typeof GH !== 'undefined' && GH.setDoc) {
+                GH.setDoc(GH.doc(null, 'settings/user_logins'), {
+                    logins: state.userLogins,
+                    lastUpdated: new Date().toISOString()
+                });
+            }
+            if (db && currentUser) {
+                setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_settings_rev16', 'user_logins'), {
+                    logins: state.userLogins,
+                    lastUpdated: new Date().toISOString()
+                }).catch(e => console.warn(e));
+            }
+            if (window.renderDevUserLogins) renderDevUserLogins();
+        }
+
+        window.renderDevUserLogins = function() {
+            const container = document.getElementById('devUserLoginsList');
+            if (!container) return;
+
+            container.innerHTML = BASE_USERS.map(u => {
+                const isCurrentActive = u.id === state.activeProfileId;
+                const lastIso = state.userLogins ? state.userLogins[u.id] : null;
+                const formatted = formatLoginTimestamp(lastIso);
+                const color = getUserColor(u.id);
+                const roleShort = (u.role || '').split('/')[0].trim();
+
+                return `
+                    <div class="flex items-center justify-between p-2.5 rounded-xl border border-slate-200 bg-slate-50/80 hover:bg-white transition">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <div class="w-8 h-8 rounded-xl flex items-center justify-center text-white text-xs font-black shadow-xs shrink-0"
+                                 style="background-color: ${color}">
+                                ${u.name.charAt(0)}
+                            </div>
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-1.5 flex-wrap">
+                                    <span class="text-xs font-black text-slate-900">${u.name}</span>
+                                    <span class="text-[9.5px] font-bold text-slate-500">(${roleShort})</span>
+                                    ${isCurrentActive ? `<span class="px-1.5 py-0.2 rounded-full text-[9px] font-black bg-emerald-100 text-emerald-800">In uso adesso</span>` : ''}
+                                </div>
+                                <div class="text-[10.5px] font-semibold text-slate-600 flex items-center gap-1 mt-0.5 truncate">
+                                    <i data-lucide="clock" class="w-3 h-3 text-slate-400 shrink-0"></i>
+                                    <span class="truncate">${formatted}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            if (window.lucide) lucide.createIcons();
+        };
+
+        window.addNewCategoryFromDev = function() {
+            const input = document.getElementById('devNewCategoryLabelInput');
+            const colorSel = document.getElementById('devNewCategoryColorSelect');
+            if (!input || !input.value.trim()) {
+                showToast("Inserisci il nome della nuova categoria");
+                return;
+            }
+            const label = input.value.trim();
+            const hex = colorSel ? colorSel.value : '#3b82f6';
+            const catId = 'cat_' + Date.now();
+
+            if (!state.familyDefaultColors) state.familyDefaultColors = {};
+            if (!state.familyDefaultColors.categories) state.familyDefaultColors.categories = {};
+
+            Object.keys(DEFAULT_CATEGORIES_COLORS).forEach(k => {
+                if (!state.familyDefaultColors.categories[k]) {
+                    state.familyDefaultColors.categories[k] = { ...DEFAULT_CATEGORIES_COLORS[k] };
+                }
+            });
+
+            state.familyDefaultColors.categories[catId] = {
+                id: catId,
+                label: label,
+                borderHex: hex,
+                bgHex: hex + '20',
+                textHex: hex
+            };
+            if (!state.subcategories[catId]) state.subcategories[catId] = [];
+
+            input.value = '';
+            if (window.renderAltroCategoriesManager) renderAltroCategoriesManager();
+            renderFormControls();
+            renderFilterDropdowns();
+            renderApp();
+            showToast(`Categoria "${label}" aggiunta con successo!`);
+
+            if (typeof GH !== 'undefined' && GH.setDoc) {
+                GH.setDoc(GH.doc(null, 'settings/default_colors'), {
+                    categories: state.familyDefaultColors.categories,
+                    users: state.familyDefaultColors.users || {}
+                });
+            }
+            if (db && currentUser) {
+                setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_settings_rev16', 'default_colors'), {
+                    categories: state.familyDefaultColors.categories,
+                    users: state.familyDefaultColors.users || {}
+                }).catch(e => console.warn(e));
+            }
+        };
         function renderAltroScreen() {
             const user = BASE_USERS.find(u => u.id === state.activeProfileId) || BASE_USERS[0];
             const nameEl = document.getElementById('altroUserName');
@@ -4620,6 +4851,15 @@ function ghOpenSetup() {
             renderFilterDropdowns();
 
             // Aggiorna titolo del periodo corrente in testata
+            // Gestione visibilitÃ  barra navigazione data (nascosta su vista lista)
+            const periodNav = document.getElementById('calendarPeriodNavWrapper');
+            if (periodNav) {
+                if (state.viewMode === 'list') {
+                    periodNav.classList.add('hidden');
+                } else {
+                    periodNav.classList.remove('hidden');
+                }
+            }
             const periodTitle = document.getElementById('currentPeriodTitle');
             if (periodTitle) {
                 if (state.viewMode === 'day') {
@@ -4665,6 +4905,7 @@ function ghOpenSetup() {
             if (user) {
                 state.loggedUserId = user.id;
                 state.activeProfileId = user.id;
+                recordUserLogin(user.id);
                 const modal = document.getElementById('loginModal');
                 if (modal) modal.classList.add('hidden');
             } else {
@@ -4740,6 +4981,7 @@ function ghOpenSetup() {
                 localStorage.setItem('agenda_famiglia_logged_user_id', user.id);
                 state.loggedUserId = user.id;
                 state.activeProfileId = user.id;
+                recordUserLogin(user.id);
                 const modal = document.getElementById('loginModal');
                 if (modal) modal.classList.add('hidden');
                 showToast(`Benvenuto/a ${user.name}!`);
@@ -4778,6 +5020,7 @@ function ghOpenSetup() {
 
         window.changeActiveProfile = function(userId) {
             state.activeProfileId = userId;
+            recordUserLogin(userId);
             localStorage.setItem('agenda_famiglia_logged_user_id', userId);
             showToast(`Profilo attivo: ${BASE_USERS.find(u => u.id === userId)?.name}`);
             renderApp();
@@ -5242,6 +5485,12 @@ function ghOpenSetup() {
 
         window.switchView = function(mode) {
             state.viewMode = mode;
+            // Al tocco di qualsiasi vista porta sempre a oggi e orario corrente
+            const now = new Date();
+            state.singleDayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            state.weekStartDate = getMondayOfWeek(now);
+            state.calendarYear = now.getFullYear();
+            state.calendarMonth = now.getMonth();
             const viewStyles = {
                 list: {
                     active: "px-2 sm:px-2.5 py-0.5 rounded-lg text-[11px] font-black transition bg-amber-500 text-white shadow-xs ring-2 ring-amber-600",
@@ -5593,7 +5842,7 @@ function ghOpenSetup() {
                 document.getElementById('formNotificationAdvance').value = ev.notificationAdvance || '15m';
                 document.getElementById('formPersonalTimer').value = ev.personalTimer || 'none';
                 document.getElementById('formVisibility').value = ev.visibility || 'all';
-                document.getElementById('formCompleted').checked = !!ev.isCompleted;
+                const compEl1 = document.getElementById('formCompleted'); if (compEl1) compEl1.checked = !!ev.isCompleted;
 
                 state.formCategory = ev.category || 'sportivi';
                 state.formUsers = Array.isArray(ev.users) ? [...ev.users] : ['u1'];
@@ -5616,7 +5865,7 @@ function ghOpenSetup() {
                 document.getElementById('formNotificationAdvance').value = '15m';
                 document.getElementById('formPersonalTimer').value = 'none';
                 document.getElementById('formVisibility').value = 'admins_only';
-                document.getElementById('formCompleted').checked = false;
+                const compEl2 = document.getElementById('formCompleted'); if (compEl2) compEl2.checked = false;
 
                 state.formCategory = 'sportivi';
                 state.formUsers = [state.activeProfileId];
@@ -5887,7 +6136,7 @@ function ghOpenSetup() {
             const notificationAdvance = document.getElementById('formNotificationAdvance').value;
             const personalTimer = document.getElementById('formPersonalTimer').value;
             const visibility = document.getElementById('formVisibility').value;
-            const isCompleted = document.getElementById('formCompleted').checked;
+            const isCompleted = !!(document.getElementById('formCompleted')?.checked);
 
             if (!title || !date || state.formUsers.length === 0) {
                 showToast("Compila i campi obbligatori (Titolo, Data, Persone)");
@@ -5924,9 +6173,7 @@ function ghOpenSetup() {
             closeEventModal();
             renderApp();
 
-            if (db && currentUser) {
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_events_rev16', id), payload);
-            }
+            try { if (db && currentUser) { await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_events_rev16', id), payload); } } catch (syncErr) { console.warn('Sync warning (salvato in locale):', syncErr); }
             showToast("Impegno salvato con successo!");
         };
 
@@ -6221,6 +6468,40 @@ function ghOpenSetup() {
         // ========================================================
         // 20. DOWNLOAD FILE REV.14 E BACKUP
         // ========================================================
+        // ========================================================
+        // FORZA AGGIORNAMENTO IMMEDIATO APP (PULIZIA CACHE & SW)
+        // ========================================================
+        window.forceAppUpdate = async function() {
+            const btn = document.getElementById('btnForceUpdate');
+            const msg = document.getElementById('updateStatusMsg');
+            const icon = document.getElementById('iconForceUpdate');
+            if (btn) btn.disabled = true;
+            if (icon) icon.classList.add('animate-spin');
+            if (msg) {
+                msg.classList.remove('hidden');
+                msg.textContent = 'Aggiornamento in corso: pulizia cache e scaricamento nuova versione...';
+            }
+
+            try {
+                if ('caches' in window) {
+                    const keys = await caches.keys();
+                    await Promise.all(keys.map(k => caches.delete(k)));
+                }
+                if ('serviceWorker' in navigator) {
+                    const regs = await navigator.serviceWorker.getRegistrations();
+                    await Promise.all(regs.map(r => r.unregister()));
+                }
+                showToast('Cache svuotata! Ricaricamento ultima versione in corso...');
+                setTimeout(() => {
+                    const cleanUrl = window.location.origin + window.location.pathname + '?v=' + Date.now();
+                    window.location.replace(cleanUrl);
+                }, 500);
+            } catch (err) {
+                console.error('Errore aggiornamento forzato:', err);
+                window.location.reload(true);
+            }
+        };
+
         window.downloadRev16File = function() {
             const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
             const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
@@ -6760,6 +7041,7 @@ function ghOpenSetup() {
                 document.getElementById('formPersonalTimer').value = ev.personalTimer || 'sound_timer';
                 document.getElementById('formVisibility').value = ev.visibility || 'all';
 
+                const compElEdit1 = document.getElementById('formCompleted'); if (compElEdit1) compElEdit1.checked = !!ev.isCompleted;
                 state.formCategory = ev.category || 'sportivi';
                 state.formUsers = Array.isArray(ev.users) && ev.users.length > 0 ? [...ev.users] : [state.activeProfileId];
                 state.formSubcategory = ev.subcategory || '';
@@ -6786,6 +7068,7 @@ function ghOpenSetup() {
                 document.getElementById('formNotificationAdvance').value = '15m';
                 document.getElementById('formPersonalTimer').value = 'sound_timer';
                 document.getElementById('formVisibility').value = 'all';
+                const compElEdit2 = document.getElementById('formCompleted'); if (compElEdit2) compElEdit2.checked = false;
 
                 state.formCategory = 'sportivi';
                 // Di default l'account che sta utilizzando l'app
