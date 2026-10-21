@@ -707,8 +707,8 @@
                             </div>
                             <div>
                                 <div class="text-[10px] font-black uppercase tracking-wider text-emerald-800">Ultimo Aggiornamento App</div>
-                                <div class="text-sm font-black text-slate-900 tracking-tight" id="appLastUpdateDateTime">21/10/2026 alle 15:42</div>
-                                <div class="text-[10px] font-bold text-slate-500" id="appDeviceCheckDateTime">Verificato su questo cellulare: 21/10/2026 alle 15:42</div>
+                                <div class="text-sm font-black text-slate-900 tracking-tight" id="appLastUpdateDateTime">21/10/2026 alle 17:12</div>
+                                <div class="text-[10px] font-bold text-slate-500" id="appDeviceCheckDateTime">Verificato su questo cellulare: 21/10/2026 alle 17:12</div>
                             </div>
                         </div>
                         <div class="self-start sm:self-center">
@@ -953,7 +953,7 @@
             <!-- FOOTER INFO VERSIONE E DATA AGGIORNAMENTO -->
             <div class="pt-2 pb-6 text-center space-y-0.5">
                 <p class="text-[11px] font-black text-slate-500">Agenda Familiare Condivisa • rev. 16</p>
-                <p class="text-[10px] font-bold text-slate-400" id="altroFooterLastUpdate">Ultimo aggiornamento rilasciato: 21/10/2026 alle 15:42</p>
+                <p class="text-[10px] font-bold text-slate-400" id="altroFooterLastUpdate">Ultimo aggiornamento rilasciato: 21/10/2026 alle 17:12</p>
             </div>
         </div>
 
@@ -2161,7 +2161,7 @@ function ghOpenSetup() {
         const APP_VERSION = 'rev.16';
         const APP_BUILD_INFO = {
             rev: 'rev. 16',
-            dateTime: '21/10/2026 alle 15:42'
+            dateTime: '21/10/2026 alle 17:12'
         };
 
         // 1. I 6 PROFILI DELLA FAMIGLIA (CON AUTENTICAZIONE PASSWORD O DATA DI NASCITA)
@@ -2256,6 +2256,30 @@ function ghOpenSetup() {
 
         const DURATION_PRESETS = ['30 min', '45 min', '1 ora', '1h 30m', '2 ore', '3 ore', '4 ore', '5h 30m', 'Tutto il giorno'];
 
+        const DURATION_PRESETS_EXTENDED = [
+            { label: "15'", min: 15 },
+            { label: "30'", min: 30 },
+            { label: "45'", min: 45 },
+            { label: "1 h", min: 60 },
+            { label: "1h 30", min: 90 },
+            { label: "2 h", min: 120 },
+            { label: "Mattina (4h)", min: 240, setStart: "08:30" },
+            { label: "Pomeriggio (4h)", min: 240, setStart: "14:30" },
+            { label: "Sera (4h)", min: 240, setStart: "19:30" },
+            { label: "Tutto il giorno", allDay: true }
+        ];
+
+        const SCHEDULE_DURATION_PRESETS = [
+            { label: "15'", min: 15 },
+            { label: "30'", min: 30 },
+            { label: "45'", min: 45 },
+            { label: "1 h", min: 60 },
+            { label: "1h 30", min: 90 },
+            { label: "2 h", min: 120 },
+            { label: "3 h", min: 180 },
+            { label: "3h 30", min: 210 }
+        ];
+
         function toIsoDate(d) {
             return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
         }
@@ -2274,29 +2298,9 @@ function ghOpenSetup() {
 
         // Convertitore durata in formato richiesto: H' MM''
         function formatDurationPrime(durationStr, startTime, endTime) {
-            let totalMinutes = 0;
-            if (startTime && endTime) {
-                const [sh, sm] = startTime.split(':').map(Number);
-                const [eh, em] = endTime.split(':').map(Number);
-                const diff = (eh * 60 + em) - (sh * 60 + sm);
-                if (diff > 0) totalMinutes = diff;
-            }
-            if (totalMinutes <= 0 && durationStr) {
-                const s = String(durationStr).toLowerCase();
-                if (s.includes('tutto')) return '24\' 00\'\'';
-                const primeMatch = s.match(/(\d+)\s*'\s*(\d+)/);
-                if (primeMatch) {
-                    totalMinutes = parseInt(primeMatch[1], 10) * 60 + parseInt(primeMatch[2], 10);
-                } else {
-                    const hM = s.match(/(\d+)\s*(?:h|or[ae])/);
-                    const mM = s.match(/(\d+)\s*m/);
-                    if (hM) totalMinutes += parseInt(hM[1], 10) * 60;
-                    if (mM) totalMinutes += parseInt(mM[1], 10);
-                }
-            }
-            if (totalMinutes <= 0) totalMinutes = 60;
-            const h = Math.floor(totalMinutes / 60);
-            const m = totalMinutes % 60;
+            const min = parseDurationToMinutes(durationStr, startTime, endTime);
+            const h = Math.floor(min / 60);
+            const m = min % 60;
             return `${h}' ${String(m).padStart(2, '0')}''`;
         }
 
@@ -2304,16 +2308,42 @@ function ghOpenSetup() {
             if (startTime && endTime) {
                 const [sh, sm] = startTime.split(':').map(Number);
                 const [eh, em] = endTime.split(':').map(Number);
-                const diff = (eh * 60 + em) - (sh * 60 + sm);
-                if (diff > 0) return diff;
+                if (!isNaN(sh) && !isNaN(sm) && !isNaN(eh) && !isNaN(em)) {
+                    let diff = (eh * 60 + em) - (sh * 60 + sm);
+                    if (diff < 0) diff += 1440;
+                    if (diff > 0) return diff;
+                }
             }
             if (!durationStr) return 60;
-            const s = durationStr.toLowerCase();
+            const s = String(durationStr).toLowerCase().trim();
+            if (s.includes('tutto')) return 1440;
+
             let total = 0;
-            const hM = s.match(/(\d+)\s*(?:h|or[ae]|')/);
-            const mM = s.match(/(\d+)\s*(?:m|'')/);
-            if (hM) total += parseInt(hM[1], 10) * 60;
-            if (mM) total += parseInt(mM[1], 10);
+
+            // Ore con 'h' o 'ora/ore'
+            const hMatch = s.match(/(\d+)\s*(?:h|or[ae])/i);
+            if (hMatch) {
+                total += parseInt(hMatch[1], 10) * 60;
+            }
+
+            // Minuti con apice singolo es: 15', 30', 45'
+            const primeMatch = s.match(/(\d+)\s*'/);
+            if (primeMatch) {
+                total += parseInt(primeMatch[1], 10);
+            }
+
+            // Minuti con 'm' o 'min' o composti es: '1h 30', '1h 30m', '30 min', '45m'
+            const mMatch = s.match(/(?:h|or[ae])\s*(\d+)(?:\s*m|\s*min)?/i) || s.match(/(\d+)\s*(?:m|min)/i);
+            if (mMatch && !primeMatch) {
+                total += parseInt(mMatch[1], 10);
+            }
+
+            // Se la stringa è solo un numero (es "30" o "1")
+            if (total === 0 && /^\d+$/.test(s)) {
+                const n = parseInt(s, 10);
+                total = n <= 12 ? n * 60 : n;
+            }
+
             return total > 0 ? total : 60;
         }
 
@@ -3867,49 +3897,74 @@ function ghOpenSetup() {
                                 let res = displayItems.map(item => {
                                     if (item.isSteppedGroup) {
                                         const cat = BASE_CATEGORIES[item.category] || BASE_CATEGORIES.sportivi || BASE_CATEGORIES.famigliari;
+                                        const timeSpan = (item.time && item.endTime && item.endTime !== item.time)
+                                            ? `${item.time} - ${item.endTime}`
+                                            : (item.time || '');
                                         return `
                                             <div onclick="event.stopPropagation(); openActivityDetailModal(JSON.parse(this.dataset.item))"
                                                  data-item="${escapeHtml(JSON.stringify(item))}"
-                                                 title="${escapeHtml(item.title)}: ${item.participants.length} familiari (${item.time}-${item.endTime})"
-                                                 class="px-1 py-0.5 rounded text-[8.5px] font-bold truncate flex items-center justify-between gap-1 shadow-2xs cursor-pointer hover:brightness-95 transition border border-black/10"
+                                                 title="${escapeHtml(item.title)}: ${timeSpan} (${item.participants.length} familiari)"
+                                                 class="px-1.5 py-1 rounded-lg text-[8px] font-bold flex flex-col justify-center shadow-2xs cursor-pointer hover:brightness-95 transition border border-black/10 leading-tight gap-0.5"
                                                  style="background-color:${cat.bgHex}; color:${cat.textHex}">
-                                                <div class="truncate flex items-center gap-1 min-w-0">
-                                                    <span class="w-1.5 h-1.5 rounded-full shrink-0" style="background-color:${cat.borderHex}"></span>
-                                                    <span class="truncate font-black">${escapeHtml(item.title)}</span>
+                                                <div class="flex items-center justify-between gap-1 min-w-0">
+                                                    <div class="truncate flex items-center gap-1 min-w-0">
+                                                        <span class="w-1.5 h-1.5 rounded-full shrink-0" style="background-color:${cat.borderHex}"></span>
+                                                        <span class="truncate font-black text-[8.5px] leading-tight">${escapeHtml(item.title)}</span>
+                                                    </div>
+                                                    <div class="flex items-center gap-0.5 shrink-0">
+                                                        ${item.participants.map(p => {
+                                                            const u = usersList.find(x => x.id === p.userId) || { hex: '#334155' };
+                                                            return `<span class="w-2 h-2 rounded-full border border-white/60 shrink-0" style="background-color:${u.hex}"></span>`;
+                                                        }).join('')}
+                                                    </div>
                                                 </div>
-                                                <div class="flex items-center gap-0.5 shrink-0">
-                                                    ${item.participants.map(p => {
-                                                        const u = usersList.find(x => x.id === p.userId) || { hex: '#334155' };
-                                                        return `<span class="w-2 h-2 rounded-full border border-white/60 shrink-0" style="background-color:${u.hex}"></span>`;
-                                                    }).join('')}
-                                                </div>
+                                                ${timeSpan ? `
+                                                    <div class="text-[7.5px] font-black opacity-85 truncate tracking-tight leading-none mt-0.5">
+                                                        ${timeSpan}
+                                                    </div>
+                                                ` : ''}
                                             </div>
                                         `;
                                     } else {
                                         const ev = item.ev;
                                         const cat = BASE_CATEGORIES[ev.category] || BASE_CATEGORIES.famigliari;
+                                        const startTime = item.time || ev.time || '';
+                                        const endTime = item.endTime || ev.endTime || '';
+                                        const isAllDay = item.isAllDay || !startTime || (typeof startTime === 'string' && startTime.toLowerCase().includes('tutto'));
+                                        const timeSpan = isAllDay
+                                            ? 'Tutto il giorno'
+                                            : (startTime && endTime && endTime !== startTime)
+                                                ? `${startTime} - ${endTime}`
+                                                : (startTime || '');
                                         return `
                                             <div onclick="event.stopPropagation(); openEventModal('${ev.id}')"
-                                                 title="${escapeHtml(ev.title)} (${ev.time || 'Tutto il giorno'})"
-                                                 class="px-1 py-0.5 rounded text-[8.5px] font-bold truncate flex items-center justify-between gap-1 shadow-2xs cursor-pointer hover:brightness-95 transition border border-black/5"
+                                                 title="${escapeHtml(ev.title)} (${timeSpan})"
+                                                 class="px-1.5 py-1 rounded-lg text-[8px] font-bold flex flex-col justify-center shadow-2xs cursor-pointer hover:brightness-95 transition border border-black/5 leading-tight gap-0.5"
                                                  style="background-color:${cat.bgHex}; color:${cat.textHex}">
-                                                <div class="truncate flex items-center gap-1 min-w-0">
-                                                    <span class="w-1.5 h-1.5 rounded-full shrink-0" style="background-color:${cat.borderHex}"></span>
-                                                    <span class="truncate">${escapeHtml(ev.title)}</span>
+                                                <div class="flex items-center justify-between gap-1 min-w-0">
+                                                    <div class="truncate flex items-center gap-1 min-w-0">
+                                                        <span class="w-1.5 h-1.5 rounded-full shrink-0" style="background-color:${cat.borderHex}"></span>
+                                                        <span class="truncate font-bold text-[8.5px] leading-tight">${escapeHtml(ev.title)}</span>
+                                                    </div>
+                                                    <div class="flex items-center gap-0.5 shrink-0">
+                                                        ${(ev.users || []).map(uid => {
+                                                            const u = usersList.find(x => x.id === uid) || { hex: '#334155' };
+                                                            return `<span class="w-2 h-2 rounded-full border border-white/60 shrink-0" style="background-color:${u.hex}"></span>`;
+                                                        }).join('')}
+                                                    </div>
                                                 </div>
-                                                <div class="flex items-center gap-0.5 shrink-0">
-                                                    ${(ev.users || []).map(uid => {
-                                                        const u = usersList.find(x => x.id === uid) || { hex: '#334155' };
-                                                        return `<span class="w-2 h-2 rounded-full border border-white/60 shrink-0" style="background-color:${u.hex}"></span>`;
-                                                    }).join('')}
-                                                </div>
+                                                ${timeSpan ? `
+                                                    <div class="text-[7.5px] font-black opacity-85 truncate tracking-tight leading-none mt-0.5">
+                                                        ${timeSpan}
+                                                    </div>
+                                                ` : ''}
                                             </div>
                                         `;
                                     }
                                 }).join('');
 
                                 if (monthItems.length > 3) {
-                                    res += `<div class="text-[8px] font-bold text-slate-400 text-center leading-none">+${monthItems.length - 3} altri</div>`;
+                                    res += `<div class="text-[8px] font-bold text-slate-400 text-center leading-none mt-0.5">+${monthItems.length - 3} altri</div>`;
                                 }
                                 return res;
                             })()}
@@ -6338,18 +6393,9 @@ function ghOpenSetup() {
                         <!-- Tasti rapidi durata per questo slot -->
                         <div class="flex flex-wrap gap-1 items-center pt-0.5 border-t border-slate-100">
                             <span class="text-[9.5px] font-bold text-slate-400 mr-0.5">Durata rapida:</span>
-                            ${[
-                                { label: "15'", min: 15 },
-                                { label: "30'", min: 30 },
-                                { label: "45'", min: 45 },
-                                { label: "1 h", min: 60 },
-                                { label: "1h 30", min: 90 },
-                                { label: "2 h", min: 120 },
-                                { label: "3 h", min: 180 },
-                                { label: "3h 30", min: 210 }
-                            ].map(btn => `
-                                <button type="button" onclick="applyScheduleSlotDuration(${index}, ${btn.min}, '${btn.label}')"
-                                        class="px-1.5 py-0.5 rounded text-[10px] font-black border transition ${slot.duration === btn.label ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'}">
+                            ${SCHEDULE_DURATION_PRESETS.map((btn, btnIdx) => `
+                                <button type="button" onclick="applyScheduleSlotDuration(${index}, ${btnIdx})"
+                                        class="px-1.5 py-0.5 rounded text-[10px] font-black border transition ${slot.duration === btn.label ? 'bg-indigo-600 text-white border-indigo-600 ring-1 ring-indigo-300' : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'}">
                                     ${btn.label}
                                 </button>
                             `).join('')}
@@ -6454,15 +6500,17 @@ function ghOpenSetup() {
             state.formSchedule[index].notes = val;
         };
 
-        window.applyScheduleSlotDuration = function(index, min, label) {
-            if (!state.formSchedule[index]) return;
+        window.applyScheduleSlotDuration = function(index, presetIdx) {
+            if (!state.formSchedule || !state.formSchedule[index]) return;
+            const preset = SCHEDULE_DURATION_PRESETS[presetIdx];
+            if (!preset) return;
             const st = state.formSchedule[index].time || '18:00';
             const [sh, sm] = st.split(':').map(Number);
-            const eMin = (sh * 60 + sm + min) % 1440;
+            const eMin = (sh * 60 + sm + preset.min) % 1440;
             const eh = String(Math.floor(eMin / 60)).padStart(2, '0');
             const em = String(eMin % 60).padStart(2, '0');
             state.formSchedule[index].endTime = `${eh}:${em}`;
-            state.formSchedule[index].duration = label;
+            state.formSchedule[index].duration = preset.label;
             renderScheduleRows();
         };
 
@@ -6555,14 +6603,24 @@ function ghOpenSetup() {
 
             const durGrid = document.getElementById('durationQuickButtons');
             if (durGrid) {
-                durGrid.innerHTML = DURATION_PRESETS_EXTENDED.map((d, idx) => `
-                    <button type="button" onclick="selectQuickDurationPreset(${idx})"
-                            class="px-2 py-1 rounded-lg bg-white border border-slate-300 hover:bg-indigo-50 hover:border-indigo-400 text-[11px] font-black text-slate-800 text-center shadow-2xs transition">
-                        ${d.label}
-                    </button>
-                `).join('');
+                renderDurationQuickButtons();
             }
         }
+
+        window.renderDurationQuickButtons = function() {
+            const durGrid = document.getElementById('durationQuickButtons');
+            if (!durGrid) return;
+            const curDur = (document.getElementById('formDuration')?.value || '').trim();
+            durGrid.innerHTML = DURATION_PRESETS_EXTENDED.map((d, idx) => {
+                const isSelected = curDur === d.label;
+                return `
+                    <button type="button" onclick="selectQuickDurationPreset(${idx})"
+                            class="px-2 py-1 rounded-lg border text-[11px] font-black text-center shadow-2xs transition ${isSelected ? 'bg-indigo-600 text-white border-indigo-600 ring-2 ring-indigo-300 scale-[1.02]' : 'bg-white text-slate-800 border-slate-300 hover:bg-indigo-50 hover:border-indigo-400'}">
+                        ${d.label}
+                    </button>
+                `;
+            }).join('');
+        };
 
         window.toggleUserInForm = function(uid) {
             if (state.formUsers.includes(uid)) {
@@ -7879,19 +7937,6 @@ function ghOpenSetup() {
         // ========================================================
         // CALCOLO AUTOMATICO ORA INIZIO, DURATA E ORA FINE
         // ========================================================
-        const DURATION_PRESETS_EXTENDED = [
-            { label: "15'", min: 15 },
-            { label: "30'", min: 30 },
-            { label: "45'", min: 45 },
-            { label: "1 h", min: 60 },
-            { label: "1h 30", min: 90 },
-            { label: "2 h", min: 120 },
-            { label: "Mattina (4h)", min: 240, setStart: "08:30" },
-            { label: "Pomeriggio (4h)", min: 240, setStart: "14:30" },
-            { label: "Sera (4h)", min: 240, setStart: "19:30" },
-            { label: "Tutto il giorno", allDay: true }
-        ];
-
         window.selectQuickDurationPreset = function(idx) {
             const item = DURATION_PRESETS_EXTENDED[idx];
             if (!item) return;
@@ -7905,6 +7950,7 @@ function ghOpenSetup() {
                 etInput.value = '23:59';
                 durInput.value = 'Tutto il giorno';
                 updateCalculatedDurationHint();
+                renderDurationQuickButtons();
                 return;
             }
 
@@ -7927,6 +7973,7 @@ function ghOpenSetup() {
             durInput.value = item.label;
 
             updateCalculatedDurationHint();
+            renderDurationQuickButtons();
         };
 
         window.applyCustomDurationInputs = function() {
@@ -7951,6 +7998,7 @@ function ghOpenSetup() {
             const durStr = `${h > 0 ? h + 'h ' : ''}${m > 0 ? m + 'm' : ''}`.trim();
             durInput.value = durStr;
             updateCalculatedDurationHint();
+            renderDurationQuickButtons();
             showToast(`Durata impostata: ${durStr}`);
         };
 
@@ -7970,6 +8018,7 @@ function ghOpenSetup() {
                 }
             }
             updateCalculatedDurationHint();
+            renderDurationQuickButtons();
         };
 
         window.onFormEndTimeChange = function() {
@@ -7990,6 +8039,7 @@ function ghOpenSetup() {
                 }
             }
             updateCalculatedDurationHint();
+            renderDurationQuickButtons();
         };
 
         function updateCalculatedDurationHint() {
