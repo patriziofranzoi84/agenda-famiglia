@@ -16,7 +16,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Agenda Familiare Condivisa rev.21</title>
+    <title>Agenda Familiare Condivisa rev.22</title>
     <script>
         // Applicazione immediata grandezza caratteri salvata per questo dispositivo
         (function() {
@@ -212,11 +212,11 @@
                 <div id="calendarViewsRow" class="flex items-center justify-between gap-1.5 pt-0.5 border-t border-slate-100 overflow-x-auto thin-scroll flex-nowrap shrink-0">
                     <div class="inline-flex items-center gap-1 p-0.5 rounded-xl bg-slate-100 border border-slate-200 shrink-0">
                         <button type="button" onclick="switchView('list')" id="tabListBtn"
-                                class="px-2 sm:px-2.5 py-0.5 rounded-lg text-[11px] font-extrabold transition bg-amber-100/80 text-amber-900 border border-amber-300 hover:bg-amber-200">
+                                class="px-2 sm:px-2.5 py-0.5 rounded-lg text-[11px] font-black transition bg-amber-500 text-white shadow-xs ring-2 ring-amber-600">
                             lista
                         </button>
                         <button type="button" onclick="switchView('day')" id="tabDayBtn"
-                                class="px-2 sm:px-2.5 py-0.5 rounded-lg text-[11px] font-black transition bg-sky-600 text-white shadow-xs ring-2 ring-sky-700">
+                                class="px-2 sm:px-2.5 py-0.5 rounded-lg text-[11px] font-extrabold transition bg-sky-100/80 text-sky-900 border border-sky-300 hover:bg-sky-200">
                             gg
                         </button>
                         <button type="button" onclick="switchView('week')" id="tabWeekBtn"
@@ -279,7 +279,7 @@
             </div>
 
             <!-- 1. VISTA LISTA INFINITA (Ancorata alle attività di adesso/oggi, scorrevole su e giù) -->
-            <section id="listViewSection" class="hidden flex-1 h-full overflow-y-auto thin-scroll p-1">
+            <section id="listViewSection" class="flex-1 h-full overflow-y-auto thin-scroll p-1">
                 <div class="max-w-4xl mx-auto space-y-2 pb-10">
                     <div class="flex flex-wrap items-center justify-between gap-2 bg-white px-2.5 py-1.5 rounded-xl border border-slate-200 sticky top-0 z-10 shadow-2xs">
                         <div class="flex items-center gap-2">
@@ -304,7 +304,7 @@
             </section>
 
             <!-- 2. VISTA GG (Giorno singolo con timeline oraria a sx stile settimana e rettangoli annidati per impegni dentro altri) -->
-            <section id="dayViewSection" class="flex-1 h-full bg-white rounded-2xl border border-slate-200 shadow-2xs overflow-hidden flex flex-col">
+            <section id="dayViewSection" class="hidden flex-1 h-full bg-white rounded-2xl border border-slate-200 shadow-2xs overflow-hidden flex flex-col">
                 <div class="px-3 py-2 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-1.5 shrink-0">
                     <div class="flex items-center gap-2">
                         <span id="singleDayTitle" class="text-xs sm:text-sm font-extrabold capitalize text-slate-900"></span>
@@ -715,7 +715,7 @@
                         <i data-lucide="user" class="w-5 h-5 text-indigo-400"></i>
                         <h2 class="text-sm sm:text-base font-black">Account e Profilo Famiglia</h2>
                     </div>
-                    <span class="text-[10px] font-bold text-indigo-400 font-black">rev.21</span>
+                    <span class="text-[10px] font-bold text-indigo-400 font-black">rev.22</span>
                 </div>
                 <div class="p-4 space-y-3">
                     <div class="flex items-center justify-between gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200">
@@ -764,8 +764,8 @@
                             </div>
                             <div>
                                 <div class="text-[10px] font-black uppercase tracking-wider text-emerald-800">Ultimo Aggiornamento App</div>
-                                <div class="text-sm font-black text-slate-900 tracking-tight" id="appLastUpdateDateTime">21/10/2026 alle 22:38</div>
-                                <div class="text-[10px] font-bold text-slate-500" id="appDeviceCheckDateTime">Verificato su questo cellulare: 21/10/2026 alle 22:38</div>
+                                <div class="text-sm font-black text-slate-900 tracking-tight" id="appLastUpdateDateTime">21/10/2026 alle 22:55</div>
+                                <div class="text-[10px] font-bold text-slate-500" id="appDeviceCheckDateTime">Verificato su questo cellulare: 21/10/2026 alle 22:55</div>
                             </div>
                         </div>
                         <div class="self-start sm:self-center">
@@ -835,20 +835,67 @@
                 </div>
             </div>
 
-            <!-- Scorciatoie Impostazioni e Personalizzazioni -->
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-2xs p-4 space-y-3">
-                <h3 class="text-xs font-black uppercase text-slate-400 tracking-wider">Impostazioni & Personalizzazioni</h3>
+            <!-- NOTIFICHE, PROMEMORIA & SUONERIA SCHERMO SPENTO -->
+            <div class="bg-white rounded-2xl border-2 border-amber-300 shadow-2xs p-4 space-y-3">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xs font-black uppercase text-amber-900 tracking-wider flex items-center gap-1.5">
+                        <i data-lucide="bell-ring" class="w-4 h-4 text-amber-600"></i>
+                        <span>Notifiche, Promemoria & Suoneria</span>
+                    </h3>
+                    <span id="notifPermissionBadge" class="text-[10px] font-black px-2 py-0.5 rounded-lg bg-amber-100 text-amber-900">Verifica...</span>
+                </div>
+                <p class="text-[11px] text-slate-600 leading-relaxed font-medium">
+                    Per ricevere gli avvisi acustici e i popup a schermo spento, tocca <strong>"Attiva Notifiche & Sblocca Suoni"</strong> per autorizzare il browser e sbloccare l'audio.
+                </p>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <button type="button" onclick="enableAndTestNotifications()"
+                            class="flex items-center gap-2.5 p-3 rounded-xl border border-indigo-300 bg-indigo-50/80 hover:bg-indigo-100 text-left transition group">
+                        <div class="p-2 bg-indigo-600 text-white rounded-lg group-hover:scale-105 transition">
+                            <i data-lucide="bell" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-black text-indigo-950">Attiva Notifiche & Sblocca Suoni</div>
+                            <div class="text-[10px] text-indigo-800">Concedi permessi e autorizza l'audio</div>
+                        </div>
+                    </button>
                     <button type="button" onclick="testLockscreenNotification()"
-                            class="flex items-center gap-3 p-3 rounded-xl border border-amber-300 bg-amber-50/70 hover:bg-amber-100/80 text-left transition group">
+                            class="flex items-center gap-2.5 p-3 rounded-xl border border-amber-300 bg-amber-50/80 hover:bg-amber-100 text-left transition group">
                         <div class="p-2 bg-amber-500 text-white rounded-lg group-hover:scale-105 transition">
                             <i data-lucide="bell-ring" class="w-4 h-4"></i>
                         </div>
                         <div>
-                            <div class="text-xs font-black text-amber-950">Prova Suoneria & Notifica Schermo Spento</div>
-                            <div class="text-[10px] text-amber-800">Suona e invia notifica di test dopo 5 secondi</div>
+                            <div class="text-xs font-black text-amber-950">Prova Avviso Schermo Spento</div>
+                            <div class="text-[10px] text-amber-800">Blocca il telefono: suonerà tra 5 secondi</div>
                         </div>
                     </button>
+                </div>
+                <!-- Box info trasparente su funzionamento cellulare -->
+                <div class="p-2.5 rounded-xl bg-amber-50/60 border border-amber-200 text-[10.5px] text-amber-950 space-y-1">
+                    <div class="font-extrabold flex items-center gap-1 text-amber-900">
+                        <i data-lucide="info" class="w-3.5 h-3.5 text-amber-700"></i>
+                        <span>Come funziona a schermo spento / in background:</span>
+                    </div>
+                    <p class="leading-relaxed text-amber-900/90 font-medium">
+                        I cellulari bloccano l'audio se non è mai stato toccato lo schermo. Tenendo l'app aperta o nella schermata delle app recenti, l'agenda monitora continuamente gli impegni e suona all'orario indicato con notifica sulla schermata di blocco. Se l'app viene chiusa del tutto da molte ore, il sistema operativo sospende i timer per risparmio energetico.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Scorciatoie Impostazioni e Personalizzazioni -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-2xs p-4 space-y-3">
+                <h3 class="text-xs font-black uppercase text-slate-400 tracking-wider">Impostazioni & Personalizzazioni</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <button type="button" onclick="openVacationsModal()"
+                            class="flex items-center gap-3 p-3 rounded-xl border border-emerald-300 bg-emerald-50/60 hover:bg-emerald-100/70 text-left transition group">
+                        <div class="p-2 rounded-xl bg-emerald-600 text-white group-hover:scale-105 transition">
+                            <i data-lucide="palmtree" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-black text-emerald-950">Ferie & Vacanze Membri</div>
+                            <div class="text-[10px] text-emerald-800">Aggiungi ponti o date singole alle 9:00</div>
+                        </div>
+                    </button>
+
                     <button type="button" onclick="openColorsModal()"
                             class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:border-indigo-400 hover:bg-indigo-50/30 text-left transition group">
                         <div class="p-2 rounded-xl bg-indigo-100 text-indigo-700 group-hover:scale-105 transition">
@@ -856,7 +903,7 @@
                         </div>
                         <div>
                             <div class="text-xs font-black text-slate-800">Colori Membri & Categorie</div>
-                            <div class="text-[10px] text-slate-500">Personalizza tinte, sottocategorie e preferenze</div>
+                            <div class="text-[10px] text-slate-500">Personalizza tinte e preferenze</div>
                         </div>
                     </button>
 
@@ -867,20 +914,20 @@
                         </div>
                         <div>
                             <div class="text-xs font-black text-slate-800">Scuola & Ponti 2026/2027</div>
-                            <div class="text-[10px] text-slate-500">Festività, vacanze scolastiche ed eventi</div>
+                            <div class="text-[10px] text-slate-500">Festività e vacanze scolastiche</div>
                         </div>
                     </button>
                 </div>
             </div>
 
-            <!-- Backup, Esportazione e Scaricamento rev.21 -->
+            <!-- Backup, Esportazione e Scaricamento rev.22 -->
             <div class="bg-white rounded-2xl border border-slate-200 shadow-2xs p-4 space-y-3">
                 <h3 class="text-xs font-black uppercase text-slate-400 tracking-wider">Gestione Dati & Download</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                    <button type="button" onclick="downloadRev21File()"
+                    <button type="button" onclick="downloadRev22File()"
                             class="flex flex-col items-center justify-center p-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-center transition shadow-2xs">
                         <i data-lucide="download" class="w-5 h-5 mb-1"></i>
-                        <span class="text-xs font-black">Scarica rev.21</span>
+                        <span class="text-xs font-black">Scarica rev.22</span>
                         <span class="text-[9.5px] opacity-80">File HTML completo</span>
                     </button>
 
@@ -996,12 +1043,12 @@
                 <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
                     <div>
                         <div class="text-xs font-black text-slate-800">Scaricamento File HTML Completo</div>
-                        <div class="text-[10px] text-slate-500 font-medium">Backup e download della versione rev.21</div>
+                        <div class="text-[10px] text-slate-500 font-medium">Backup e download della versione rev.22</div>
                     </div>
-                    <button type="button" onclick="downloadRev21File()"
+                    <button type="button" onclick="downloadRev22File()"
                             class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black shadow-2xs transition">
                         <i data-lucide="download" class="w-3.5 h-3.5"></i>
-                        <span>Scarica rev.21</span>
+                        <span>Scarica rev.22</span>
                     </button>
                 </div>
             </div>
@@ -1009,8 +1056,8 @@
 
             <!-- FOOTER INFO VERSIONE E DATA AGGIORNAMENTO -->
             <div class="pt-2 pb-6 text-center space-y-0.5">
-                <p class="text-[11px] font-black text-slate-500">Agenda Familiare Condivisa • rev. 21</p>
-                <p class="text-[10px] font-bold text-slate-400" id="altroFooterLastUpdate">Ultimo aggiornamento rilasciato: 21/10/2026 alle 22:38</p>
+                <p class="text-[11px] font-black text-slate-500">Agenda Familiare Condivisa • rev. 22</p>
+                <p class="text-[10px] font-bold text-slate-400" id="altroFooterLastUpdate">Ultimo aggiornamento rilasciato: 21/10/2026 alle 22:55</p>
             </div>
         </div>
 
@@ -1323,6 +1370,134 @@
             <div class="px-3.5 py-2.5 bg-slate-50 border-t border-slate-200 flex justify-end">
                 <button type="button" onclick="closePontiModal()" class="px-4 py-1.5 rounded-xl text-xs font-extrabold bg-slate-200 hover:bg-slate-300 text-slate-800">
                     Chiudi
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- MODALE: GESTIONE FERIE E VACANZE FAMIGLIA -->
+    <!-- ======================================================== -->
+    <div id="vacationsModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white w-full max-w-xl rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200 max-h-[92dvh] flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 duration-200">
+            <!-- Header -->
+            <div class="px-4 py-3 bg-emerald-700 text-white flex items-center justify-between shrink-0 shadow-xs">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="palmtree" class="w-5 h-5 text-emerald-200"></i>
+                    <div>
+                        <h3 class="text-sm font-extrabold text-white">Gestione Ferie & Vacanze Membri</h3>
+                        <p class="text-[10px] text-emerald-100 font-medium">Aggiungi ponti o giorni singoli e genera gli eventi alle 09:00</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeVacationsModal()" class="p-1 rounded-lg text-emerald-200 hover:text-white transition">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Body -->
+            <div class="p-4 overflow-y-auto thin-scroll space-y-4 flex-1 text-xs">
+                <!-- Info spiegazione -->
+                <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-emerald-950 text-[11.5px] leading-snug space-y-1">
+                    <p class="font-bold flex items-center gap-1.5 text-emerald-900">
+                        <i data-lucide="calendar-check" class="w-4 h-4 text-emerald-600 shrink-0"></i>
+                        <span>Come funziona:</span>
+                    </p>
+                    <p class="text-emerald-800">
+                        Seleziona chi fa le ferie, inserisci le date (un intervallo <strong>"Da ... A ..."</strong> per un ponte o periodo, oppure una <strong>Data singola</strong>) e tocca <strong>"Aggiungi alla lista"</strong>. Al termine, tocca <strong>"Applica Ferie al Calendario"</strong>: nei giorni indicati verrà generato un evento alle ore <strong>09:00</strong> con scritto <strong>"Ferie"</strong>. Se più persone hanno ferie nello stesso giorno, saranno raggruppate automaticamente nello stesso appuntamento!
+                    </p>
+                </div>
+
+                <!-- Box Inserimento Nuovo Periodo -->
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 space-y-3">
+                    <h4 class="text-xs font-black uppercase text-slate-600 tracking-wider flex items-center gap-1.5">
+                        <i data-lucide="plus-circle" class="w-4 h-4 text-emerald-600"></i>
+                        <span>Aggiungi Voce Ferie</span>
+                    </h4>
+
+                    <!-- 1. Chi fa le ferie -->
+                    <div>
+                        <label class="block text-[11px] font-extrabold uppercase text-slate-600 mb-1.5">Chi riguarda? (Seleziona uno o più membri) *</label>
+                        <div id="vacationUsersSelector" class="flex flex-wrap gap-1.5">
+                            <!-- Popolato dinamicamente da renderVacationUsersSelector -->
+                        </div>
+                    </div>
+
+                    <!-- 2. Tipo inserimento: Periodo vs Data Singola -->
+                    <div>
+                        <label class="block text-[11px] font-extrabold uppercase text-slate-600 mb-1">Modalità selezione data *</label>
+                        <div class="inline-flex items-center p-0.5 rounded-xl bg-slate-200 text-xs font-extrabold">
+                            <button type="button" onclick="setVacationDateMode('range')" id="btnVacModeRange"
+                                    class="px-3 py-1.5 rounded-lg transition bg-white text-emerald-800 shadow-2xs">
+                                Periodo / Ponte (Da ... A ...)
+                            </button>
+                            <button type="button" onclick="setVacationDateMode('single')" id="btnVacModeSingle"
+                                    class="px-3 py-1.5 rounded-lg transition text-slate-600 hover:text-slate-900">
+                                Data Singola
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 3. Campi Date -->
+                    <div id="vacationRangeBox" class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10.5px] font-extrabold text-slate-500 mb-0.5">Da data (Inizio) *</label>
+                            <input type="date" id="vacationStartDate" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white font-bold text-xs text-slate-800">
+                        </div>
+                        <div>
+                            <label class="block text-[10.5px] font-extrabold text-slate-500 mb-0.5">A data (Fine compresa) *</label>
+                            <input type="date" id="vacationEndDate" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white font-bold text-xs text-slate-800">
+                        </div>
+                    </div>
+
+                    <div id="vacationSingleBox" class="hidden">
+                        <label class="block text-[10.5px] font-extrabold text-slate-500 mb-0.5">Data del giorno di ferie *</label>
+                        <input type="date" id="vacationSingleDate" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white font-bold text-xs text-slate-800">
+                    </div>
+
+                    <!-- 4. Descrizione / Etichetta opzionale -->
+                    <div>
+                        <label class="block text-[10.5px] font-extrabold text-slate-500 mb-0.5">Descrizione / Nota (opzionale)</label>
+                        <input type="text" id="vacationLabelInput" placeholder="Es. Ponte Ognissanti, Vacanze Natale, Ferie estive..."
+                               class="w-full px-3 py-1.5 rounded-xl border border-slate-300 bg-white font-bold text-xs text-slate-800">
+                    </div>
+
+                    <!-- Pulsante aggiungi a lista -->
+                    <div class="flex justify-end pt-1">
+                        <button type="button" onclick="addVacationDraft()"
+                                class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-black shadow-xs transition">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                            <span>Aggiungi alla lista</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Lista delle date/periodi preparati -->
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-xs font-black uppercase text-slate-600 tracking-wider flex items-center gap-1.5">
+                            <i data-lucide="list-checks" class="w-4 h-4 text-emerald-600"></i>
+                            <span>Lista Ferie da Applicare (<span id="vacationDraftsCount">0</span>)</span>
+                        </h4>
+                        <button type="button" onclick="clearAllVacationDrafts()" id="btnClearVacations" class="text-[11px] font-bold text-rose-600 hover:underline hidden">
+                            Svuota lista
+                        </button>
+                    </div>
+
+                    <div id="vacationDraftsContainer" class="space-y-1.5 max-h-56 overflow-y-auto thin-scroll">
+                        <!-- Voci generate dinamicamente -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer con tasti Chiudi e APPLICA -->
+            <div class="px-4 py-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between shrink-0">
+                <button type="button" onclick="closeVacationsModal()" class="px-4 py-2 rounded-xl text-xs font-black bg-slate-200 hover:bg-slate-300 text-slate-800 transition">
+                    Chiudi
+                </button>
+                <button type="button" onclick="applyVacationsToCalendar()" id="btnApplyVacations"
+                        class="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-black shadow-md shadow-emerald-600/30 transition">
+                    <i data-lucide="calendar-plus" class="w-4 h-4"></i>
+                    <span>Applica Ferie al Calendario</span>
                 </button>
             </div>
         </div>
@@ -2530,10 +2705,10 @@ function ghOpenSetup() {
         const { doc, setDoc, deleteDoc, onSnapshot, collection, ghConfigured, ghStart, ghHasToken, ghOpenSetup, ghApplyDot } = GH;
 
 
-        const APP_VERSION = window.APP_VERSION = 'rev.21';
+        const APP_VERSION = window.APP_VERSION = 'rev.22';
         const APP_BUILD_INFO = window.APP_BUILD_INFO = {
-            rev: 'rev. 21',
-            dateTime: '21/10/2026 alle 22:38'
+            rev: 'rev. 22',
+            dateTime: '21/10/2026 alle 22:55'
         };
 
         // 1. I 6 PROFILI DELLA FAMIGLIA (CON AUTENTICAZIONE PASSWORD O DATA DI NASCITA)
@@ -3288,7 +3463,7 @@ function ghOpenSetup() {
             },
             personalColorsByProfile: {},
             versionControl: {
-                approvedVersion: 'rev.21',
+                approvedVersion: 'rev.22',
                 approvedBy: 'Patrizio',
                 approvedAt: ''
             },
@@ -3296,10 +3471,12 @@ function ghOpenSetup() {
             selectedCategories: Object.keys(BASE_CATEGORIES),
             selectedBillsUtenze: ['Acqua', 'Gas', 'Elettricità', 'Internet e telefono', 'Consorzio', 'Spese manutenzione casa', 'Spese condominiali', 'Altre utenze'],
             showRoutineSchool: false, // NON spuntata di default
-            viewMode: 'day', // Apertura di default in vista giornaliera (gg)
+            viewMode: 'list', // Apertura di default in vista lista ("lista")
             showPast: false, // Default: nascondi passati
             monthHidePast: false, // Tasto nascondi passati nel mese
             listColumnsMode: localStorage.getItem('agenda_famiglia_list_cols') || '1col',
+            familyVacationDrafts: [],
+            notifiedEvents: {},
             billsHidePaid: false,
             resocontoPeriod: 'day',
             resocontoDate: getTodayIso(),
@@ -6199,6 +6376,7 @@ function ghOpenSetup() {
             }
             renderAltroCategoriesManager();
             renderAltroUpdateInfo();
+            if (window.renderNotifPermissionBadge) renderNotifPermissionBadge();
         }
 
         function renderAltroUpdateInfo() {
@@ -9506,41 +9684,42 @@ function ghOpenSetup() {
             }
         };
 
-        window.downloadRev21File = function() {
+        window.downloadRev22File = function() {
             const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
             const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'agenda_famiglia_rev.21.html';
+            a.download = 'agenda_famiglia_rev.22.html';
             document.body.appendChild(a);
             a.click();
             a.remove();
             URL.revokeObjectURL(url);
-            showToast("File agenda_famiglia_rev.21.html scaricato con successo!");
+            showToast("File agenda_famiglia_rev.22.html scaricato con successo!");
         };
-        window.downloadRev20File = window.downloadRev21File;
-        window.downloadRev19File = window.downloadRev21File;
-        window.downloadRev18File = window.downloadRev21File;
-        window.downloadRev17File = window.downloadRev21File;
-        window.downloadRev16File = window.downloadRev21File;
-        window.downloadRev15File = window.downloadRev21File;
-        window.downloadRev14File = window.downloadRev21File;
-        window.downloadRev13File = window.downloadRev21File;
+        window.downloadRev21File = window.downloadRev22File;
+        window.downloadRev20File = window.downloadRev22File;
+        window.downloadRev19File = window.downloadRev22File;
+        window.downloadRev18File = window.downloadRev22File;
+        window.downloadRev17File = window.downloadRev22File;
+        window.downloadRev16File = window.downloadRev22File;
+        window.downloadRev15File = window.downloadRev22File;
+        window.downloadRev14File = window.downloadRev22File;
+        window.downloadRev13File = window.downloadRev22File;
 
         window.patrizioConfirmVersion = async function() {
             state.versionControl = {
-                approvedVersion: 'rev.21',
+                approvedVersion: 'rev.22',
                 approvedBy: 'Patrizio',
                 approvedAt: new Date().toISOString()
             };
             renderFooterProfileAndVersion();
-            showToast("rev.21 confermata ufficialmente da Patrizio!");
+            showToast("rev.22 confermata ufficialmente da Patrizio!");
         };
 
         window.exportDataJson = function() {
             const backup = {
-                version: 'rev.21',
+                version: 'rev.22',
                 exportedAt: new Date().toISOString(),
                 events: state.events,
                 shoppingList: state.shoppingList,
@@ -10589,29 +10768,55 @@ function ghOpenSetup() {
         }
 
         // ========================================================
-        // SUONERIA TIMER E NOTIFICHE PROMEMORIA (ANCHE SCHERMO SPENTO)
+        // SUONERIA, AUDIOCONTEXT UNLOCK & NOTIFICHE PROMEMORIA
         // ========================================================
+        let sharedAudioCtx = null;
+        function getAudioContext() {
+            try {
+                if (!sharedAudioCtx) {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    if (AudioCtx) sharedAudioCtx = new AudioCtx();
+                }
+                if (sharedAudioCtx && sharedAudioCtx.state === 'suspended') {
+                    sharedAudioCtx.resume().catch(() => {});
+                }
+            } catch(e) {}
+            return sharedAudioCtx;
+        }
+
+        // Sblocca AudioContext al primo tocco o clic dell'utente (requisito browser per autoplay)
+        ['click', 'touchstart', 'touchend', 'keydown'].forEach(evt => {
+            window.addEventListener(evt, () => { getAudioContext(); }, { passive: true });
+        });
+
         window.playChimeSound = function() {
             try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) return;
-                const ctx = new AudioCtx();
-                
+                const ctx = getAudioContext();
+                if (!ctx) return;
+                if (ctx.state === 'suspended') {
+                    ctx.resume().catch(() => {});
+                }
+
                 const now = ctx.currentTime;
+                // Suoneria a 4 toni melodici chiari e squillanti (Do5 -> Mi5 -> Sol5 -> Do6)
                 const osc1 = ctx.createOscillator();
                 const osc2 = ctx.createOscillator();
                 const gain = ctx.createGain();
 
                 osc1.type = 'sine';
-                osc1.frequency.setValueAtTime(783.99, now); // Sol5 (G5)
-                osc1.frequency.setValueAtTime(1046.50, now + 0.18); // Do6 (C6)
+                osc1.frequency.setValueAtTime(523.25, now);
+                osc1.frequency.setValueAtTime(659.25, now + 0.16);
+                osc1.frequency.setValueAtTime(783.99, now + 0.32);
+                osc1.frequency.setValueAtTime(1046.50, now + 0.48);
 
                 osc2.type = 'triangle';
-                osc2.frequency.setValueAtTime(523.25, now); // Do5 (C5)
-                osc2.frequency.setValueAtTime(659.25, now + 0.18); // Mi5 (E5)
+                osc2.frequency.setValueAtTime(261.63, now);
+                osc2.frequency.setValueAtTime(329.63, now + 0.16);
+                osc2.frequency.setValueAtTime(392.00, now + 0.32);
+                osc2.frequency.setValueAtTime(523.25, now + 0.48);
 
-                gain.gain.setValueAtTime(0.35, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 1.4);
+                gain.gain.setValueAtTime(0.45, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 1.8);
 
                 osc1.connect(gain);
                 osc2.connect(gain);
@@ -10619,39 +10824,86 @@ function ghOpenSetup() {
 
                 osc1.start(now);
                 osc2.start(now);
-                osc1.stop(now + 1.4);
-                osc2.stop(now + 1.4);
+                osc1.stop(now + 1.8);
+                osc2.stop(now + 1.8);
             } catch(e) { console.log('Audio chime error:', e); }
 
             if ('vibrate' in navigator) {
-                try { navigator.vibrate([250, 100, 250, 100, 500]); } catch(e){}
+                try { navigator.vibrate([350, 150, 350, 150, 600]); } catch(e){}
             }
         };
 
+        window.renderNotifPermissionBadge = function() {
+            const badge = document.getElementById('notifPermissionBadge');
+            if (!badge) return;
+            if (!('Notification' in window)) {
+                badge.className = "text-[10px] font-black px-2 py-0.5 rounded-lg bg-slate-200 text-slate-700";
+                badge.textContent = "Non supportate dal browser";
+                return;
+            }
+            if (Notification.permission === 'granted') {
+                badge.className = "text-[10px] font-black px-2 py-0.5 rounded-lg bg-emerald-100 text-emerald-800 border border-emerald-300";
+                badge.textContent = "Attive & Consentite âœ“";
+            } else if (Notification.permission === 'denied') {
+                badge.className = "text-[10px] font-black px-2 py-0.5 rounded-lg bg-rose-100 text-rose-800 border border-rose-300";
+                badge.textContent = "Bloccate dal telefono âœ—";
+            } else {
+                badge.className = "text-[10px] font-black px-2 py-0.5 rounded-lg bg-amber-100 text-amber-800 border border-amber-300 animate-pulse";
+                badge.textContent = "Tocca per Attivare ðŸ””";
+            }
+        };
+
+        window.enableAndTestNotifications = async function() {
+            getAudioContext();
+            playChimeSound();
+            if ('Notification' in window) {
+                if (Notification.permission !== 'granted') {
+                    try {
+                        const perm = await Notification.requestPermission();
+                        if (perm === 'granted') {
+                            showToast("Notifiche e suoni attivati con successo! Ora riceverai i promemoria.");
+                        } else {
+                            showToast("Attenzione: notifiche non consentite. Controlla le impostazioni del browser.");
+                        }
+                    } catch(e) {
+                        console.error('Request permission err:', e);
+                    }
+                } else {
+                    showToast("Notifiche giÃ  autorizzate! Audio e suoneria sbloccati.");
+                }
+            } else {
+                showToast("Il tuo browser non supporta la Web Notification API.");
+            }
+            renderNotifPermissionBadge();
+        };
+
         window.testLockscreenNotification = async function() {
+            getAudioContext();
             if ('Notification' in window) {
                 if (Notification.permission !== 'granted') {
                     const perm = await Notification.requestPermission();
                     if (perm !== 'granted') {
                         showToast("Permesso notifiche rifiutato dal browser!");
+                        renderNotifPermissionBadge();
                         return;
                     }
                 }
             }
-
+            renderNotifPermissionBadge();
             showToast("â³ Prova avviata! Blocca lo schermo ORA: tra 5 secondi suonerÃ  la notifica!", 5000);
 
             setTimeout(async () => {
                 playChimeSound();
                 if ('serviceWorker' in navigator) {
                     const reg = await navigator.serviceWorker.getRegistration();
-                    if (reg) {
+                    if (reg && reg.showNotification) {
                         reg.showNotification("Agenda Famiglia: Promemoria!", {
                             body: "Test suoneria e avviso a schermo spento funzionante!",
                             icon: "./icons/icon-192.png",
                             badge: "./icons/icon-192.png",
-                            vibrate: [300, 150, 300, 150, 600],
-                            tag: "test-reminder"
+                            vibrate: [350, 150, 350, 150, 600],
+                            tag: "test-reminder",
+                            renotify: true
                         });
                         return;
                     }
@@ -10665,15 +10917,493 @@ function ghOpenSetup() {
             }, 5000);
         };
 
+        // MOTORE DI CONTROLLO PROMEMORIA SCHEDULATI IN BACKGROUND
+        window.checkScheduledNotifications = function() {
+            try {
+                const now = new Date();
+                const pad = n => String(n).padStart(2, '0');
+                const curDateStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+                const curMinutes = now.getHours() * 60 + now.getMinutes();
+
+                const advanceMap = {
+                    '5m': 5,
+                    '10m': 10,
+                    '15m': 15,
+                    '20m': 20,
+                    '30m': 30,
+                    '1h': 60,
+                    '2h': 120,
+                    '1d': 1440
+                };
+
+                // Controlla gli eventi di oggi
+                const todayEvents = getEventsForDate(curDateStr);
+                todayEvents.forEach(ev => {
+                    if (!ev || !ev.time || ev.isCompleted) return;
+                    const advVal = ev.notificationAdvance;
+                    if (!advVal || advVal === 'none') return;
+                    const advMin = advanceMap[advVal];
+                    if (advMin === undefined) return;
+
+                    const [eh, em] = ev.time.split(':').map(Number);
+                    if (isNaN(eh) || isNaN(em)) return;
+                    const evMinutes = eh * 60 + em;
+
+                    if (advVal !== '1d') {
+                        const targetMin = evMinutes - advMin;
+                        if (curMinutes >= targetMin && curMinutes <= evMinutes + 15) {
+                            const key = `notif_${ev.id}_${curDateStr}_${advVal}`;
+                            if (!state.notifiedEvents[key] && !sessionStorage.getItem(key)) {
+                                state.notifiedEvents[key] = true;
+                                try { sessionStorage.setItem(key, '1'); } catch(e){}
+                                fireNotificationForEvent(ev, curDateStr, advVal);
+                            }
+                        }
+                    }
+                });
+
+                // Controlla eventi di domani per promemoria a 1 giorno prima (1d)
+                const tomorrow = new Date(now);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                const tomorrowDateStr = `${tomorrow.getFullYear()}-${pad(tomorrow.getMonth() + 1)}-${pad(tomorrow.getDate())}`;
+                const tomorrowEvents = getEventsForDate(tomorrowDateStr);
+                tomorrowEvents.forEach(ev => {
+                    if (!ev || !ev.time || ev.isCompleted) return;
+                    if (ev.notificationAdvance !== '1d') return;
+                    const [eh, em] = ev.time.split(':').map(Number);
+                    if (isNaN(eh) || isNaN(em)) return;
+                    const evMinutes = eh * 60 + em;
+                    if (curMinutes >= evMinutes && curMinutes <= evMinutes + 30) {
+                        const key = `notif_${ev.id}_${tomorrowDateStr}_1d`;
+                        if (!state.notifiedEvents[key] && !sessionStorage.getItem(key)) {
+                            state.notifiedEvents[key] = true;
+                            try { sessionStorage.setItem(key, '1'); } catch(e){}
+                            fireNotificationForEvent(ev, tomorrowDateStr, '1d');
+                        }
+                    }
+                });
+            } catch (err) {
+                console.warn('Errore checkScheduledNotifications:', err);
+            }
+        };
+
+        window.fireNotificationForEvent = function(ev, dateStr, advVal) {
+            // Suono
+            if (ev.personalTimer === 'sound_timer' || !ev.personalTimer) {
+                playChimeSound();
+            }
+
+            const usersList = getActiveUsersList();
+            const who = (ev.users || []).map(uid => (usersList.find(u => u.id === uid) || {}).name || uid).join(', ');
+            const advLabels = { '5m': 'tra 5 minuti', '10m': 'tra 10 minuti', '15m': 'tra 15 minuti', '20m': 'tra 20 minuti', '30m': 'tra 30 minuti', '1h': 'tra 1 ora', '2h': 'tra 2 ore', '1d': 'domani' };
+            const whenLabel = advLabels[advVal] || `alle ${ev.time}`;
+            const title = `Promemoria: ${ev.title || 'Impegno'} (${whenLabel})`;
+            const body = `Orario: ${ev.time} â€¢ ${who}${ev.place ? ' â€¢ ' + ev.place : ''}`;
+
+            // Notifica di sistema / lockscreen
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistration().then(reg => {
+                    if (reg && reg.showNotification) {
+                        reg.showNotification(title, {
+                            body: body,
+                            icon: './icons/icon-192.png',
+                            badge: './icons/icon-192.png',
+                            vibrate: [350, 150, 350, 150, 700],
+                            tag: `event_${ev.id}_${dateStr}`,
+                            renotify: true
+                        });
+                    } else if ('Notification' in window && Notification.permission === 'granted') {
+                        new Notification(title, { body: body, icon: './icons/icon-192.png' });
+                    }
+                }).catch(() => {
+                    if ('Notification' in window && Notification.permission === 'granted') {
+                        new Notification(title, { body: body, icon: './icons/icon-192.png' });
+                    }
+                });
+            } else if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification(title, { body: body, icon: './icons/icon-192.png' });
+            }
+
+            showToast(`ðŸ”” PROMEMORIA: ${ev.title} (${ev.time}) per ${who}!`, 8000);
+        };
+
+        let notifCheckInterval = null;
+        window.startNotificationMonitor = function() {
+            if (notifCheckInterval) clearInterval(notifCheckInterval);
+            checkScheduledNotifications();
+            notifCheckInterval = setInterval(checkScheduledNotifications, 25000);
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden) checkScheduledNotifications();
+            });
+            window.addEventListener('focus', () => {
+                checkScheduledNotifications();
+            });
+        };
+
+        // ========================================================
+        // GESTIONE FERIE & VACANZE FAMIGLIA (SEZIONE ALTRO)
+        // ========================================================
+        state.vacationSelectedUsers = [state.activeProfileId || 'u1'];
+        state.vacationDateMode = 'range';
+
+        window.openVacationsModal = function() {
+            const todayStr = getTodayIso();
+            const startInput = document.getElementById('vacationStartDate');
+            const endInput = document.getElementById('vacationEndDate');
+            const singleInput = document.getElementById('vacationSingleDate');
+            if (startInput && !startInput.value) startInput.value = todayStr;
+            if (endInput && !endInput.value) endInput.value = todayStr;
+            if (singleInput && !singleInput.value) singleInput.value = todayStr;
+
+            if (!Array.isArray(state.vacationSelectedUsers) || state.vacationSelectedUsers.length === 0) {
+                state.vacationSelectedUsers = [state.activeProfileId || 'u1'];
+            }
+
+            renderVacationUsersSelector();
+            setVacationDateMode(state.vacationDateMode || 'range');
+            renderVacationDraftsList();
+
+            const modal = document.getElementById('vacationsModal');
+            if (modal) modal.classList.remove('hidden');
+            if (window.lucide) lucide.createIcons();
+        };
+
+        window.closeVacationsModal = function() {
+            const modal = document.getElementById('vacationsModal');
+            if (modal) modal.classList.add('hidden');
+        };
+
+        window.setVacationDateMode = function(mode) {
+            state.vacationDateMode = mode;
+            const rangeBox = document.getElementById('vacationRangeBox');
+            const singleBox = document.getElementById('vacationSingleBox');
+            const btnRange = document.getElementById('btnVacModeRange');
+            const btnSingle = document.getElementById('btnVacModeSingle');
+
+            if (mode === 'range') {
+                if (rangeBox) rangeBox.classList.remove('hidden');
+                if (singleBox) singleBox.classList.add('hidden');
+                if (btnRange) btnRange.className = "px-3 py-1.5 rounded-lg transition bg-white text-emerald-800 shadow-2xs";
+                if (btnSingle) btnSingle.className = "px-3 py-1.5 rounded-lg transition text-slate-600 hover:text-slate-900";
+            } else {
+                if (rangeBox) rangeBox.classList.add('hidden');
+                if (singleBox) singleBox.classList.remove('hidden');
+                if (btnRange) btnRange.className = "px-3 py-1.5 rounded-lg transition text-slate-600 hover:text-slate-900";
+                if (btnSingle) btnSingle.className = "px-3 py-1.5 rounded-lg transition bg-white text-emerald-800 shadow-2xs";
+            }
+        };
+
+        window.toggleVacationUser = function(uid) {
+            if (!Array.isArray(state.vacationSelectedUsers)) state.vacationSelectedUsers = [];
+            if (uid === 'all') {
+                const allUids = BASE_USERS.map(u => u.id);
+                const isAllSelected = allUids.every(id => state.vacationSelectedUsers.includes(id));
+                if (isAllSelected) {
+                    state.vacationSelectedUsers = [state.activeProfileId || 'u1'];
+                } else {
+                    state.vacationSelectedUsers = [...allUids];
+                }
+            } else {
+                if (state.vacationSelectedUsers.includes(uid)) {
+                    state.vacationSelectedUsers = state.vacationSelectedUsers.filter(x => x !== uid);
+                    if (state.vacationSelectedUsers.length === 0) state.vacationSelectedUsers = [uid];
+                } else {
+                    state.vacationSelectedUsers.push(uid);
+                }
+            }
+            renderVacationUsersSelector();
+        };
+
+        window.renderVacationUsersSelector = function() {
+            const container = document.getElementById('vacationUsersSelector');
+            if (!container) return;
+
+            const allUids = BASE_USERS.map(u => u.id);
+            const isAll = allUids.every(id => state.vacationSelectedUsers.includes(id));
+
+            let html = `
+                <button type="button" onclick="toggleVacationUser('all')"
+                        class="px-2.5 py-1 rounded-xl text-xs font-black transition border ${isAll ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs ring-1 ring-indigo-500' : 'bg-slate-100 text-slate-700 border-slate-300 hover:bg-slate-200'}">
+                    Tutta la famiglia
+                </button>
+            `;
+
+            BASE_USERS.forEach(u => {
+                const sel = state.vacationSelectedUsers.includes(u.id);
+                const color = getUserColor(u.id);
+                html += `
+                    <button type="button" onclick="toggleVacationUser('${u.id}')"
+                            style="${sel ? `background-color: ${color}; color: #ffffff; border-color: ${color};` : ''}"
+                            class="px-2.5 py-1 rounded-xl text-xs font-black transition border ${sel ? 'shadow-xs ring-1 ring-white/50' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'}">
+                        ${sel ? 'âœ“ ' : ''}${escapeHtml(u.name)}
+                    </button>
+                `;
+            });
+
+            container.innerHTML = html;
+        };
+
+        window.addVacationDraft = function() {
+            if (!Array.isArray(state.vacationSelectedUsers) || state.vacationSelectedUsers.length === 0) {
+                showToast("Seleziona almeno un membro della famiglia!");
+                return;
+            }
+
+            let start = '';
+            let end = '';
+            const mode = state.vacationDateMode || 'range';
+
+            if (mode === 'range') {
+                start = (document.getElementById('vacationStartDate')?.value || '').trim();
+                end = (document.getElementById('vacationEndDate')?.value || '').trim();
+                if (!start || !end) {
+                    showToast("Inserisci entrambe le date (Inizio e Fine) per il periodo!");
+                    return;
+                }
+                if (start > end) {
+                    const tmp = start;
+                    start = end;
+                    end = tmp;
+                    if (document.getElementById('vacationStartDate')) document.getElementById('vacationStartDate').value = start;
+                    if (document.getElementById('vacationEndDate')) document.getElementById('vacationEndDate').value = end;
+                }
+            } else {
+                start = (document.getElementById('vacationSingleDate')?.value || '').trim();
+                end = start;
+                if (!start) {
+                    showToast("Inserisci la data del giorno di ferie!");
+                    return;
+                }
+            }
+
+            const label = (document.getElementById('vacationLabelInput')?.value || '').trim();
+
+            if (!Array.isArray(state.familyVacationDrafts)) state.familyVacationDrafts = [];
+
+            state.familyVacationDrafts.push({
+                id: 'vac_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 4),
+                userIds: [...state.vacationSelectedUsers],
+                type: mode,
+                startDate: start,
+                endDate: end,
+                label: label
+            });
+
+            const lblInput = document.getElementById('vacationLabelInput');
+            if (lblInput) lblInput.value = '';
+
+            renderVacationDraftsList();
+            showToast("Voce ferie aggiunta alla lista!");
+        };
+
+        window.deleteVacationDraft = function(id) {
+            state.familyVacationDrafts = (state.familyVacationDrafts || []).filter(x => x.id !== id);
+            renderVacationDraftsList();
+        };
+
+        window.clearAllVacationDrafts = function() {
+            if (confirm("Vuoi svuotare tutte le voci di ferie preparate nella lista?")) {
+                state.familyVacationDrafts = [];
+                renderVacationDraftsList();
+            }
+        };
+
+        window.renderVacationDraftsList = function() {
+            const container = document.getElementById('vacationDraftsContainer');
+            const countEl = document.getElementById('vacationDraftsCount');
+            const btnClear = document.getElementById('btnClearVacations');
+            if (!container) return;
+
+            const drafts = state.familyVacationDrafts || [];
+            if (countEl) countEl.textContent = drafts.length;
+            if (btnClear) btnClear.classList.toggle('hidden', drafts.length === 0);
+
+            if (drafts.length === 0) {
+                container.innerHTML = `
+                    <div class="p-4 text-center rounded-xl bg-slate-100 border border-dashed border-slate-300 text-slate-500 font-medium text-[11.5px]">
+                        Nessun periodo o giorno di ferie nella lista.<br>
+                        Seleziona le persone e le date sopra, poi tocca <strong>"Aggiungi alla lista"</strong>.
+                    </div>
+                `;
+                return;
+            }
+
+            const usersList = getActiveUsersList();
+
+            let html = '';
+            drafts.forEach(d => {
+                const userBadges = (d.userIds || []).map(uid => {
+                    const u = usersList.find(x => x.id === uid) || { name: uid };
+                    const col = getUserColor(uid);
+                    return `<span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-black text-white" style="background-color: ${col}">${escapeHtml(u.name)}</span>`;
+                }).join(' ');
+
+                let dateDesc = '';
+                if (d.startDate === d.endDate) {
+                    const [y, m, day] = d.startDate.split('-');
+                    dateDesc = `Giorno singolo: <strong>${day}/${m}/${y}</strong>`;
+                } else {
+                    const [sy, sm, sd] = d.startDate.split('-');
+                    const [ey, em, ed] = d.endDate.split('-');
+                    const diffDays = Math.round((new Date(d.endDate + 'T00:00:00') - new Date(d.startDate + 'T00:00:00')) / (1000 * 60 * 60 * 24)) + 1;
+                    dateDesc = `Dal <strong>${sd}/${sm}/${sy}</strong> al <strong>${ed}/${em}/${ey}</strong> (${diffDays} giorni)`;
+                }
+
+                html += `
+                    <div class="p-2.5 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-center justify-between gap-2">
+                        <div class="space-y-1 min-w-0">
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                ${userBadges}
+                                ${d.label ? `<span class="text-[11px] font-extrabold text-slate-800">â€¢ ${escapeHtml(d.label)}</span>` : ''}
+                            </div>
+                            <div class="text-[11px] text-slate-600 font-medium">
+                                ${dateDesc}
+                            </div>
+                        </div>
+                        <button type="button" onclick="deleteVacationDraft('${d.id}')" title="Rimuovi voce"
+                                class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition shrink-0">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+            if (window.lucide) lucide.createIcons();
+        };
+
+        window.applyVacationsToCalendar = async function() {
+            if (!Array.isArray(state.familyVacationDrafts) || state.familyVacationDrafts.length === 0) {
+                showToast("Aggiungi almeno una voce di ferie alla lista prima di applicare!");
+                return;
+            }
+
+            // Costruisci mappa: dateStr -> { userSet: Set, notes: [] }
+            const dateMap = {};
+
+            state.familyVacationDrafts.forEach(draft => {
+                const uids = Array.isArray(draft.userIds) && draft.userIds.length > 0 ? draft.userIds : [state.activeProfileId || 'u1'];
+                let start = draft.startDate;
+                let end = draft.endDate || draft.startDate;
+
+                const dCur = new Date(start + 'T00:00:00');
+                const dEnd = new Date(end + 'T00:00:00');
+                if (dCur > dEnd) {
+                    const tmp = new Date(dCur);
+                    dCur.setTime(dEnd.getTime());
+                    dEnd.setTime(tmp.getTime());
+                }
+
+                while (dCur <= dEnd) {
+                    const y = dCur.getFullYear();
+                    const m = String(dCur.getMonth() + 1).padStart(2, '0');
+                    const d = String(dCur.getDate()).padStart(2, '0');
+                    const dStr = `${y}-${m}-${d}`;
+
+                    if (!dateMap[dStr]) {
+                        dateMap[dStr] = {
+                            userSet: new Set(),
+                            notes: []
+                        };
+                    }
+                    uids.forEach(uid => dateMap[dStr].userSet.add(uid));
+                    if (draft.label && !dateMap[dStr].notes.includes(draft.label)) {
+                        dateMap[dStr].notes.push(draft.label);
+                    }
+
+                    dCur.setDate(dCur.getDate() + 1);
+                }
+            });
+
+            const datesList = Object.keys(dateMap).sort();
+            if (datesList.length === 0) {
+                showToast("Nessuna data valida trovata nelle ferie!");
+                return;
+            }
+
+            let createdCount = 0;
+            let mergedCount = 0;
+
+            datesList.forEach(dateStr => {
+                const targetUsers = Array.from(dateMap[dateStr].userSet);
+                const notesStr = dateMap[dateStr].notes.join(' â€¢ ');
+
+                // Cerca se esiste giÃ  un evento "Ferie" in questa data
+                const existingEvent = state.events.find(e => 
+                    e.date === dateStr && 
+                    e.title && 
+                    e.title.trim().toLowerCase() === 'ferie'
+                );
+
+                if (existingEvent) {
+                    // SE SONO PIÃ™ UTENTI CHE HANNO LO STESSO GIORNO DI FERIE SI AGGIUNGONO TUTTI NELLO STESSO APPUNTAMENTO!
+                    const mergedUsersSet = new Set([...(existingEvent.users || []), ...targetUsers]);
+                    existingEvent.users = Array.from(mergedUsersSet);
+                    existingEvent.time = '09:00';
+                    existingEvent.endTime = '09:30';
+                    existingEvent.duration = "30''";
+                    existingEvent.category = 'famiglia';
+                    existingEvent.subcategory = existingEvent.subcategory || 'Vacanze';
+                    if (notesStr && (!existingEvent.notes || !existingEvent.notes.includes(notesStr))) {
+                        existingEvent.notes = existingEvent.notes ? `${existingEvent.notes} â€¢ ${notesStr}` : notesStr;
+                    }
+                    existingEvent.updatedAt = new Date().toISOString();
+                    mergedCount++;
+                } else {
+                    // Crea nuovo evento Ferie alle ore 09:00
+                    const newEv = {
+                        id: 'ferie_' + dateStr.replace(/-/g, '') + '_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 4),
+                        title: 'Ferie',
+                        date: dateStr,
+                        endDate: dateStr,
+                        time: '09:00',
+                        endTime: '09:30',
+                        duration: "30''",
+                        category: 'famiglia',
+                        users: targetUsers,
+                        subcategory: 'Vacanze',
+                        notes: notesStr || 'Ferie',
+                        recurrence: 'none',
+                        notificationAdvance: 'none',
+                        personalTimer: 'sound_timer',
+                        visibility: 'all',
+                        isCompleted: false,
+                        updatedAt: new Date().toISOString()
+                    };
+                    state.events.push(newEv);
+                    createdCount++;
+                }
+            });
+
+            persistEventsLocally();
+            renderApp();
+
+            try {
+                if (db && currentUser) {
+                    for (const dateStr of datesList) {
+                        const ev = state.events.find(e => e.date === dateStr && e.title && e.title.trim().toLowerCase() === 'ferie');
+                        if (ev) {
+                            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_events_rev16', ev.id), ev);
+                        }
+                    }
+                }
+            } catch(e) { console.warn('Sync warning:', e); }
+
+            closeVacationsModal();
+            showToast(`ðŸŒ´ Ferie applicate con successo! (${createdCount} creati, ${mergedCount} raggruppati) alle ore 09:00`, 6000);
+        };
+
         function bootApp() {
             // Eliminazione completa e definitiva di tutti gli eventi Twirling (richiesta utente)
             state.events = removeAllTwirlingEvents(state.events);
             persistEventsLocally();
 
             renderApp();
+            switchView('list');
             initAuth();
             initFirebaseSync();
             recordUserActivity(state.activeProfileId);
+            startNotificationMonitor();
 
             // Supporto tasti freccia sinistra/destra per navigare nel tempo
             document.addEventListener('keydown', (e) => {
@@ -10696,7 +11426,7 @@ function ghOpenSetup() {
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js').then(reg => {
-                    console.log('SW rev.21 registrato con successo.');
+                    console.log('SW rev.22 registrato con successo.');
                     reg.update();
                     reg.addEventListener('updatefound', () => {
                         const newWorker = reg.installing;
