@@ -1,6 +1,6 @@
 // Service worker: apertura anche senza rete + aggiornamenti automatici dell'app.
 // I DATI non passano di qui: li gestisce GitHub Sync con la sua cache locale.
-const CACHE = 'agenda-famiglia-rev16-v7';
+const CACHE = 'agenda-famiglia-rev16-v8';
 const SHELL = [
   './',
   './index.html',

@@ -707,8 +707,8 @@
                             </div>
                             <div>
                                 <div class="text-[10px] font-black uppercase tracking-wider text-emerald-800">Ultimo Aggiornamento App</div>
-                                <div class="text-sm font-black text-slate-900 tracking-tight" id="appLastUpdateDateTime">21/10/2026 alle 14:52</div>
-                                <div class="text-[10px] font-bold text-slate-500" id="appDeviceCheckDateTime">Verificato su questo cellulare: 21/10/2026 alle 14:52</div>
+                                <div class="text-sm font-black text-slate-900 tracking-tight" id="appLastUpdateDateTime">21/10/2026 alle 15:42</div>
+                                <div class="text-[10px] font-bold text-slate-500" id="appDeviceCheckDateTime">Verificato su questo cellulare: 21/10/2026 alle 15:42</div>
                             </div>
                         </div>
                         <div class="self-start sm:self-center">
@@ -953,7 +953,7 @@
             <!-- FOOTER INFO VERSIONE E DATA AGGIORNAMENTO -->
             <div class="pt-2 pb-6 text-center space-y-0.5">
                 <p class="text-[11px] font-black text-slate-500">Agenda Familiare Condivisa • rev. 16</p>
-                <p class="text-[10px] font-bold text-slate-400" id="altroFooterLastUpdate">Ultimo aggiornamento rilasciato: 21/10/2026 alle 14:52</p>
+                <p class="text-[10px] font-bold text-slate-400" id="altroFooterLastUpdate">Ultimo aggiornamento rilasciato: 21/10/2026 alle 15:42</p>
             </div>
         </div>
 
@@ -1308,6 +1308,19 @@
                         <i data-lucide="clock" class="w-4 h-4 text-indigo-600 shrink-0"></i>
                         <span id="summaryTimeAndDuration" class="font-black text-sm">18:00 - 19:30 (1h 30m)</span>
                     </div>
+
+                    <!-- Dettaglio Orari e Visite (se orari differenti o visite multiple) -->
+                    <div id="summaryScheduleBox" class="hidden p-3 rounded-2xl bg-indigo-50/70 border border-indigo-200 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] font-black uppercase tracking-wider text-indigo-900 flex items-center gap-1.5">
+                                <i data-lucide="layers" class="w-3.5 h-3.5 text-indigo-600"></i>
+                                <span>Orari e Visite Dettagliati</span>
+                            </span>
+                            <span id="summaryScheduleCountBadge" class="text-[9.5px] font-black px-2 py-0.5 rounded-full bg-white text-indigo-700 border border-indigo-200"></span>
+                        </div>
+                        <div id="summaryScheduleList" class="space-y-1.5"></div>
+                    </div>
+
                     <div id="summaryRecurrenceRow" class="hidden flex items-center gap-2 text-indigo-700 text-xs font-bold pt-1 border-t border-slate-200">
                         <i data-lucide="repeat" class="w-3.5 h-3.5 text-indigo-600 shrink-0"></i>
                         <span id="summaryRecurrenceText">Ripetizione settimanale</span>
@@ -1459,41 +1472,77 @@
                     </div>
                 </div>
 
-                <!-- 4. DATA, ORARI E DURATA CON CALCOLO AUTOMATICO ORA FINE -->
+                <!-- 4. DATA, ORARI E DURATA (SINGOLO O ORARI DIFFERENTI / PIÙ VISITE) -->
                 <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 space-y-2.5">
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                        <div>
-                            <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-0.5">Data *</label>
-                            <input type="date" id="formDate" required class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold">
+                    <div>
+                        <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-0.5">Data *</label>
+                        <input type="date" id="formDate" required class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold">
+                    </div>
+
+                    <!-- Toggle Orari identici o Differenti -->
+                    <div class="flex items-center justify-between p-2 rounded-xl bg-white border border-slate-200 shadow-2xs">
+                        <label class="flex items-center gap-2 cursor-pointer select-none">
+                            <input type="checkbox" id="formSameTimeCheckbox" checked onchange="toggleSameTimeMode()"
+                                   class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer">
+                            <span class="text-xs font-black text-slate-800">Orari identici per tutti (Singolo orario)</span>
+                        </label>
+                        <span id="formScheduleModeBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">Standard</span>
+                    </div>
+
+                    <!-- SEZIONE 4A: ORARIO SINGOLO STANDARD (Attivo quando formSameTimeCheckbox è spuntato) -->
+                    <div id="formSingleTimeSection" class="space-y-2.5">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-0.5">Ora Inizio</label>
+                                <input type="time" id="formTime" onchange="onFormStartTimeChange()" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-0.5">Ora Fine (automatica)</label>
+                                <input type="time" id="formEndTime" onchange="onFormEndTimeChange()" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold">
+                            </div>
                         </div>
+
+                        <!-- Tasti rapidi Durata -->
                         <div>
-                            <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-0.5">Ora Inizio</label>
-                            <input type="time" id="formTime" onchange="onFormStartTimeChange()" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-0.5">Ora Fine (automatica)</label>
-                            <input type="time" id="formEndTime" onchange="onFormEndTimeChange()" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold">
+                            <div class="flex items-center justify-between mb-1">
+                                <label class="text-[10px] font-extrabold uppercase text-slate-500">Durata Impegno</label>
+                                <span id="calculatedDurationHint" class="text-[11px] font-black text-indigo-600"></span>
+                            </div>
+                            <div class="flex flex-wrap gap-1" id="durationQuickButtons"></div>
+
+                            <!-- Casella durata personalizzata: ore e minuti -->
+                            <div class="flex items-center gap-1.5 mt-2 pt-1.5 border-t border-slate-200 text-xs">
+                                <span class="text-[10.5px] font-bold text-slate-500">Personalizzata:</span>
+                                <input type="number" id="formCustomHours" min="0" max="23" placeholder="0" class="w-12 px-2 py-1 rounded-lg border border-slate-300 bg-white text-center font-bold">
+                                <span class="text-[11px] font-bold text-slate-600">ore</span>
+                                <input type="number" id="formCustomMinutes" min="0" max="59" step="5" placeholder="30" class="w-12 px-2 py-1 rounded-lg border border-slate-300 bg-white text-center font-bold">
+                                <span class="text-[11px] font-bold text-slate-600">min</span>
+                                <button type="button" onclick="applyCustomDurationInputs()" class="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[11px] shadow-2xs transition">Applica</button>
+                            </div>
+                            <input type="hidden" id="formDuration">
                         </div>
                     </div>
 
-                    <!-- Tasti rapidi Durata -->
-                    <div>
-                        <div class="flex items-center justify-between mb-1">
-                            <label class="text-[10px] font-extrabold uppercase text-slate-500">Durata Impegno</label>
-                            <span id="calculatedDurationHint" class="text-[11px] font-black text-indigo-600"></span>
+                    <!-- SEZIONE 4B: ORARI DIFFERENTI PER PERSONA / PIÙ VISITE (Attivo quando formSameTimeCheckbox NON è spuntato) -->
+                    <div id="formDifferentiatedScheduleSection" class="hidden space-y-2.5 pt-1">
+                        <div class="p-2 rounded-xl bg-indigo-50 border border-indigo-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5">
+                            <div class="text-[10.5px] font-bold text-indigo-900 leading-tight">
+                                Imposta orari differenti per persona (es. Twirling) o più visite nello stesso giorno (es. Mediche: Analisi ore 8, Cardiologo ore 9).
+                            </div>
+                            <span id="formOverallScheduleSpan" class="text-[10px] font-black px-2 py-0.5 rounded-lg bg-white text-indigo-700 shrink-0 border border-indigo-200 self-start sm:self-auto"></span>
                         </div>
-                        <div class="flex flex-wrap gap-1" id="durationQuickButtons"></div>
 
-                        <!-- Casella durata personalizzata: ore e minuti -->
-                        <div class="flex items-center gap-1.5 mt-2 pt-1.5 border-t border-slate-200 text-xs">
-                            <span class="text-[10.5px] font-bold text-slate-500">Personalizzata:</span>
-                            <input type="number" id="formCustomHours" min="0" max="23" placeholder="0" class="w-12 px-2 py-1 rounded-lg border border-slate-300 bg-white text-center font-bold">
-                            <span class="text-[11px] font-bold text-slate-600">ore</span>
-                            <input type="number" id="formCustomMinutes" min="0" max="59" step="5" placeholder="30" class="w-12 px-2 py-1 rounded-lg border border-slate-300 bg-white text-center font-bold">
-                            <span class="text-[11px] font-bold text-slate-600">min</span>
-                            <button type="button" onclick="applyCustomDurationInputs()" class="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[11px] shadow-2xs transition">Applica</button>
+                        <!-- Elenco righe orari/visite -->
+                        <div id="formScheduleRowsContainer" class="space-y-2"></div>
+
+                        <!-- Bottone per aggiungere riga -->
+                        <div class="flex items-center justify-between pt-1">
+                            <button type="button" onclick="addNewScheduleRow()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black shadow-2xs transition">
+                                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                                <span>Aggiungi visita / orario</span>
+                            </button>
+                            <span class="text-[10px] text-slate-400 font-semibold">Unico appuntamento nel calendario</span>
                         </div>
-                        <input type="hidden" id="formDuration">
                     </div>
 
                     <!-- Ripetizione appuntamento -->
@@ -2112,7 +2161,7 @@ function ghOpenSetup() {
         const APP_VERSION = 'rev.16';
         const APP_BUILD_INFO = {
             rev: 'rev. 16',
-            dateTime: '21/10/2026 alle 14:52'
+            dateTime: '21/10/2026 alle 15:42'
         };
 
         // 1. I 6 PROFILI DELLA FAMIGLIA (CON AUTENTICAZIONE PASSWORD O DATA DI NASCITA)
@@ -2378,36 +2427,114 @@ function ghOpenSetup() {
             }
         }
 
-        function cleanupAsiaTuesdayTwirling(events) {
+        function consolidateTwirlingEvents(events) {
             if (!Array.isArray(events)) return events;
+            const byDate = {};
+            const otherEvents = [];
+
             events.forEach(e => {
-                if ((e.title || '').toLowerCase().includes('twirling') || (e.subcategory || '').toLowerCase().includes('twirling')) {
-                    if ((e.users || []).includes('u3')) {
-                        // Asia
-                        const d = new Date(e.date + 'T12:00:00');
-                        if (d.getDay() === 2) {
-                            e.time = '16:30';
-                            e.endTime = '20:00';
-                            e.duration = '3h 30m';
-                        } else if (d.getDay() === 4) {
-                            e.time = '18:00';
-                            e.endTime = '21:00';
-                            e.duration = '3 ore';
-                        }
-                    } else if ((e.users || []).includes('u5')) {
-                        // Emma
-                        e.time = '18:00';
-                        e.endTime = '19:30';
-                        e.duration = '1h 30m';
-                    } else if ((e.users || []).includes('u6')) {
-                        // Clara
-                        e.time = '18:00';
-                        e.endTime = '19:00';
-                        e.duration = '1 ora';
-                    }
+                const isTw = (e.title || '').toLowerCase().includes('twirling') ||
+                             (e.subcategory || '').toLowerCase().includes('twirling') ||
+                             (e.id || '').startsWith('tw_') ||
+                             (e.id || '').startsWith('twirling_');
+                if (isTw && e.date) {
+                    if (!byDate[e.date]) byDate[e.date] = [];
+                    byDate[e.date].push(e);
+                } else {
+                    otherEvents.push(e);
                 }
             });
-            return events;
+
+            const consolidatedTwirling = [];
+            Object.keys(byDate).forEach(dateStr => {
+                const list = byDate[dateStr];
+                // Se è già un evento unico consolidato con schedule, mantienilo
+                if (list.length === 1 && list[0].hasDifferentTimes && Array.isArray(list[0].schedule) && list[0].schedule.length > 0) {
+                    consolidatedTwirling.push(list[0]);
+                    return;
+                }
+
+                const d = new Date(dateStr + 'T12:00:00');
+                const dow = d.getDay();
+                let minTime = '18:00';
+                let maxEndTime = '19:30';
+                let dur = '1h 30m';
+                let schedule = [];
+
+                if (dow === 2) {
+                    // Martedì: Asia 16:30-20:00 (Palestra), Emma 18:00-19:30 (Palestra Isola), Clara 18:00-19:00 (Palestra Isola)
+                    minTime = '16:30';
+                    maxEndTime = '20:00';
+                    dur = '3h 30m';
+                    schedule = [
+                        { userId: 'u3', userName: 'Asia', time: '16:30', endTime: '20:00', duration: '3h 30m', notes: 'Palestra' },
+                        { userId: 'u5', userName: 'Emma', time: '18:00', endTime: '19:30', duration: '1h 30m', notes: 'Palestra Isola' },
+                        { userId: 'u6', userName: 'Clara', time: '18:00', endTime: '19:00', duration: '1 ora', notes: 'Palestra Isola' }
+                    ];
+                } else if (dow === 4) {
+                    // Giovedì: Asia 18:00-21:00 (Palestra), Emma 18:00-19:30 (Palestra Isola), Clara 18:00-19:00 (Palestra Isola)
+                    minTime = '18:00';
+                    maxEndTime = '21:00';
+                    dur = '3 ore';
+                    schedule = [
+                        { userId: 'u3', userName: 'Asia', time: '18:00', endTime: '21:00', duration: '3 ore', notes: 'Palestra' },
+                        { userId: 'u5', userName: 'Emma', time: '18:00', endTime: '19:30', duration: '1h 30m', notes: 'Palestra Isola' },
+                        { userId: 'u6', userName: 'Clara', time: '18:00', endTime: '19:00', duration: '1 ora', notes: 'Palestra Isola' }
+                    ];
+                } else {
+                    let minS = 24 * 60, maxE = 0;
+                    list.forEach(item => {
+                        const [sh, sm] = (item.time || '18:00').split(':').map(Number);
+                        const sMin = (isNaN(sh) ? 18 : sh) * 60 + (isNaN(sm) ? 0 : sm);
+                        const [eh, em] = (item.endTime || '19:00').split(':').map(Number);
+                        const eMin = (isNaN(eh) ? 19 : eh) * 60 + (isNaN(em) ? 0 : em);
+                        if (sMin < minS) minS = sMin;
+                        if (eMin > maxE) maxE = eMin;
+                        (item.users || ['u3']).forEach(uid => {
+                            const u = BASE_USERS.find(x => x.id === uid) || { name: uid };
+                            schedule.push({
+                                userId: uid,
+                                userName: u.name,
+                                time: item.time || '18:00',
+                                endTime: item.endTime || '19:00',
+                                duration: item.duration || '1 ora',
+                                notes: item.notes || item.place || ''
+                            });
+                        });
+                    });
+                    const sH = String(Math.floor(minS / 60)).padStart(2, '0');
+                    const sM = String(minS % 60).padStart(2, '0');
+                    const eH = String(Math.floor(maxE / 60)).padStart(2, '0');
+                    const eM = String(maxE % 60).padStart(2, '0');
+                    minTime = `${sH}:${sM}`;
+                    maxEndTime = `${eH}:${eM}`;
+                    const diff = maxE - minS;
+                    dur = `${Math.floor(diff / 60)}h ${diff % 60 > 0 ? (diff % 60 + 'm') : ''}`.trim() || '1 ora';
+                }
+
+                const baseEv = list[0] || {};
+                consolidatedTwirling.push({
+                    id: `twirling_${dateStr}`,
+                    title: 'Twirling',
+                    category: 'sportivi',
+                    subcategory: 'Twirling',
+                    date: dateStr,
+                    time: minTime,
+                    endTime: maxEndTime,
+                    duration: dur,
+                    hasDifferentTimes: true,
+                    users: ['u3', 'u5', 'u6'],
+                    place: 'Palestra Isola / Palestra',
+                    notes: 'Allenamenti Twirling Asia, Emma e Clara',
+                    schedule: schedule,
+                    recurrence: 'weekly',
+                    notificationAdvance: baseEv.notificationAdvance || '15m',
+                    personalTimer: baseEv.personalTimer || 'sound_timer',
+                    visibility: 'all'
+                });
+            });
+
+            return [...otherEvents, ...consolidatedTwirling];
         }
 
         function loadPersistedEvents() {
@@ -2416,11 +2543,11 @@ function ghOpenSetup() {
                 if (raw) {
                     const parsed = JSON.parse(raw);
                     if (Array.isArray(parsed) && parsed.length > 0) {
-                        return cleanupAsiaTuesdayTwirling(parsed);
+                        return consolidateTwirlingEvents(parsed);
                     }
                 }
             } catch(e) {}
-            return cleanupAsiaTuesdayTwirling(buildRequestedSeedEvents());
+            return consolidateTwirlingEvents(buildRequestedSeedEvents());
         }
 
         function persistEventsLocally() {
@@ -2513,7 +2640,7 @@ function ghOpenSetup() {
             updateBillsBadge();
         }
 
-        // DATI DI PROVA INIZIALI: INCLUDE ESEMPIO DI APPUNTAMENTO DENTRO UN ALTRO (4-8 E 5-7:30) E TWIRLING A SCALINI
+        // DATI DI PROVA INIZIALI: INCLUDE TWIRLING UNIFICATO A SCALINI E VISITE MEDICHE MULTIPLE
         function buildRequestedSeedEvents() {
             const items = [];
             // Genera impegni Twirling richiesti per tutto l'anno sportivo (settembre 2026 - luglio 2027)
@@ -2523,89 +2650,138 @@ function ghOpenSetup() {
                 const dow = d.getDay();
                 const dt = toIsoDate(d);
                 if (dow === 2) {
-                    // MARTEDI:
-                    // Asia: 16:30-20:00 (Palestra)
+                    // MARTEDI: Singolo appuntamento Twirling con orari a scalini per Asia, Emma e Clara
                     items.push({
-                        id: `tw_asia_mar_${dt}`,
+                        id: `twirling_mar_${dt}`,
                         title: 'Twirling',
                         subcategory: 'Twirling',
                         date: dt,
                         time: '16:30',
                         endTime: '20:00',
                         duration: '3h 30m',
+                        hasDifferentTimes: true,
                         category: 'sportivi',
-                        users: ['u3'],
-                        notes: 'Palestra'
-                    });
-                    // Emma: 18:00-19:30 (Palestra Isola)
-                    items.push({
-                        id: `tw_emma_mar_${dt}`,
-                        title: 'Twirling',
-                        subcategory: 'Twirling',
-                        date: dt,
-                        time: '18:00',
-                        endTime: '19:30',
-                        duration: '1h 30m',
-                        category: 'sportivi',
-                        users: ['u5'],
-                        notes: 'Palestra Isola'
-                    });
-                    // Clara: 18:00-19:00 (Palestra Isola)
-                    items.push({
-                        id: `tw_clara_mar_${dt}`,
-                        title: 'Twirling',
-                        subcategory: 'Twirling',
-                        date: dt,
-                        time: '18:00',
-                        endTime: '19:00',
-                        duration: '1 ora',
-                        category: 'sportivi',
-                        users: ['u6'],
-                        notes: 'Palestra Isola'
+                        users: ['u3', 'u5', 'u6'],
+                        place: 'Palestra Isola / Palestra',
+                        notes: 'Allenamenti Twirling Asia, Emma e Clara',
+                        recurrence: 'weekly',
+                        notificationAdvance: '15m',
+                        personalTimer: 'sound_timer',
+                        visibility: 'all',
+                        schedule: [
+                            {
+                                userId: 'u3',
+                                userName: 'Asia',
+                                time: '16:30',
+                                endTime: '20:00',
+                                duration: '3h 30m',
+                                notes: 'Palestra'
+                            },
+                            {
+                                userId: 'u5',
+                                userName: 'Emma',
+                                time: '18:00',
+                                endTime: '19:30',
+                                duration: '1h 30m',
+                                notes: 'Palestra Isola'
+                            },
+                            {
+                                userId: 'u6',
+                                userName: 'Clara',
+                                time: '18:00',
+                                endTime: '19:00',
+                                duration: '1 ora',
+                                notes: 'Palestra Isola'
+                            }
+                        ]
                     });
                 } else if (dow === 4) {
-                    // GIOVEDI:
-                    // Asia: 18:00-21:00 (Palestra)
+                    // GIOVEDI: Singolo appuntamento Twirling con orari a scalini per Asia, Emma e Clara
                     items.push({
-                        id: `tw_asia_gio_${dt}`,
+                        id: `twirling_gio_${dt}`,
                         title: 'Twirling',
                         subcategory: 'Twirling',
                         date: dt,
                         time: '18:00',
                         endTime: '21:00',
                         duration: '3 ore',
+                        hasDifferentTimes: true,
                         category: 'sportivi',
-                        users: ['u3'],
-                        notes: 'Palestra'
-                    });
-                    // Emma: 18:00-19:30 (Palestra Isola)
-                    items.push({
-                        id: `tw_emma_gio_${dt}`,
-                        title: 'Twirling',
-                        subcategory: 'Twirling',
-                        date: dt,
-                        time: '18:00',
-                        endTime: '19:30',
-                        duration: '1h 30m',
-                        category: 'sportivi',
-                        users: ['u5'],
-                        notes: 'Palestra Isola'
-                    });
-                    // Clara: 18:00-19:00 (Palestra Isola)
-                    items.push({
-                        id: `tw_clara_gio_${dt}`,
-                        title: 'Twirling',
-                        subcategory: 'Twirling',
-                        date: dt,
-                        time: '18:00',
-                        endTime: '19:00',
-                        duration: '1 ora',
-                        category: 'sportivi',
-                        users: ['u6'],
-                        notes: 'Palestra Isola'
+                        users: ['u3', 'u5', 'u6'],
+                        place: 'Palestra Isola / Palestra',
+                        notes: 'Allenamenti Twirling Asia, Emma e Clara',
+                        recurrence: 'weekly',
+                        notificationAdvance: '15m',
+                        personalTimer: 'sound_timer',
+                        visibility: 'all',
+                        schedule: [
+                            {
+                                userId: 'u3',
+                                userName: 'Asia',
+                                time: '18:00',
+                                endTime: '21:00',
+                                duration: '3 ore',
+                                notes: 'Palestra'
+                            },
+                            {
+                                userId: 'u5',
+                                userName: 'Emma',
+                                time: '18:00',
+                                endTime: '19:30',
+                                duration: '1h 30m',
+                                notes: 'Palestra Isola'
+                            },
+                            {
+                                userId: 'u6',
+                                userName: 'Clara',
+                                time: '18:00',
+                                endTime: '19:00',
+                                duration: '1 ora',
+                                notes: 'Palestra Isola'
+                            }
+                        ]
                     });
                 }
             }
+
+            // Esempio Visite Mediche con orari differenti / visite multiple nello stesso giorno (richiesto da utente)
+            items.push({
+                id: 'visite_mediche_demo',
+                title: 'Visite Mediche',
+                category: 'medici',
+                subcategory: 'Controllo Generale',
+                date: '2026-10-28',
+                time: '08:00',
+                endTime: '10:00',
+                duration: '2 ore',
+                hasDifferentTimes: true,
+                users: ['u5', 'u2'],
+                place: 'Poliambulatorio San Donato',
+                notes: 'Analisi del sangue a digiuno e controllo cardiologico',
+                recurrence: 'none',
+                notificationAdvance: '1d',
+                personalTimer: 'sound_timer',
+                visibility: 'all',
+                schedule: [
+                    {
+                        userId: 'u5',
+                        userName: 'Emma',
+                        time: '08:00',
+                        endTime: '08:30',
+                        duration: "30'",
+                        notes: 'Analisi del sangue (a digiuno)'
+                    },
+                    {
+                        userId: 'u5',
+                        userName: 'Emma',
+                        time: '09:00',
+                        endTime: '10:00',
+                        duration: '1 ora',
+                        notes: 'Visita Cardiologica'
+                    }
+                ]
+            });
+
             return items;
         }
 
@@ -2631,6 +2807,7 @@ function ghOpenSetup() {
             formSubcategory: '',
             formPatrizioCategory: '',
             formPatrizioFamilyMember: 'Tutta la famiglia',
+            formSchedule: [],
             ponti: [{ id: 'ponte_1', start: '2026-11-02', end: '2026-11-02', name: 'Ponte Ognissanti' }],
             familyDefaultColors: {
                 users: Object.fromEntries(BASE_USERS.map(u => [u.id, u.hex])),
@@ -2941,7 +3118,8 @@ function ghOpenSetup() {
 
             let barsHtml = '';
             sorted.forEach(p => {
-                const u = usersList.find(x => x.id === p.userId) || { name: p.userId, hex: '#4f46e5' };
+                const u = usersList.find(x => x.id === p.userId) || { name: p.userName || p.userId, hex: '#4f46e5' };
+                const labelName = p.userName || u.name;
                 const leftPct = Math.max(0, Math.min(100, ((p.startMin - minStart) / totalDur) * 100));
                 const widthPct = Math.max(18, Math.min(100 - leftPct, ((p.endMin - p.startMin) / totalDur) * 100));
 
@@ -2950,9 +3128,9 @@ function ghOpenSetup() {
                         <div class="w-full bg-slate-200/80 h-7 rounded-lg relative overflow-hidden shadow-inner border border-black/5">
                             <div class="absolute top-0 bottom-0 rounded-lg shadow-xs flex items-center justify-between px-2 text-white font-black text-[11px] truncate transition-all duration-300"
                                  style="left:${leftPct.toFixed(1)}%; width:${widthPct.toFixed(1)}%; background-color:${u.hex};">
-                                <span class="truncate flex items-center gap-1.5">
+                                <span class="truncate flex items-center gap-1.5 min-w-0">
                                     <span class="w-2 h-2 rounded-full bg-white shrink-0"></span>
-                                    <span class="font-black text-white tracking-wide">${escapeHtml(u.name)}</span>
+                                    <span class="font-black text-white tracking-wide truncate">${escapeHtml(labelName)}${p.notes ? ` <span class="font-normal opacity-90 text-[10px]">(${escapeHtml(p.notes)})</span>` : ''}</span>
                                 </span>
                                 <span class="text-[10px] font-extrabold opacity-95 shrink-0 ml-1.5 bg-black/25 px-1.5 py-0.5 rounded shadow-2xs">
                                     ${p.time}-${p.endTime}
@@ -2998,23 +3176,88 @@ function ghOpenSetup() {
             const timedEvents = [];
 
             dayEvents.forEach(e => {
-                if (!e.time || e.time.toLowerCase().includes('tutto') || (e.duration && e.duration.toLowerCase().includes('tutto'))) {
+                if (!e.time || (typeof e.time === 'string' && e.time.toLowerCase().includes('tutto')) || (e.duration && typeof e.duration === 'string' && e.duration.toLowerCase().includes('tutto'))) {
                     allDayEvents.push(e);
                 } else {
                     timedEvents.push(e);
                 }
             });
 
-            // Raggruppamento per titolo e categoria
-            const groupsByTitle = {};
+            const timedItems = [];
+            const regularTimedEvents = [];
+
+            // 1. Eventi singoli con orari differenti / visite multiple già configurate nel singolo appuntamento
             timedEvents.forEach(e => {
+                if (e.hasDifferentTimes && Array.isArray(e.schedule) && e.schedule.length > 0) {
+                    let minStartMin = 24 * 60;
+                    let maxEndMin = 0;
+                    const participants = [];
+
+                    e.schedule.forEach(slot => {
+                        const [sh, sm] = (slot.time || e.time || '18:00').split(':').map(Number);
+                        const sMin = (isNaN(sh) ? 18 : sh) * 60 + (isNaN(sm) ? 0 : sm);
+                        let eMin = sMin + 60;
+                        if (slot.endTime) {
+                            const [eh, em] = slot.endTime.split(':').map(Number);
+                            if (!isNaN(eh) && !isNaN(em)) eMin = eh * 60 + em;
+                        } else if (slot.duration) {
+                            eMin = sMin + parseDurationToMinutes(slot.duration, slot.time);
+                        }
+                        if (eMin <= sMin) eMin = sMin + 30;
+
+                        if (sMin < minStartMin) minStartMin = sMin;
+                        if (eMin > maxEndMin) maxEndMin = eMin;
+
+                        participants.push({
+                            userId: slot.userId || (e.users && e.users[0]) || 'u1',
+                            userName: slot.userName || '',
+                            startMin: sMin,
+                            endMin: eMin,
+                            durMin: Math.max(15, eMin - sMin),
+                            time: slot.time || e.time,
+                            endTime: slot.endTime || `${String(Math.floor(eMin / 60)).padStart(2, '0')}:${String(eMin % 60).padStart(2, '0')}`,
+                            duration: slot.duration,
+                            notes: slot.notes || '',
+                            rawEv: e
+                        });
+                    });
+
+                    participants.sort((a, b) => b.durMin - a.durMin || a.startMin - b.startMin);
+
+                    const startH = Math.floor(minStartMin / 60);
+                    const startM = minStartMin % 60;
+                    const endH = Math.floor(maxEndMin / 60);
+                    const endM = maxEndMin % 60;
+
+                    timedItems.push({
+                        isSteppedGroup: true,
+                        key: `event_${e.id}`,
+                        eventId: e.id,
+                        title: e.title,
+                        category: e.category,
+                        subcategory: e.subcategory || e.notes || '',
+                        startMin: minStartMin,
+                        endMin: maxEndMin,
+                        durMin: maxEndMin - minStartMin,
+                        time: `${String(startH).padStart(2, '0')}:${String(startM).padStart(2, '0')}`,
+                        endTime: `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`,
+                        participants,
+                        events: [e],
+                        ev: e
+                    });
+                } else {
+                    regularTimedEvents.push(e);
+                }
+            });
+
+            // 2. Raggruppamento per titolo e categoria per eventi standard / legacy
+            const groupsByTitle = {};
+            regularTimedEvents.forEach(e => {
                 const normTitle = (e.title || 'Attività').trim().toLowerCase();
                 const key = `${normTitle}__${e.category}`;
                 if (!groupsByTitle[key]) groupsByTitle[key] = [];
                 groupsByTitle[key].push(e);
             });
-
-            const timedItems = [];
 
             Object.keys(groupsByTitle).forEach(key => {
                 const list = groupsByTitle[key];
@@ -3056,15 +3299,18 @@ function ghOpenSetup() {
                     timedItems.push({
                         isSteppedGroup: true,
                         key,
+                        eventId: list[0].id,
                         title: list[0].title,
                         category: list[0].category,
+                        subcategory: list[0].subcategory || list[0].notes || '',
                         startMin: minStartMin,
                         endMin: maxEndMin,
                         durMin: maxEndMin - minStartMin,
                         time: `${String(startH).padStart(2, '0')}:${String(startM).padStart(2, '0')}`,
                         endTime: `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`,
                         participants,
-                        events: list
+                        events: list,
+                        ev: list[0]
                     });
                 } else {
                     const ev = list[0];
@@ -3084,7 +3330,8 @@ function ghOpenSetup() {
                         startMin: sMin,
                         endMin: computedEndMin,
                         durMin,
-                        ev
+                        ev,
+                        eventId: ev.id
                     });
                 }
             });
@@ -5901,21 +6148,24 @@ function ghOpenSetup() {
                             <h4 class="text-xs font-black uppercase text-slate-500 mb-2">Orari e Durate Individuali (A Scalini):</h4>
                             <div class="space-y-2">
                                 ${item.participants.map(p => {
-                                    const u = usersList.find(x => x.id === p.userId) || { name: p.userId, hex: '#334155' };
+                                    const u = usersList.find(x => x.id === p.userId) || { name: p.userName || p.userId, hex: '#334155' };
+                                    const labelName = p.userName || u.name;
+                                    const evId = p.rawEv ? p.rawEv.id : (item.eventId || (item.events && item.events[0] ? item.events[0].id : ''));
                                     return `
                                         <div class="p-2.5 rounded-xl border border-slate-200 bg-white flex items-center justify-between shadow-2xs">
                                             <div class="flex items-center gap-2.5">
-                                                <span class="w-7 h-7 rounded-lg flex items-center justify-center text-white text-xs font-black shadow-xs" style="background-color:${u.hex}">
-                                                    ${u.name.charAt(0)}
+                                                <span class="w-7 h-7 rounded-lg flex items-center justify-center text-white text-xs font-black shadow-xs shrink-0" style="background-color:${u.hex}">
+                                                    ${labelName.charAt(0)}
                                                 </span>
                                                 <div>
-                                                    <div class="text-xs font-black text-slate-900">${u.name}</div>
+                                                    <div class="text-xs font-black text-slate-900">${escapeHtml(labelName)}</div>
                                                     <div class="text-[10px] text-slate-500">Durata: ${Math.floor(p.durMin/60)}h ${p.durMin%60}m</div>
+                                                    ${p.notes ? `<div class="text-[10.5px] font-semibold text-slate-600 mt-0.5">${escapeHtml(p.notes)}</div>` : ''}
                                                 </div>
                                             </div>
-                                            <div class="text-right">
+                                            <div class="text-right shrink-0">
                                                 <div class="text-xs font-black text-indigo-700">${p.time}-${p.endTime}</div>
-                                                <button type="button" onclick="closeActivityDetailModal(); openEventModal('${p.rawEv.id}')"
+                                                <button type="button" onclick="closeActivityDetailModal(); openEventModal('${evId}')"
                                                         class="text-[10px] font-bold text-slate-400 hover:text-indigo-600 underline">Modifica</button>
                                             </div>
                                         </div>
@@ -5925,7 +6175,22 @@ function ghOpenSetup() {
                         </div>
                     </div>
                 `;
-                if (editCont) editCont.innerHTML = '';
+                const mainEvId = item.eventId || (item.events && item.events[0] ? item.events[0].id : (item.ev ? item.ev.id : ''));
+                if (editCont) {
+                    editCont.innerHTML = `
+                        <div class="flex items-center justify-between w-full pt-1">
+                            <button type="button" onclick="closeActivityDetailModal(); if(confirm('Vuoi eliminare questo appuntamento?')) { deleteEventWithSync('${mainEvId}'); }"
+                                    class="px-3 py-1.5 rounded-xl text-rose-600 hover:bg-rose-50 text-xs font-black transition">
+                                Elimina
+                            </button>
+                            <button type="button" onclick="closeActivityDetailModal(); openEventModal('${mainEvId}')"
+                                    class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black shadow-md transition flex items-center gap-1.5">
+                                <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                                <span>Modifica Appuntamento</span>
+                            </button>
+                        </div>
+                    `;
+                }
             } else {
                 const ev = item.ev || item;
                 bodyEl.innerHTML = `
@@ -5958,71 +6223,274 @@ function ghOpenSetup() {
         };
 
         // ========================================================
-        // 14. MODALE CREA / MODIFICA EVENTO (STILE GOOGLE CALENDAR)
+        // 14. GESTIONE ORARI DIFFERENTI / VISITE MULTIPLE NEL MODALE IMPEGNO
         // ========================================================
-        window.openEventModal = function(id = null, defaultDate = null, defaultTime = null) {
-            renderFormControls();
-            state.confirmingDelete = false;
+        window.toggleSameTimeMode = function() {
+            const isSame = document.getElementById('formSameTimeCheckbox')?.checked ?? true;
+            const singleSec = document.getElementById('formSingleTimeSection');
+            const diffSec = document.getElementById('formDifferentiatedScheduleSection');
+            const modeBadge = document.getElementById('formScheduleModeBadge');
 
-            const modal = document.getElementById('eventModal');
-            const header = document.getElementById('eventModalHeader');
-            const btnDel = document.getElementById('btnDeleteEvent');
-
-            if (id) {
-                const ev = state.events.find(x => x.id === id);
-                if (!ev) return;
-                header.textContent = 'Modifica Impegno';
-                if (btnDel) btnDel.classList.remove('hidden');
-
-                document.getElementById('formEventId').value = ev.id;
-                document.getElementById('formTitle').value = ev.title || '';
-                document.getElementById('formDate').value = ev.date || '';
-                document.getElementById('formTime').value = ev.time || '';
-                document.getElementById('formEndTime').value = ev.endTime || '';
-                document.getElementById('formDuration').value = ev.duration || '';
-                document.getElementById('formNotes').value = ev.notes || '';
-                document.getElementById('formRecurrence').value = ev.recurrence || 'none';
-                document.getElementById('formPlace').value = ev.place || '';
-                document.getElementById('formNotificationAdvance').value = ev.notificationAdvance || '15m';
-                document.getElementById('formPersonalTimer').value = ev.personalTimer || 'none';
-                document.getElementById('formVisibility').value = ev.visibility || 'all';
-                const compEl1 = document.getElementById('formCompleted'); if (compEl1) compEl1.checked = !!ev.isCompleted;
-
-                state.formCategory = ev.category || 'sportivi';
-                state.formUsers = Array.isArray(ev.users) ? [...ev.users] : ['u1'];
-                state.formSubcategory = ev.subcategory || '';
-                state.formPatrizioCategory = ev.patrizioCategory || '';
-                state.formPatrizioFamilyMember = ev.patrizioFamilyMember || 'Tutta la famiglia';
+            if (isSame) {
+                if (singleSec) singleSec.classList.remove('hidden');
+                if (diffSec) diffSec.classList.add('hidden');
+                if (modeBadge) {
+                    modeBadge.textContent = 'Orari identici';
+                    modeBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600';
+                }
             } else {
-                header.textContent = 'Nuovo Impegno';
-                if (btnDel) btnDel.classList.add('hidden');
+                if (singleSec) singleSec.classList.add('hidden');
+                if (diffSec) diffSec.classList.remove('hidden');
+                if (modeBadge) {
+                    modeBadge.textContent = 'Orari differenti';
+                    modeBadge.className = 'text-[10px] font-black px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700';
+                }
+                if (!Array.isArray(state.formSchedule) || state.formSchedule.length === 0) {
+                    initDefaultScheduleFromUsers();
+                }
+                renderScheduleRows();
+            }
+        };
 
-                document.getElementById('formEventId').value = '';
-                document.getElementById('formTitle').value = '';
-                document.getElementById('formDate').value = defaultDate || toIsoDate(state.singleDayDate);
-                document.getElementById('formTime').value = defaultTime || '18:00';
-                document.getElementById('formEndTime').value = '';
-                document.getElementById('formDuration').value = '1 ora';
-                document.getElementById('formNotes').value = '';
-                document.getElementById('formRecurrence').value = 'none';
-                document.getElementById('formPlace').value = '';
-                document.getElementById('formNotificationAdvance').value = '15m';
-                document.getElementById('formPersonalTimer').value = 'none';
-                document.getElementById('formVisibility').value = 'admins_only';
-                const compEl2 = document.getElementById('formCompleted'); if (compEl2) compEl2.checked = false;
+        function initDefaultScheduleFromUsers() {
+            const usersList = getActiveUsersList();
+            const curTime = document.getElementById('formTime')?.value || '18:00';
+            const curEndTime = document.getElementById('formEndTime')?.value || '19:30';
+            const curDur = document.getElementById('formDuration')?.value || '1h 30m';
 
-                state.formCategory = 'sportivi';
-                state.formUsers = [state.activeProfileId];
-                state.formSubcategory = '';
-                state.formPatrizioCategory = '';
-                state.formPatrizioFamilyMember = 'Tutta la famiglia';
+            if (state.formUsers && state.formUsers.length > 0) {
+                state.formSchedule = state.formUsers.map((uid, idx) => {
+                    const u = usersList.find(x => x.id === uid) || { name: uid };
+                    return {
+                        userId: uid,
+                        userName: u.name,
+                        time: curTime,
+                        endTime: curEndTime,
+                        duration: curDur,
+                        notes: ''
+                    };
+                });
+            } else {
+                state.formSchedule = [{
+                    userId: state.activeProfileId,
+                    userName: (usersList.find(x => x.id === state.activeProfileId) || {}).name || 'Utente',
+                    time: curTime,
+                    endTime: curEndTime,
+                    duration: curDur,
+                    notes: ''
+                }];
+            }
+        }
+
+        window.renderScheduleRows = function() {
+            const container = document.getElementById('formScheduleRowsContainer');
+            if (!container) return;
+            const usersList = getActiveUsersList();
+
+            if (!Array.isArray(state.formSchedule) || state.formSchedule.length === 0) {
+                initDefaultScheduleFromUsers();
             }
 
-            renderFormControls();
-            renderPatrizioPersonalCategories();
-            renderFormSubcategories();
-            modal.classList.remove('hidden');
-            lucide.createIcons();
+            container.innerHTML = state.formSchedule.map((slot, index) => {
+                const u = usersList.find(x => x.id === slot.userId) || { name: slot.userName || slot.userId, hex: '#4f46e5' };
+                return `
+                    <div class="p-2.5 rounded-xl border border-slate-200 bg-white shadow-2xs space-y-2 relative">
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="flex items-center gap-1.5 flex-1 min-w-0">
+                                <span class="w-3 h-3 rounded-full shrink-0" style="background-color:${u.hex}"></span>
+                                <select onchange="updateScheduleSlotUser(${index}, this.value)" class="text-xs font-bold text-slate-800 bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 max-w-[150px]">
+                                    ${usersList.map(usr => `<option value="${usr.id}" ${usr.id === slot.userId ? 'selected' : ''}>${escapeHtml(usr.name)}</option>`).join('')}
+                                    <option value="all" ${slot.userId === 'all' ? 'selected' : ''}>Tutta la famiglia</option>
+                                </select>
+                            </div>
+
+                            <div class="flex items-center gap-1">
+                                <span class="text-[10px] font-black text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-lg border border-indigo-100">
+                                    ${slot.duration || '1 ora'}
+                                </span>
+                                ${state.formSchedule.length > 1 ? `
+                                    <button type="button" onclick="removeScheduleSlot(${index})" class="p-1 rounded-lg text-slate-400 hover:text-rose-600 transition" title="Rimuovi orario">
+                                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                            <div>
+                                <label class="block text-[9px] font-extrabold uppercase text-slate-400 mb-0.5">Ora Inizio</label>
+                                <input type="time" value="${slot.time || '18:00'}" onchange="updateScheduleSlotStartTime(${index}, this.value)"
+                                       class="w-full px-2 py-1 rounded-lg border border-slate-200 bg-slate-50 text-xs font-bold">
+                            </div>
+                            <div>
+                                <label class="block text-[9px] font-extrabold uppercase text-slate-400 mb-0.5">Ora Fine</label>
+                                <input type="time" value="${slot.endTime || '19:00'}" onchange="updateScheduleSlotEndTime(${index}, this.value)"
+                                       class="w-full px-2 py-1 rounded-lg border border-slate-200 bg-slate-50 text-xs font-bold">
+                            </div>
+                            <div class="col-span-2 sm:col-span-1">
+                                <label class="block text-[9px] font-extrabold uppercase text-slate-400 mb-0.5">Tipologia / Note / Visita</label>
+                                <input type="text" value="${escapeHtml(slot.notes || '')}" placeholder="Es. Analisi, Cardiologo, Palestra..."
+                                       oninput="updateScheduleSlotNotes(${index}, this.value)"
+                                       class="w-full px-2 py-1 rounded-lg border border-slate-200 bg-white text-xs font-semibold">
+                            </div>
+                        </div>
+
+                        <!-- Tasti rapidi durata per questo slot -->
+                        <div class="flex flex-wrap gap-1 items-center pt-0.5 border-t border-slate-100">
+                            <span class="text-[9.5px] font-bold text-slate-400 mr-0.5">Durata rapida:</span>
+                            ${[
+                                { label: "15'", min: 15 },
+                                { label: "30'", min: 30 },
+                                { label: "45'", min: 45 },
+                                { label: "1 h", min: 60 },
+                                { label: "1h 30", min: 90 },
+                                { label: "2 h", min: 120 },
+                                { label: "3 h", min: 180 },
+                                { label: "3h 30", min: 210 }
+                            ].map(btn => `
+                                <button type="button" onclick="applyScheduleSlotDuration(${index}, ${btn.min}, '${btn.label}')"
+                                        class="px-1.5 py-0.5 rounded text-[10px] font-black border transition ${slot.duration === btn.label ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'}">
+                                    ${btn.label}
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            updateOverallScheduleSpan();
+            if (window.lucide) lucide.createIcons();
+        };
+
+        window.addNewScheduleRow = function() {
+            if (!Array.isArray(state.formSchedule)) state.formSchedule = [];
+            const usersList = getActiveUsersList();
+            const existingUids = state.formSchedule.map(s => s.userId);
+            const remainingUid = (state.formUsers || []).find(uid => !existingUids.includes(uid)) || state.activeProfileId;
+            const u = usersList.find(x => x.id === remainingUid) || { name: remainingUid };
+
+            let lastTime = '18:00';
+            let lastEndTime = '19:00';
+            if (state.formSchedule.length > 0) {
+                const prev = state.formSchedule[state.formSchedule.length - 1];
+                lastTime = prev.endTime || prev.time || '18:00';
+                const [ph, pm] = lastTime.split(':').map(Number);
+                const nH = (ph + 1) % 24;
+                lastEndTime = `${String(nH).padStart(2, '0')}:${String(pm).padStart(2, '0')}`;
+            }
+
+            state.formSchedule.push({
+                userId: remainingUid,
+                userName: u.name,
+                time: lastTime,
+                endTime: lastEndTime,
+                duration: '1 ora',
+                notes: ''
+            });
+
+            if (!state.formUsers.includes(remainingUid) && remainingUid !== 'all') {
+                state.formUsers.push(remainingUid);
+                renderFormControls();
+            }
+
+            renderScheduleRows();
+        };
+
+        window.removeScheduleSlot = function(index) {
+            if (state.formSchedule.length <= 1) return;
+            state.formSchedule.splice(index, 1);
+            renderScheduleRows();
+        };
+
+        window.updateScheduleSlotUser = function(index, uid) {
+            if (!state.formSchedule[index]) return;
+            state.formSchedule[index].userId = uid;
+            const usersList = getActiveUsersList();
+            state.formSchedule[index].userName = (usersList.find(x => x.id === uid) || {}).name || uid;
+            if (!state.formUsers.includes(uid) && uid !== 'all') {
+                state.formUsers.push(uid);
+                renderFormControls();
+            }
+            renderScheduleRows();
+        };
+
+        window.updateScheduleSlotStartTime = function(index, val) {
+            if (!state.formSchedule[index] || !val) return;
+            state.formSchedule[index].time = val;
+            const curDur = state.formSchedule[index].duration;
+            if (curDur) {
+                const durMin = parseDurationToMinutes(curDur, val);
+                if (durMin > 0) {
+                    const [sh, sm] = val.split(':').map(Number);
+                    const eMin = (sh * 60 + sm + durMin) % 1440;
+                    const eh = String(Math.floor(eMin / 60)).padStart(2, '0');
+                    const em = String(eMin % 60).padStart(2, '0');
+                    state.formSchedule[index].endTime = `${eh}:${em}`;
+                }
+            }
+            renderScheduleRows();
+        };
+
+        window.updateScheduleSlotEndTime = function(index, val) {
+            if (!state.formSchedule[index] || !val) return;
+            state.formSchedule[index].endTime = val;
+            const st = state.formSchedule[index].time;
+            if (st && val) {
+                const [sh, sm] = st.split(':').map(Number);
+                const [eh, em] = val.split(':').map(Number);
+                let diff = (eh * 60 + em) - (sh * 60 + sm);
+                if (diff < 0) diff += 1440;
+                if (diff > 0) {
+                    const h = Math.floor(diff / 60);
+                    const m = diff % 60;
+                    state.formSchedule[index].duration = `${h > 0 ? h + 'h ' : ''}${m > 0 ? m + 'm' : ''}`.trim() || '30m';
+                }
+            }
+            renderScheduleRows();
+        };
+
+        window.updateScheduleSlotNotes = function(index, val) {
+            if (!state.formSchedule[index]) return;
+            state.formSchedule[index].notes = val;
+        };
+
+        window.applyScheduleSlotDuration = function(index, min, label) {
+            if (!state.formSchedule[index]) return;
+            const st = state.formSchedule[index].time || '18:00';
+            const [sh, sm] = st.split(':').map(Number);
+            const eMin = (sh * 60 + sm + min) % 1440;
+            const eh = String(Math.floor(eMin / 60)).padStart(2, '0');
+            const em = String(eMin % 60).padStart(2, '0');
+            state.formSchedule[index].endTime = `${eh}:${em}`;
+            state.formSchedule[index].duration = label;
+            renderScheduleRows();
+        };
+
+        window.updateOverallScheduleSpan = function() {
+            const span = document.getElementById('formOverallScheduleSpan');
+            if (!span || !Array.isArray(state.formSchedule) || state.formSchedule.length === 0) return;
+            let minStart = 24 * 60;
+            let maxEnd = 0;
+            state.formSchedule.forEach(slot => {
+                if (!slot.time) return;
+                const [sh, sm] = slot.time.split(':').map(Number);
+                const sMin = sh * 60 + sm;
+                const [eh, em] = (slot.endTime || slot.time).split(':').map(Number);
+                const eMin = (isNaN(eh) || isNaN(em)) ? sMin + 60 : eh * 60 + em;
+                if (sMin < minStart) minStart = sMin;
+                if (eMin > maxEnd) maxEnd = eMin;
+            });
+            if (minStart < maxEnd && minStart < 24 * 60) {
+                const sh = String(Math.floor(minStart / 60)).padStart(2, '0');
+                const sm = String(minStart % 60).padStart(2, '0');
+                const eh = String(Math.floor(maxEnd / 60)).padStart(2, '0');
+                const em = String(maxEnd % 60).padStart(2, '0');
+                const diff = maxEnd - minStart;
+                const diffStr = `${Math.floor(diff / 60)}h ${diff % 60 > 0 ? (diff % 60 + 'm') : ''}`.trim();
+                span.textContent = `Fascia: ${sh}:${sm} - ${eh}:${em} (${diffStr})`;
+            } else {
+                span.textContent = '';
+            }
         };
 
         window.closeEventModal = function() {
@@ -6102,12 +6570,32 @@ function ghOpenSetup() {
             } else {
                 state.formUsers.push(uid);
             }
+            const chk = document.getElementById('formSameTimeCheckbox');
+            if (chk && !chk.checked && Array.isArray(state.formSchedule)) {
+                if (state.formUsers.includes(uid) && !state.formSchedule.some(s => s.userId === uid)) {
+                    const u = getActiveUsersList().find(x => x.id === uid) || { name: uid };
+                    state.formSchedule.push({
+                        userId: uid,
+                        userName: u.name,
+                        time: document.getElementById('formTime')?.value || '18:00',
+                        endTime: document.getElementById('formEndTime')?.value || '19:30',
+                        duration: '1h 30m',
+                        notes: ''
+                    });
+                    renderScheduleRows();
+                }
+            }
             renderFormControls();
         };
 
         window.toggleSelectAllUsersInForm = function() {
             if (state.formUsers.length === BASE_USERS.length) state.formUsers = [state.activeProfileId];
             else state.formUsers = BASE_USERS.map(u => u.id);
+            const chk = document.getElementById('formSameTimeCheckbox');
+            if (chk && !chk.checked && Array.isArray(state.formSchedule)) {
+                initDefaultScheduleFromUsers();
+                renderScheduleRows();
+            }
             renderFormControls();
         };
 
@@ -6271,9 +6759,6 @@ function ghOpenSetup() {
             const id = document.getElementById('formEventId').value || ('ev_' + Date.now());
             const title = document.getElementById('formTitle').value.trim();
             const date = document.getElementById('formDate').value;
-            const time = document.getElementById('formTime').value;
-            const endTime = document.getElementById('formEndTime').value;
-            const duration = document.getElementById('formDuration').value || '1 ora';
             const notes = document.getElementById('formNotes').value.trim();
             const recurrence = document.getElementById('formRecurrence').value;
             const place = document.getElementById('formPlace').value.trim();
@@ -6287,15 +6772,73 @@ function ghOpenSetup() {
                 return;
             }
 
+            const isSameTime = document.getElementById('formSameTimeCheckbox')?.checked ?? true;
+            let finalTime = '';
+            let finalEndTime = '';
+            let finalDuration = '';
+            let finalSchedule = [];
+            let finalUsers = [...state.formUsers];
+
+            if (isSameTime) {
+                finalTime = document.getElementById('formTime').value;
+                finalEndTime = document.getElementById('formEndTime').value;
+                finalDuration = document.getElementById('formDuration').value || '1 ora';
+                finalSchedule = [];
+            } else {
+                // Modalità orari differenti / visite multiple
+                if (!Array.isArray(state.formSchedule) || state.formSchedule.length === 0) {
+                    showToast("Aggiungi almeno un orario o visita");
+                    return;
+                }
+
+                const usersList = getActiveUsersList();
+                finalSchedule = state.formSchedule.map(slot => {
+                    const u = usersList.find(x => x.id === slot.userId) || { name: slot.userName || slot.userId };
+                    return {
+                        userId: slot.userId || state.activeProfileId,
+                        userName: slot.userName || u.name,
+                        time: slot.time || '18:00',
+                        endTime: slot.endTime || '19:00',
+                        duration: slot.duration || '1 ora',
+                        notes: (slot.notes || '').trim()
+                    };
+                });
+
+                let minStart = 24 * 60;
+                let maxEnd = 0;
+                finalSchedule.forEach(s => {
+                    const [sh, sm] = s.time.split(':').map(Number);
+                    const sMin = (isNaN(sh) ? 18 : sh) * 60 + (isNaN(sm) ? 0 : sm);
+                    const [eh, em] = s.endTime.split(':').map(Number);
+                    const eMin = (isNaN(eh) ? 19 : eh) * 60 + (isNaN(em) ? 0 : em);
+                    if (sMin < minStart) minStart = sMin;
+                    if (eMin > maxEnd) maxEnd = eMin;
+                    if (!finalUsers.includes(s.userId) && s.userId !== 'all') {
+                        finalUsers.push(s.userId);
+                    }
+                });
+
+                const sh = String(Math.floor(minStart / 60)).padStart(2, '0');
+                const sm = String(minStart % 60).padStart(2, '0');
+                const eh = String(Math.floor(maxEnd / 60)).padStart(2, '0');
+                const em = String(maxEnd % 60).padStart(2, '0');
+                const diff = maxEnd - minStart;
+                finalTime = `${sh}:${sm}`;
+                finalEndTime = `${eh}:${em}`;
+                finalDuration = `${Math.floor(diff / 60)}h ${diff % 60 > 0 ? (diff % 60 + 'm') : ''}`.trim() || '1 ora';
+            }
+
             const payload = {
                 id,
                 title,
                 date,
-                time,
-                endTime,
-                duration,
+                time: finalTime,
+                endTime: finalEndTime,
+                duration: finalDuration,
+                hasDifferentTimes: !isSameTime,
+                schedule: finalSchedule,
                 category: state.formCategory,
-                users: [...state.formUsers],
+                users: finalUsers,
                 subcategory: state.formSubcategory,
                 patrizioCategory: state.formPatrizioCategory,
                 patrizioFamilyMember: state.formPatrizioFamilyMember,
@@ -7044,6 +7587,41 @@ function ghOpenSetup() {
                 }
             }
 
+            // Dettaglio Orari e Visite (se orari differenti o visite multiple)
+            const schedBox = document.getElementById('summaryScheduleBox');
+            const schedList = document.getElementById('summaryScheduleList');
+            const schedCount = document.getElementById('summaryScheduleCountBadge');
+            if (schedBox && schedList) {
+                if (ev.hasDifferentTimes && Array.isArray(ev.schedule) && ev.schedule.length > 0) {
+                    schedBox.classList.remove('hidden');
+                    if (schedCount) schedCount.textContent = `${ev.schedule.length} voci/orari`;
+                    schedList.innerHTML = ev.schedule.map(s => {
+                        const u = usersList.find(x => x.id === s.userId) || { name: s.userName || s.userId || 'Tutti', hex: '#4f46e5' };
+                        const durStr = s.duration ? `(${s.duration})` : '';
+                        const noteStr = s.notes ? `<div class="text-[11px] font-semibold text-slate-600 mt-0.5">${escapeHtml(s.notes)}</div>` : '';
+                        return `
+                            <div class="p-2 rounded-xl bg-white border border-indigo-100 flex items-start justify-between gap-2 shadow-2xs">
+                                <div class="flex items-start gap-2 min-w-0">
+                                    <span class="w-6 h-6 rounded-lg flex items-center justify-center text-white text-[11px] font-black shrink-0 mt-0.5 shadow-xs" style="background-color:${u.hex}">
+                                        ${u.name.charAt(0)}
+                                    </span>
+                                    <div class="min-w-0">
+                                        <div class="text-xs font-black text-slate-900 truncate">${escapeHtml(u.name)}</div>
+                                        ${noteStr}
+                                    </div>
+                                </div>
+                                <div class="text-right shrink-0">
+                                    <div class="text-xs font-black text-indigo-700">${s.time} - ${s.endTime}</div>
+                                    <div class="text-[10px] font-bold text-slate-400">${durStr}</div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    schedBox.classList.add('hidden');
+                }
+            }
+
             // Ripetizione
             const recRow = document.getElementById('summaryRecurrenceRow');
             const recTxt = document.getElementById('summaryRecurrenceText');
@@ -7195,6 +7773,18 @@ function ghOpenSetup() {
                 state.formUsers = Array.isArray(ev.users) && ev.users.length > 0 ? [...ev.users] : [state.activeProfileId];
                 state.formSubcategory = ev.subcategory || '';
                 state.formPatrizioCategory = ev.patrizioCategory || '';
+
+                if (ev.hasDifferentTimes && Array.isArray(ev.schedule) && ev.schedule.length > 0) {
+                    state.formSchedule = JSON.parse(JSON.stringify(ev.schedule));
+                    const chk = document.getElementById('formSameTimeCheckbox');
+                    if (chk) chk.checked = false;
+                    toggleSameTimeMode();
+                } else {
+                    state.formSchedule = [];
+                    const chk = document.getElementById('formSameTimeCheckbox');
+                    if (chk) chk.checked = true;
+                    toggleSameTimeMode();
+                }
             } else {
                 header.textContent = 'Nuovo Impegno';
                 if (btnDel) btnDel.classList.add('hidden');
@@ -7224,6 +7814,11 @@ function ghOpenSetup() {
                 state.formUsers = [state.activeProfileId];
                 state.formSubcategory = '';
                 state.formPatrizioCategory = '';
+
+                state.formSchedule = [];
+                const chk = document.getElementById('formSameTimeCheckbox');
+                if (chk) chk.checked = true;
+                toggleSameTimeMode();
             }
 
             renderFormControls();
@@ -7253,6 +7848,18 @@ function ghOpenSetup() {
             state.formUsers = Array.isArray(ev.users) ? [...ev.users] : [state.activeProfileId];
             state.formSubcategory = ev.subcategory || '';
             state.formPatrizioCategory = ev.patrizioCategory || '';
+
+            if (ev.hasDifferentTimes && Array.isArray(ev.schedule) && ev.schedule.length > 0) {
+                state.formSchedule = JSON.parse(JSON.stringify(ev.schedule));
+                const chk = document.getElementById('formSameTimeCheckbox');
+                if (chk) chk.checked = false;
+                toggleSameTimeMode();
+            } else {
+                state.formSchedule = [];
+                const chk = document.getElementById('formSameTimeCheckbox');
+                if (chk) chk.checked = true;
+                toggleSameTimeMode();
+            }
 
             renderFormControls();
             updateCalculatedDurationHint();
