@@ -16,7 +16,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Agenda Familiare Condivisa rev.24</title>
+    <title>Agenda Familiare Condivisa rev.25</title>
     <script>
         // Applicazione immediata grandezza caratteri salvata per questo dispositivo
         (function() {
@@ -55,10 +55,13 @@
         }
     </style>
 </head>
-<body class="h-full flex flex-col font-sans text-slate-800 antialiased select-none overflow-hidden bg-slate-100">
+<body class="h-full flex flex-col font-sans text-slate-800 antialiased select-none overflow-hidden bg-slate-100 relative">
+
+    <!-- BACKDROP GLOBALE PER CHIUSURA MENU FILTRI CLICCANDO FUORI SENZA ATTIVARE IL CALENDARIO -->
+    <div id="dropdownBackdrop" class="hidden fixed inset-0 z-35 bg-transparent" onclick="closeAllDropdowns(event)"></div>
 
     <!-- INTESTAZIONE PRINCIPALE: NAVIGAZIONE SCHERMATE, FILTRI CHI E COSA, CONTROLLI CALENDARIO -->
-    <header class="bg-white border-b border-slate-200 z-30 shrink-0 shadow-xs">
+    <header class="bg-white border-b border-slate-200 z-40 shrink-0 shadow-xs relative">
         <div class="px-2 sm:px-4 py-1.5 space-y-1.5">
 
             <!-- RIGA 0: NAVIGAZIONE TRA LE 6 SCHERMATE PRINCIPALI -->
@@ -83,7 +86,7 @@
                     <button type="button" onclick="switchMainScreen('spesa')" id="navScreenSpesa"
                             class="inline-flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-lg text-xs font-bold transition text-slate-700 hover:bg-white hover:text-emerald-800">
                         <i data-lucide="shopping-cart" class="w-3.5 h-3.5 text-emerald-600"></i>
-                        <span>Spesa</span>
+                        <span id="navScreenSpesaLabel">Lista Spesa</span>
                         <span id="navSpesaCountBadge" class="hidden px-1.5 py-0.2 rounded-full bg-emerald-600 text-white text-[9px] font-black">0</span>
                     </button>
 
@@ -482,8 +485,8 @@
                     <div class="flex items-center gap-2">
                         <i data-lucide="shopping-cart" class="w-5 h-5 text-emerald-300"></i>
                         <div>
-                'LISTA DELLA SPESA CONDIVISA FAMIGLIA',
-                            <p class="text-[10px] text-emerald-200 font-semibold">Chi ha inserito il prodotto appare a destra come nel calendario</p>
+                            <h2 class="text-sm sm:text-base font-black text-white tracking-wide">Lista Spesa</h2>
+                            <p class="text-[10px] text-emerald-200 font-semibold">Tieni premuto o usa le frecce per dare priorità ai prodotti</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-1.5">
@@ -506,27 +509,40 @@
 
                 <!-- Input e Catalogo 20 Prodotti Comuni A-Z -->
                 <div class="p-3 bg-slate-50 border-b border-slate-200 space-y-2 shrink-0">
-                    <form onsubmit="handleAddShoppingItem(event)" class="flex gap-1.5">
-                        <input type="text" id="screenShoppingInput" list="shoppingCatalogDatalist" placeholder="Aggiungi prodotto da comprare (es. Latte, Mele, Detersivo...)" autocomplete="off"
-                               class="flex-1 px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs font-bold focus:outline-emerald-500 shadow-2xs">
+                    <form onsubmit="handleAddShoppingItem(event)" class="space-y-1.5">
+                        <div class="flex gap-1.5">
+                            <input type="text" id="screenShoppingInput" list="shoppingCatalogDatalist" placeholder="Aggiungi prodotto da comprare (es. Latte, Mele, Detersivo...)" autocomplete="off"
+                                   class="flex-1 px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs font-bold focus:outline-emerald-500 shadow-2xs">
+                            <button type="submit" class="inline-flex items-center gap-1 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black shadow-2xs transition shrink-0">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                                <span>Aggiungi</span>
+                            </button>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <div class="flex-1 flex items-center gap-1.5 bg-white border border-slate-300 rounded-xl px-2.5 py-1.5 shadow-2xs">
+                                <i data-lucide="tag" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
+                                <input type="text" id="screenShoppingNoteInput" placeholder="Nota opzionale (es. quasi finito, urgente)..." autocomplete="off"
+                                       class="w-full text-xs font-semibold text-slate-800 bg-transparent focus:outline-none">
+                            </div>
+                            <div class="flex items-center gap-1 shrink-0">
+                                <button type="button" onclick="setQuickShoppingNote('Urgente')" class="px-2 py-1 rounded-lg text-[10px] font-black bg-rose-100 hover:bg-rose-200 text-rose-800 border border-rose-200 transition">Urgente</button>
+                                <button type="button" onclick="setQuickShoppingNote('Quasi finito')" class="px-2 py-1 rounded-lg text-[10px] font-black bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-200 transition">Quasi finito</button>
+                            </div>
+                        </div>
                         <datalist id="shoppingCatalogDatalist"></datalist>
-                        <button type="submit" class="inline-flex items-center gap-1 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black shadow-2xs transition shrink-0">
-                            <i data-lucide="plus" class="w-4 h-4"></i>
-                            <span>Aggiungi</span>
-                        </button>
                     </form>
 
-                    <!-- Catalogo Prodotti Comuni A-Z (20 voci richieste) -->
+                    <!-- Catalogo Prodotti Comuni A-Z (20 voci richieste) - NASCOSTO DI DEFAULT -->
                     <div class="bg-white rounded-xl p-2 border border-slate-200">
-                        <div class="flex items-center justify-between gap-1 mb-1.5">
+                        <div class="flex items-center justify-between gap-1">
                             <span class="text-[10px] font-black uppercase text-slate-500">
                                 Catalogo rapido uso comune (A-Z) • Tocca per aggiungere:
                             </span>
                             <button type="button" onclick="toggleCommonCatalogCollapse()" class="text-[10px] font-bold text-emerald-700 hover:underline">
-                                <span id="txtToggleCommonCatalog">Nascondi</span>
+                                <span id="txtToggleCommonCatalog">Mostra</span>
                             </button>
                         </div>
-                        <div id="commonShoppingCatalogGrid" class="flex flex-wrap gap-1 max-h-32 overflow-y-auto thin-scroll">
+                        <div id="commonShoppingCatalogGrid" class="hidden flex flex-wrap gap-1 max-h-32 overflow-y-auto thin-scroll mt-1.5">
                             <!-- 20 prodotti A-Z renderizzati da script -->
                         </div>
                     </div>
@@ -715,7 +731,7 @@
                         <i data-lucide="user" class="w-5 h-5 text-indigo-400"></i>
                         <h2 class="text-sm sm:text-base font-black">Account e Profilo Famiglia</h2>
                     </div>
-                    <span class="text-[10px] font-bold text-indigo-400 font-black">rev.24</span>
+                    <span class="text-[10px] font-bold text-indigo-400 font-black">rev.25</span>
                 </div>
                 <div class="p-4 space-y-3">
                     <div class="flex items-center justify-between gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200">
@@ -920,14 +936,14 @@
                 </div>
             </div>
 
-            <!-- Backup, Esportazione e Scaricamento rev.24 -->
+            <!-- Backup, Esportazione e Scaricamento rev.25 -->
             <div class="bg-white rounded-2xl border border-slate-200 shadow-2xs p-4 space-y-3">
                 <h3 class="text-xs font-black uppercase text-slate-400 tracking-wider">Gestione Dati & Download</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                    <button type="button" onclick="downloadRev24File()"
+                    <button type="button" onclick="downloadRev25File()"
                             class="flex flex-col items-center justify-center p-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-center transition shadow-2xs">
                         <i data-lucide="download" class="w-5 h-5 mb-1"></i>
-                        <span class="text-xs font-black">Scarica rev.24</span>
+                        <span class="text-xs font-black">Scarica rev.25</span>
                         <span class="text-[9.5px] opacity-80">File HTML completo</span>
                     </button>
 
@@ -1043,12 +1059,12 @@
                 <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
                     <div>
                         <div class="text-xs font-black text-slate-800">Scaricamento File HTML Completo</div>
-                        <div class="text-[10px] text-slate-500 font-medium">Backup e download della versione rev.24</div>
+                        <div class="text-[10px] text-slate-500 font-medium">Backup e download della versione rev.25</div>
                     </div>
-                    <button type="button" onclick="downloadRev24File()"
+                    <button type="button" onclick="downloadRev25File()"
                             class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black shadow-2xs transition">
                         <i data-lucide="download" class="w-3.5 h-3.5"></i>
-                        <span>Scarica rev.24</span>
+                        <span>Scarica rev.25</span>
                     </button>
                 </div>
             </div>
@@ -1056,8 +1072,8 @@
 
             <!-- FOOTER INFO VERSIONE E DATA AGGIORNAMENTO -->
             <div class="pt-2 pb-6 text-center space-y-0.5">
-                <p class="text-[11px] font-black text-slate-500">Agenda Familiare Condivisa • rev. 24</p>
-                <p class="text-[10px] font-bold text-slate-400" id="altroFooterLastUpdate">Ultimo aggiornamento rilasciato: 21/10/2026 alle 23:44</p>
+                <p class="text-[11px] font-black text-slate-500">Agenda Familiare Condivisa • rev. 25</p>
+                <p class="text-[10px] font-bold text-slate-400" id="altroFooterLastUpdate">Ultimo aggiornamento rilasciato: 22/10/2026 alle 17:15</p>
             </div>
         </div>
 
@@ -1628,6 +1644,70 @@
                     </button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- MODALE DUPLICA SINGOLO APPUNTAMENTO (SOLO DATA E ORA) -->
+    <!-- ======================================================== -->
+    <div id="duplicateEventModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3">
+        <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-150">
+            <!-- Header Modal -->
+            <div class="px-5 py-3.5 bg-indigo-600 text-white flex items-center justify-between shrink-0 shadow-xs">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="copy" class="w-5 h-5 text-indigo-200"></i>
+                    <h3 class="font-black text-base">Duplica Appuntamento</h3>
+                </div>
+                <button type="button" onclick="closeDuplicateEventModal()" class="p-1 rounded-lg text-indigo-100 hover:text-white transition">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Form Duplicazione -->
+            <form onsubmit="handleConfirmDuplicateEvent(event)" class="p-5 space-y-4">
+                <input type="hidden" id="dupOriginalEventId" value="">
+
+                <!-- Info Appuntamento Originale -->
+                <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+                    <div class="text-[10px] font-black uppercase text-slate-400">Appuntamento da duplicare:</div>
+                    <div id="dupModalOriginalTitle" class="font-black text-sm text-slate-900">--</div>
+                    <div id="dupModalOriginalInfo" class="text-xs text-slate-600 font-semibold flex items-center gap-1.5">--</div>
+                </div>
+
+                <!-- Campo Nuova Data -->
+                <div>
+                    <label for="dupNewDate" class="block text-xs font-black text-slate-700 mb-1">
+                        Nuova Data per il duplicato:
+                    </label>
+                    <input type="date" id="dupNewDate" required
+                           class="w-full px-3 py-2.5 rounded-xl border border-slate-300 font-bold text-sm bg-white focus:outline-indigo-600 focus:ring-2 focus:ring-indigo-500/20 shadow-2xs">
+                </div>
+
+                <!-- Campo Nuova Ora -->
+                <div>
+                    <label for="dupNewTime" class="block text-xs font-black text-slate-700 mb-1">
+                        Nuova Ora di inizio:
+                    </label>
+                    <input type="time" id="dupNewTime" required
+                           class="w-full px-3 py-2.5 rounded-xl border border-slate-300 font-bold text-sm bg-white focus:outline-indigo-600 focus:ring-2 focus:ring-indigo-500/20 shadow-2xs">
+                    <p class="text-[10.5px] text-slate-400 font-medium mt-1">
+                        * Verrà creato un solo appuntamento duplicato mantenendo durata, note e partecipanti originali.
+                    </p>
+                </div>
+
+                <!-- Footer Tasti -->
+                <div class="pt-3 flex items-center justify-end gap-2 border-t border-slate-100">
+                    <button type="button" onclick="closeDuplicateEventModal()"
+                            class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition">
+                        Annulla
+                    </button>
+                    <button type="submit"
+                            class="px-4 py-2 rounded-xl text-xs font-black text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-600/30 transition flex items-center gap-1.5">
+                        <i data-lucide="copy" class="w-4 h-4"></i>
+                        <span>Conferma e Duplica</span>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -2740,10 +2820,10 @@ function ghOpenSetup() {
         const { doc, setDoc, deleteDoc, onSnapshot, collection, isTombstone, ghConfigured, ghStart, ghHasToken, ghOpenSetup, ghApplyDot } = GH;
 
 
-        const APP_VERSION = window.APP_VERSION = 'rev.24';
+        const APP_VERSION = window.APP_VERSION = 'rev.25';
         const APP_BUILD_INFO = window.APP_BUILD_INFO = {
-            rev: 'rev. 24',
-            dateTime: '21/10/2026 alle 23:44'
+            rev: 'rev. 25',
+            dateTime: '22/10/2026 alle 17:15'
         };
 
         // 1. I 6 PROFILI DELLA FAMIGLIA (CON AUTENTICAZIONE PASSWORD O DATA DI NASCITA)
@@ -3505,7 +3585,7 @@ function ghOpenSetup() {
             },
             personalColorsByProfile: {},
             versionControl: {
-                approvedVersion: 'rev.24',
+                approvedVersion: 'rev.25',
                 approvedBy: 'Patrizio',
                 approvedAt: ''
             },
@@ -3534,7 +3614,7 @@ function ghOpenSetup() {
             formAttachments: [],
             shoppingList: loadPersistedShoppingList(),
             shoppingTab: 'active',
-            isCommonCatalogCollapsed: false,
+            isCommonCatalogCollapsed: true,
             confirmingDelete: false
         };
 
@@ -5729,31 +5809,84 @@ function ghOpenSetup() {
             if (items.length === 0) {
                 container.innerHTML = `
                     <div class="py-12 text-center text-xs font-semibold text-slate-400">
-                        ${state.shoppingTab === 'active' ? 'Nessun prodotto da comprare. Aggiungine uno dal catalogo A-Z sopra!' : 'Nessun prodotto acquistato.'}
+                        ${state.shoppingTab === 'active' ? 'Nessun prodotto da comprare. Aggiungine uno con il form sopra!' : 'Nessun prodotto acquistato.'}
                     </div>
                 `;
                 return;
             }
 
-            container.innerHTML = items.map(it => {
+            const activeCount = items.length;
+
+            container.innerHTML = items.map((it, idx) => {
                 const adder = it.addedBy || 'Patrizio';
                 const userObj = BASE_USERS.find(u => u.name.toLowerCase() === adder.toLowerCase()) || { hex: '#4f46e5' };
+                const isUrgent = it.note && (it.note.toLowerCase().includes('urgente') || it.note.toLowerCase().includes('subito'));
+
+                const priorityControls = (!it.completed && activeCount > 1) ? `
+                    <div class="flex items-center gap-0.5 shrink-0 text-slate-400">
+                        <button type="button" onclick="moveShoppingItem('${it.id}', -1)" title="Sposta più in alto (maggiore priorità)"
+                                class="p-1 hover:text-emerald-700 hover:bg-emerald-50 rounded transition ${idx === 0 ? 'opacity-20 pointer-events-none' : ''}">
+                            <i data-lucide="chevron-up" class="w-3.5 h-3.5"></i>
+                        </button>
+                        <button type="button" onclick="moveShoppingItem('${it.id}', 1)" title="Sposta più in basso"
+                                class="p-1 hover:text-emerald-700 hover:bg-emerald-50 rounded transition ${idx === activeCount - 1 ? 'opacity-20 pointer-events-none' : ''}">
+                            <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                ` : '';
+
+                const noteBadge = it.note ? `
+                    <button type="button" onclick="promptEditShoppingNote('${it.id}')" title="Tocca per modificare la nota"
+                            class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10.5px] font-black transition ${isUrgent ? 'bg-rose-100 text-rose-800 border border-rose-300' : 'bg-amber-100 text-amber-900 border border-amber-300'}">
+                        <i data-lucide="tag" class="w-2.5 h-2.5"></i>
+                        <span class="truncate max-w-[120px] sm:max-w-[180px]">${escapeHtml(it.note)}</span>
+                    </button>
+                ` : `
+                    <button type="button" onclick="promptEditShoppingNote('${it.id}')" title="Aggiungi nota (es. urgente, quasi finito)"
+                            class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold text-slate-400 hover:text-amber-800 hover:bg-amber-50 border border-dashed border-slate-300 transition">
+                        <i data-lucide="plus" class="w-2.5 h-2.5"></i>
+                        <span>nota</span>
+                    </button>
+                `;
 
                 return `
-                    <div class="bg-white rounded-xl border border-slate-200 p-2.5 flex items-center justify-between gap-2 shadow-2xs hover:border-slate-300 transition">
-                        <div class="flex items-center gap-2.5 truncate">
+                    <div data-shop-id="${it.id}"
+                         draggable="${!it.completed}"
+                         ondragstart="handleShopDragStart(event, '${it.id}')"
+                         ondragover="handleShopDragOver(event)"
+                         ondragleave="handleShopDragLeave(event)"
+                         ondrop="handleShopDrop(event, '${it.id}')"
+                         ondragend="handleShopDragEnd(event)"
+                         class="bg-white rounded-xl border border-slate-200 p-2 sm:p-2.5 flex items-center justify-between gap-2 shadow-2xs hover:border-slate-300 transition relative">
+                        
+                        <!-- Sinistra: drag handle + checkbox + testo prodotto + nota -->
+                        <div class="flex items-center gap-2 min-w-0 flex-1">
+                            ${!it.completed ? `
+                            <div class="cursor-grab active:cursor-grabbing p-1 text-slate-300 hover:text-slate-600 rounded touch-none shrink-0"
+                                 title="Tieni premuto e trascina per ordinare la priorità"
+                                 ontouchstart="handleShopTouchStart(event, '${it.id}')"
+                                 ontouchmove="handleShopTouchMove(event)"
+                                 ontouchend="handleShopTouchEnd(event)">
+                                <i data-lucide="grip-vertical" class="w-4 h-4"></i>
+                            </div>` : ''}
+
                             <input type="checkbox" ${it.completed ? 'checked' : ''} onchange="toggleShoppingItem('${it.id}')"
                                    class="w-4 h-4 rounded text-emerald-600 border-slate-300 focus:ring-emerald-500 cursor-pointer shrink-0">
-                            <span class="text-xs sm:text-sm font-bold text-slate-900 truncate ${it.completed ? 'line-through text-slate-400' : ''}">${escapeHtml(it.text)}</span>
+                            
+                            <div class="flex flex-wrap items-center gap-1.5 min-w-0 flex-1">
+                                <span class="text-xs sm:text-sm font-bold text-slate-900 truncate ${it.completed ? 'line-through text-slate-400' : ''}">${escapeHtml(it.text)}</span>
+                                ${noteBadge}
+                            </div>
                         </div>
 
-                        <!-- UTENTE CHE HA MESSO IL PRODOTTO A DESTRA CON IL SUO COLORE -->
-                        <div class="flex items-center gap-2 shrink-0">
+                        <!-- Destra: Frecce priorità + Utente con colore + Elimina -->
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            ${priorityControls}
                             <span class="px-2 py-0.5 rounded text-[10.5px] font-black text-white shadow-2xs flex items-center gap-1"
                                   style="background-color:${userObj.hex}"
                                   title="Inserito da ${escapeHtml(adder)}">
                                 <i data-lucide="user" class="w-3 h-3"></i>
-                                <span>${escapeHtml(adder)}</span>
+                                <span class="hidden sm:inline">${escapeHtml(adder)}</span>
                             </span>
                             <button type="button" onclick="deleteShoppingItem('${it.id}')" title="Elimina"
                                     class="p-1 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition">
@@ -5787,6 +5920,14 @@ function ghOpenSetup() {
                 btnClearActive.title = isParent ? "Svuota prodotti da comprare" : "Solo Patrizio o Manuela possono svuotare i prodotti";
             }
             updateShoppingBadge();
+            const catGrid = document.getElementById('commonShoppingCatalogGrid');
+            const catTxt = document.getElementById('txtToggleCommonCatalog');
+            if (catGrid) {
+                catGrid.classList.toggle('hidden', !!state.isCommonCatalogCollapsed);
+            }
+            if (catTxt) {
+                catTxt.textContent = state.isCommonCatalogCollapsed ? 'Mostra' : 'Nascondi';
+            }
             renderShoppingCatalogGrid();
             renderShoppingItems('screenShoppingItemsContainer');
             renderShoppingItems('shoppingListItemsContainer');
@@ -7142,7 +7283,7 @@ function ghOpenSetup() {
         };
 
         // ========================================================
-        // 10. AZIONI LISTA DELLA SPESA (CONDIVISIONE DIRETTA WA/TG E CATALOGO)
+        // 10. AZIONI LISTA DELLA SPESA (NOTE, RIORDINO PRIORITÀ, CONDIVISIONE WA/TG)
         // ========================================================
         window.shareShoppingWhatsApp = function() {
             const activeItems = state.shoppingList.filter(it => !it.completed);
@@ -7151,9 +7292,12 @@ function ghOpenSetup() {
                 return;
             }
             const lines = [
-                'LISTA DELLA SPESA CONDIVISA FAMIGLIA',
+                '🛒 LISTA DELLA SPESA CONDIVISA FAMIGLIA',
                 '----------------------------------------',
-                ...activeItems.map(it => `• ${it.text} (${it.addedBy || 'Famiglia'})`),
+                ...activeItems.map((it, idx) => {
+                    const noteStr = it.note ? ` [${it.note}]` : '';
+                    return `${idx + 1}. ${it.text}${noteStr} (${it.addedBy || 'Famiglia'})`;
+                }),
                 '----------------------------------------',
                 `Aggiornata al ${new Date().toLocaleDateString('it-IT')}`
             ];
@@ -7168,9 +7312,12 @@ function ghOpenSetup() {
                 return;
             }
             const lines = [
-                'LISTA DELLA SPESA CONDIVISA FAMIGLIA',
+                '🛒 LISTA DELLA SPESA CONDIVISA FAMIGLIA',
                 '----------------------------------------',
-                ...activeItems.map(it => `  - ${it.text} (${it.addedBy || 'Famiglia'})`),
+                ...activeItems.map((it, idx) => {
+                    const noteStr = it.note ? ` [${it.note}]` : '';
+                    return `  ${idx + 1}. ${it.text}${noteStr} (${it.addedBy || 'Famiglia'})`;
+                }),
                 '----------------------------------------',
                 `Aggiornata al ${new Date().toLocaleDateString('it-IT')}`
             ];
@@ -7188,13 +7335,36 @@ function ghOpenSetup() {
                 showToast("Nessun articolo da copiare");
                 return;
             }
-            const text = activeItems.map(it => `• ${it.text} (${it.addedBy || 'Famiglia'})`).join('\n');
+            const text = activeItems.map((it, idx) => {
+                const noteStr = it.note ? ` [${it.note}]` : '';
+                return `${idx + 1}. ${it.text}${noteStr} (${it.addedBy || 'Famiglia'})`;
+            }).join('\n');
             navigator.clipboard.writeText(`🛒 LISTA DELLA SPESA FAMIGLIA:\n\n${text}`)
                 .then(() => showToast("Lista copiata negli appunti!"))
                 .catch(() => showToast("Impossibile copiare negli appunti"));
         };
 
-        window.quickAddFromCatalog = function(prodName) {
+        window.setQuickShoppingNote = function(note) {
+            const input = document.getElementById('screenShoppingNoteInput');
+            if (!input) return;
+            input.value = note;
+            input.focus();
+        };
+
+        window.promptEditShoppingNote = function(id) {
+            const item = state.shoppingList.find(it => it.id === id);
+            if (!item) return;
+            const current = item.note || '';
+            const ans = prompt(`Inserisci o modifica la nota per "${item.text}" (es. "urgente", "quasi finito", "marca coop"):`, current);
+            if (ans !== null) {
+                item.note = ans.trim();
+                persistShoppingList();
+                renderShoppingScreen();
+                showToast(`Nota aggiornata per "${item.text}"`);
+            }
+        };
+
+        window.quickAddFromCatalog = function(prodName, note = '') {
             const exists = state.shoppingList.some(it => !it.completed && it.text.toLowerCase() === prodName.toLowerCase());
             if (exists) {
                 showToast(`"${prodName}" è già presente nella lista da comprare!`);
@@ -7204,6 +7374,7 @@ function ghOpenSetup() {
             state.shoppingList.unshift({
                 id: 'shop_' + Date.now(),
                 text: prodName,
+                note: (note || '').trim(),
                 addedBy: curUser.name,
                 completed: false,
                 createdAt: new Date().toISOString()
@@ -7224,8 +7395,12 @@ function ghOpenSetup() {
             const text = input.value.trim();
             if (!text) return;
 
-            window.quickAddFromCatalog(text);
+            const noteInput = document.getElementById('screenShoppingNoteInput');
+            const note = noteInput ? noteInput.value.trim() : '';
+
+            window.quickAddFromCatalog(text, note);
             input.value = '';
+            if (noteInput) noteInput.value = '';
         };
 
         window.toggleShoppingItem = function(id) {
@@ -7299,6 +7474,172 @@ function ghOpenSetup() {
         };
 
         // ========================================================
+        // RIORDINO PRIORITÀ LISTA SPESA (DRAG & DROP, TOUCH & HOLD, FRECCE)
+        // ========================================================
+        let draggedShopId = null;
+
+        window.handleShopDragStart = function(e, id) {
+            draggedShopId = id;
+            if (e.dataTransfer) {
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', id);
+            }
+            const row = e.currentTarget.closest('[data-shop-id]');
+            if (row) row.classList.add('opacity-40', 'scale-98');
+        };
+
+        window.handleShopDragOver = function(e) {
+            e.preventDefault();
+            if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+            const row = e.currentTarget.closest('[data-shop-id]');
+            if (row && row.getAttribute('data-shop-id') !== draggedShopId) {
+                row.classList.add('border-emerald-500', 'bg-emerald-50');
+            }
+        };
+
+        window.handleShopDragLeave = function(e) {
+            const row = e.currentTarget.closest('[data-shop-id]');
+            if (row) {
+                row.classList.remove('border-emerald-500', 'bg-emerald-50');
+            }
+        };
+
+        window.handleShopDrop = function(e, targetId) {
+            e.preventDefault();
+            const row = e.currentTarget.closest('[data-shop-id]');
+            if (row) {
+                row.classList.remove('border-emerald-500', 'bg-emerald-50');
+            }
+            if (!draggedShopId || draggedShopId === targetId) return;
+            reorderShoppingItems(draggedShopId, targetId);
+        };
+
+        window.handleShopDragEnd = function(e) {
+            draggedShopId = null;
+            document.querySelectorAll('[data-shop-id]').forEach(el => {
+                el.classList.remove('opacity-40', 'scale-98', 'border-emerald-500', 'bg-emerald-50');
+            });
+        };
+
+        // Gestione Touch per Smartphone (Tieni premuto e sposta in alto/basso)
+        let touchDragId = null;
+        let touchItemEl = null;
+        let touchHoldTimer = null;
+        let touchStartY = 0;
+        let isTouchDragging = false;
+
+        window.handleShopTouchStart = function(e, id) {
+            const touch = e.touches[0];
+            touchStartY = touch.clientY;
+            touchDragId = id;
+            touchItemEl = e.currentTarget.closest('[data-shop-id]');
+            
+            clearTimeout(touchHoldTimer);
+            touchHoldTimer = setTimeout(() => {
+                isTouchDragging = true;
+                if (touchItemEl) {
+                    touchItemEl.classList.add('ring-2', 'ring-emerald-500', 'bg-emerald-50', 'shadow-xl', 'scale-102', 'z-20');
+                }
+                if (navigator.vibrate) navigator.vibrate(30);
+            }, 180);
+        };
+
+        window.handleShopTouchMove = function(e) {
+            if (!isTouchDragging) {
+                const moveY = Math.abs(e.touches[0].clientY - touchStartY);
+                if (moveY > 10) clearTimeout(touchHoldTimer);
+                return;
+            }
+            e.preventDefault();
+            const touch = e.touches[0];
+            const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
+            const row = targetEl ? targetEl.closest('[data-shop-id]') : null;
+            document.querySelectorAll('[data-shop-id]').forEach(el => {
+                if (el !== touchItemEl) el.classList.remove('border-emerald-500', 'bg-emerald-50');
+            });
+            if (row && row !== touchItemEl) {
+                row.classList.add('border-emerald-500', 'bg-emerald-50');
+            }
+        };
+
+        window.handleShopTouchEnd = function(e) {
+            clearTimeout(touchHoldTimer);
+            if (!isTouchDragging) {
+                touchDragId = null;
+                touchItemEl = null;
+                return;
+            }
+            isTouchDragging = false;
+            const touch = e.changedTouches[0];
+            const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
+            const dropRow = targetEl ? targetEl.closest('[data-shop-id]') : null;
+            const dropId = dropRow ? dropRow.getAttribute('data-shop-id') : null;
+
+            if (touchItemEl) {
+                touchItemEl.classList.remove('ring-2', 'ring-emerald-500', 'bg-emerald-50', 'shadow-xl', 'scale-102', 'z-20');
+            }
+            document.querySelectorAll('[data-shop-id]').forEach(el => {
+                el.classList.remove('border-emerald-500', 'bg-emerald-50');
+            });
+
+            if (touchDragId && dropId && touchDragId !== dropId) {
+                reorderShoppingItems(touchDragId, dropId);
+            }
+            touchDragId = null;
+            touchItemEl = null;
+        };
+
+        function reorderShoppingItems(sourceId, targetId) {
+            const activeItems = state.shoppingList.filter(it => !it.completed);
+            const completedItems = state.shoppingList.filter(it => !!it.completed);
+
+            const srcIdx = activeItems.findIndex(it => it.id === sourceId);
+            const dstIdx = activeItems.findIndex(it => it.id === targetId);
+            if (srcIdx === -1 || dstIdx === -1) return;
+
+            const [moved] = activeItems.splice(srcIdx, 1);
+            activeItems.splice(dstIdx, 0, moved);
+
+            state.shoppingList = [...activeItems, ...completedItems];
+            persistShoppingList();
+            renderShoppingScreen();
+            showToast(`Priorità aggiornata per "${moved.text}"!`);
+        }
+
+        window.moveShoppingItem = function(id, direction) {
+            const activeItems = state.shoppingList.filter(it => !it.completed);
+            const completedItems = state.shoppingList.filter(it => !!it.completed);
+
+            const idx = activeItems.findIndex(it => it.id === id);
+            if (idx === -1) return;
+            const newIdx = idx + direction;
+            if (newIdx < 0 || newIdx >= activeItems.length) return;
+
+            const [moved] = activeItems.splice(idx, 1);
+            activeItems.splice(newIdx, 0, moved);
+
+            state.shoppingList = [...activeItems, ...completedItems];
+            persistShoppingList();
+            renderShoppingScreen();
+        };
+
+        window.moveShoppingItemToTop = function(id) {
+            const activeItems = state.shoppingList.filter(it => !it.completed);
+            const completedItems = state.shoppingList.filter(it => !!it.completed);
+
+            const idx = activeItems.findIndex(it => it.id === id);
+            if (idx <= 0) return;
+
+            const [moved] = activeItems.splice(idx, 1);
+            activeItems.unshift(moved);
+
+            state.shoppingList = [...activeItems, ...completedItems];
+            persistShoppingList();
+            renderShoppingScreen();
+            showToast(`"${moved.text}" spostato in cima (massima priorità)!`);
+        };
+
+        // ========================================================
         // 11. CAMBIO SCHERMATE (CALENDARIO | CASA | SPESA | BOLLETTE | SCADENZE | ALTRO)
         // ========================================================
         window.switchMainScreen = function(screenName) {
@@ -7347,6 +7688,12 @@ function ghOpenSetup() {
                 if (div) div.classList.toggle('hidden', s !== screenName);
                 if (btn) btn.className = s === screenName ? navActiveStyles[s] : navInactiveStyles[s];
             });
+
+            // Nome categoria Spesa: diventa 'Lista Spesa' quando selezionata
+            const spesaLabel = document.getElementById('navScreenSpesaLabel');
+            if (spesaLabel) {
+                spesaLabel.textContent = (screenName === 'spesa') ? 'Lista Spesa' : 'Spesa';
+            }
 
             // CONTROLLI CONTESTUALI TESTATA:
             // 1. Riga Viste Calendario (lista, gg, sett, mese + navigatore data): VISIBILE SOLO SU CALENDARIO
@@ -7496,6 +7843,8 @@ function ghOpenSetup() {
         // ========================================================
         // GESTIONE DROPDOWN FILTRI CHI E COSA E RAPIDO + IMPEGNO
         // ========================================================
+        window._lastDropdownClosedTime = 0;
+
         window.toggleDropdown = function(menuId, event) {
             if (event) {
                 event.stopPropagation();
@@ -7512,43 +7861,60 @@ function ghOpenSetup() {
                 if (el) el.classList.add('hidden');
             });
 
+            const backdrop = document.getElementById('dropdownBackdrop');
+
             if (isCurrentlyHidden) {
                 targetMenu.classList.remove('hidden');
+                if (backdrop) backdrop.classList.remove('hidden');
+            } else {
+                window._lastDropdownClosedTime = Date.now();
+                if (backdrop) backdrop.classList.add('hidden');
             }
         };
 
-        window.closeAllDropdowns = function() {
+        window.closeAllDropdowns = function(event) {
+            if (event) {
+                event.stopPropagation();
+            }
+            window._lastDropdownClosedTime = Date.now();
             const dropdownIds = ['usersDropdownMenu', 'categoriesDropdownMenu', 'calendarShareMenu', 'billsUtenzeDropdownMenu'];
             dropdownIds.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.classList.add('hidden');
             });
+            const backdrop = document.getElementById('dropdownBackdrop');
+            if (backdrop) backdrop.classList.add('hidden');
         };
 
-        // Chiusura al click all'esterno dei menu a discesa
+        // Chiusura rapida al click all'esterno dei menu a discesa
         document.addEventListener('click', function(e) {
             const usersWrapper = document.getElementById('usersDropdownWrapper');
             const catsWrapper = document.getElementById('categoriesDropdownWrapper');
             const shareWrapper = document.getElementById('calendarShareWrapper');
             const billsWrapper = document.getElementById('billsUtenzeDropdownWrapper');
 
-            if (usersWrapper && document.body.contains(e.target) && !usersWrapper.contains(e.target)) {
-                const m = document.getElementById('usersDropdownMenu');
-                if (m) m.classList.add('hidden');
+            const isInside = (usersWrapper && usersWrapper.contains(e.target)) ||
+                             (catsWrapper && catsWrapper.contains(e.target)) ||
+                             (shareWrapper && shareWrapper.contains(e.target)) ||
+                             (billsWrapper && billsWrapper.contains(e.target));
+
+            if (!isInside) {
+                const dropdownIds = ['usersDropdownMenu', 'categoriesDropdownMenu', 'calendarShareMenu', 'billsUtenzeDropdownMenu'];
+                let anyOpen = false;
+                dropdownIds.forEach(id => {
+                    const m = document.getElementById(id);
+                    if (m && !m.classList.contains('hidden')) {
+                        m.classList.add('hidden');
+                        anyOpen = true;
+                    }
+                });
+                if (anyOpen) {
+                    window._lastDropdownClosedTime = Date.now();
+                }
+                const backdrop = document.getElementById('dropdownBackdrop');
+                if (backdrop) backdrop.classList.add('hidden');
             }
-            if (catsWrapper && document.body.contains(e.target) && !catsWrapper.contains(e.target)) {
-                const m = document.getElementById('categoriesDropdownMenu');
-                if (m) m.classList.add('hidden');
-            }
-            if (shareWrapper && document.body.contains(e.target) && !shareWrapper.contains(e.target)) {
-                const m = document.getElementById('calendarShareMenu');
-                if (m) m.classList.add('hidden');
-            }
-            if (billsWrapper && document.body.contains(e.target) && !billsWrapper.contains(e.target)) {
-                const m = document.getElementById('billsUtenzeDropdownMenu');
-                if (m) m.classList.add('hidden');
-            }
-        });
+        }, true);
 
         // Toggle Utenze Bollette Dropdown
         window.toggleBillsUtenzeDropdown = function(event) {
@@ -9743,44 +10109,45 @@ function ghOpenSetup() {
             }
         };
 
-        window.downloadRev24File = function() {
+        window.downloadRev25File = function() {
             const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
             const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'agenda_famiglia_rev.24.html';
+            a.download = 'agenda_famiglia_rev.25.html';
             document.body.appendChild(a);
             a.click();
             a.remove();
             URL.revokeObjectURL(url);
-            showToast("File agenda_famiglia_rev.24.html scaricato con successo!");
+            showToast("File agenda_famiglia_rev.25.html scaricato con successo!");
         };
-        window.downloadRev23File = window.downloadRev24File;
-        window.downloadRev22File = window.downloadRev24File;
-        window.downloadRev21File = window.downloadRev24File;
-        window.downloadRev20File = window.downloadRev24File;
-        window.downloadRev19File = window.downloadRev24File;
-        window.downloadRev18File = window.downloadRev24File;
-        window.downloadRev17File = window.downloadRev24File;
-        window.downloadRev16File = window.downloadRev24File;
-        window.downloadRev15File = window.downloadRev24File;
-        window.downloadRev14File = window.downloadRev24File;
-        window.downloadRev13File = window.downloadRev24File;
+        window.downloadRev24File = window.downloadRev25File;
+        window.downloadRev23File = window.downloadRev25File;
+        window.downloadRev22File = window.downloadRev25File;
+        window.downloadRev21File = window.downloadRev25File;
+        window.downloadRev20File = window.downloadRev25File;
+        window.downloadRev19File = window.downloadRev25File;
+        window.downloadRev18File = window.downloadRev25File;
+        window.downloadRev17File = window.downloadRev25File;
+        window.downloadRev16File = window.downloadRev25File;
+        window.downloadRev15File = window.downloadRev25File;
+        window.downloadRev14File = window.downloadRev25File;
+        window.downloadRev13File = window.downloadRev25File;
 
         window.patrizioConfirmVersion = async function() {
             state.versionControl = {
-                approvedVersion: 'rev.24',
+                approvedVersion: 'rev.25',
                 approvedBy: 'Patrizio',
                 approvedAt: new Date().toISOString()
             };
             renderFooterProfileAndVersion();
-            showToast("rev.24 confermata ufficialmente da Patrizio!");
+            showToast("rev.25 confermata ufficialmente da Patrizio!");
         };
 
         window.exportDataJson = function() {
             const backup = {
-                version: 'rev.24',
+                version: 'rev.25',
                 exportedAt: new Date().toISOString(),
                 events: state.events,
                 shoppingList: state.shoppingList,
@@ -10356,9 +10723,7 @@ function ghOpenSetup() {
 
         window.duplicateEventFromSummary = function() {
             if (!currentSummaryEventId) return;
-            const id = currentSummaryEventId;
-            closeEventSummaryModal();
-            duplicateEvent(id);
+            openDuplicateEventModal(currentSummaryEventId);
         };
 
         window.copyEventToNextWeekFromSummary = async function(eventId = null) {
@@ -10463,6 +10828,29 @@ function ghOpenSetup() {
         // APERTURA FORM AGGIUNGI / MODIFICA EVENTO
         // ========================================================
         window.openEventModal = function(id = null, defaultDate = null, defaultTime = null) {
+            if (!id) {
+                // Se c'era un menu filtri aperto o appena chiuso con click esterno, blocca l'apertura di un nuovo appuntamento
+                const dropdownIds = ['usersDropdownMenu', 'categoriesDropdownMenu', 'calendarShareMenu', 'billsUtenzeDropdownMenu'];
+                let hadOpen = false;
+                dropdownIds.forEach(mId => {
+                    const m = document.getElementById(mId);
+                    if (m && !m.classList.contains('hidden')) {
+                        m.classList.add('hidden');
+                        hadOpen = true;
+                    }
+                });
+                const backdrop = document.getElementById('dropdownBackdrop');
+                if (backdrop) backdrop.classList.add('hidden');
+
+                if (hadOpen) {
+                    window._lastDropdownClosedTime = Date.now();
+                    return;
+                }
+                if (window._lastDropdownClosedTime && (Date.now() - window._lastDropdownClosedTime < 400)) {
+                    return;
+                }
+            }
+
             if (id) {
                 showEventSummary(id);
                 return;
@@ -10649,67 +11037,124 @@ function ghOpenSetup() {
             }
         };
 
-        window.duplicateEvent = function(id, defaultDate = null) {
-            const ev = state.events.find(x => x.id === id);
-            if (!ev) return;
-            const targetDate = defaultDate || addDaysToIso(ev.date, 7);
-            const targetEndDate = ev.endDate ? addDaysToIso(ev.endDate, defaultDate ? 0 : 7) : targetDate;
-            openEventEditModal(null, targetDate, ev.time);
-            document.getElementById('eventModalHeader').textContent = 'Duplica Impegno';
-            document.getElementById('formTitle').value = ev.title || '';
-            document.getElementById('formDate').value = targetDate;
-            document.getElementById('formEndDate').value = targetEndDate;
-            document.getElementById('formTime').value = ev.time || '';
-            document.getElementById('formEndTime').value = ev.endTime || '';
-            document.getElementById('formDuration').value = ev.duration || "30''";
-            const btnDurText = document.getElementById('formDurationButtonText');
-            if (btnDurText) btnDurText.textContent = ev.duration || "30''";
-            document.getElementById('formNotes').value = ev.notes || '';
-            document.getElementById('formPlace').value = ev.place || '';
-            document.getElementById('formRecurrence').value = ev.recurrence || 'none';
-            const recDays = document.getElementById('formRecurrenceCustomDays') || document.getElementById('formRecurrenceDaysInput');
-            if (recDays) recDays.value = ev.recurrenceDays || 1;
-            if (ev.recurrence === 'specific_weekday') {
-                setRecurrenceWeekday(ev.recurrenceWeekday !== undefined ? ev.recurrenceWeekday : 1);
+        window.openDuplicateEventModal = function(id = null) {
+            const targetId = id || currentSummaryEventId || window.currentSummaryEventId;
+            if (!targetId) return;
+            const ev = state.events.find(x => x.id === targetId);
+            if (!ev) {
+                showToast("Appuntamento non trovato.");
+                return;
             }
-            const recUntilInput = document.getElementById('formRecurrenceUntil');
-            if (recUntilInput) {
-                recUntilInput.value = ev.recurrenceUntil || '';
-            }
-            onFormRecurrenceChange();
-            updateRecurrenceUntilHint();
-            document.getElementById('formNotificationAdvance').value = ev.notificationAdvance || '15m';
-            document.getElementById('formPersonalTimer').value = ev.personalTimer || 'sound_timer';
-            document.getElementById('formVisibility').value = ev.visibility || 'admins_only';
 
-            state.formCategory = normalizeCategory(ev.category || 'famiglia');
-            state.formUsers = Array.isArray(ev.users) ? [...ev.users] : [state.activeProfileId || 'u1'];
-            state.formSubcategory = ev.subcategory || '';
-            state.formPatrizioCategory = ev.patrizioCategory || '';
-            state.formSubActivities = Array.isArray(ev.subActivities) ? JSON.parse(JSON.stringify(ev.subActivities)) : [];
-            state.formSubActivities.forEach((sub, i) => {
-                if (!sub.userId) {
-                    sub.userId = (ev.users && ev.users[i + 1]) || (ev.users && ev.users[0]) || state.activeProfileId || 'u1';
+            closeEventSummaryModal();
+
+            const origIdInput = document.getElementById('dupOriginalEventId');
+            if (origIdInput) origIdInput.value = ev.id;
+
+            const titleEl = document.getElementById('dupModalOriginalTitle');
+            if (titleEl) titleEl.textContent = ev.title || 'Senza titolo';
+
+            const infoEl = document.getElementById('dupModalOriginalInfo');
+            if (infoEl) {
+                const catObj = (typeof BASE_CATEGORIES !== 'undefined' && BASE_CATEGORIES[ev.category]) || { label: ev.category || 'Attività' };
+                const dur = formatEventDuration(ev);
+                infoEl.textContent = `${catObj.label || ev.category || 'Attività'} • Orario orig.: ${ev.time || '--:--'}${dur ? ' (' + dur + ')' : ''}`;
+            }
+
+            const dInput = document.getElementById('dupNewDate');
+            if (dInput) dInput.value = ev.date || getTodayIso();
+
+            const tInput = document.getElementById('dupNewTime');
+            if (tInput) tInput.value = ev.time || '18:00';
+
+            const modal = document.getElementById('duplicateEventModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                if (window.lucide) lucide.createIcons();
+            }
+        };
+
+        window.closeDuplicateEventModal = function() {
+            const modal = document.getElementById('duplicateEventModal');
+            if (modal) modal.classList.add('hidden');
+        };
+
+        window.handleConfirmDuplicateEvent = async function(e) {
+            if (e) e.preventDefault();
+            const origId = document.getElementById('dupOriginalEventId')?.value;
+            const newDate = document.getElementById('dupNewDate')?.value;
+            const newTime = document.getElementById('dupNewTime')?.value;
+
+            if (!origId || !newDate || !newTime) {
+                showToast("Inserisci data e ora valide.");
+                return;
+            }
+
+            const ev = state.events.find(x => x.id === origId);
+            if (!ev) {
+                showToast("Appuntamento originale non trovato.");
+                return;
+            }
+
+            // Calcolo orario di fine mantenendo la durata esatta dell'impegno
+            let newEndTime = '';
+            let finalDuration = ev.duration || "30''";
+            if (ev.time && ev.endTime) {
+                const [sh, sm] = ev.time.split(':').map(Number);
+                const [eh, em] = ev.endTime.split(':').map(Number);
+                const diffMin = (eh * 60 + em) - (sh * 60 + sm);
+                if (diffMin > 0) {
+                    const [nsh, nsm] = newTime.split(':').map(Number);
+                    const nStartMin = (isNaN(nsh) ? 0 : nsh) * 60 + (isNaN(nsm) ? 0 : nsm);
+                    const nEndMin = (nStartMin + diffMin) % 1440;
+                    const neh = String(Math.floor(nEndMin / 60)).padStart(2, '0');
+                    const nem = String(nEndMin % 60).padStart(2, '0');
+                    newEndTime = `${neh}:${nem}`;
                 }
-            });
-
-            if (ev.hasDifferentTimes && Array.isArray(ev.schedule) && ev.schedule.length > 0) {
-                state.formSchedule = JSON.parse(JSON.stringify(ev.schedule));
-                const chk = document.getElementById('formSameTimeCheckbox');
-                if (chk) chk.checked = false;
-                toggleSameTimeMode();
-            } else {
-                state.formSchedule = [];
-                const chk = document.getElementById('formSameTimeCheckbox');
-                if (chk) chk.checked = true;
-                toggleSameTimeMode();
+            }
+            if (!newEndTime) {
+                const [nsh, nsm] = newTime.split(':').map(Number);
+                const nStartMin = (isNaN(nsh) ? 18 : nsh) * 60 + (isNaN(nsm) ? 0 : nsm);
+                const nEndMin = (nStartMin + 30) % 1440;
+                newEndTime = `${String(Math.floor(nEndMin / 60)).padStart(2, '0')}:${String(nEndMin % 60).padStart(2, '0')}`;
             }
 
-            renderFormControls();
-            renderPatrizioPersonalCategories();
-            renderFormSubcategories();
-            renderSubActivities();
-            updateCalculatedDurationHint();
+            const newId = 'ev_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+
+            // IMPORTANTE: Duplicazione SINGOLA: recurrence strictly none, endDate = newDate
+            const newEvent = {
+                ...JSON.parse(JSON.stringify(ev)),
+                id: newId,
+                date: newDate,
+                endDate: newDate,
+                time: newTime,
+                endTime: newEndTime,
+                duration: finalDuration,
+                recurrence: 'none',
+                recurrenceDays: 1,
+                recurrenceWeekday: 1,
+                recurrenceUntil: '',
+                isCompleted: false,
+                updatedAt: new Date().toISOString()
+            };
+
+            state.events.push(newEvent);
+            persistEventsLocally();
+            recordUserActivity(state.activeProfileId);
+            closeDuplicateEventModal();
+            renderApp();
+
+            try {
+                if (typeof setDoc === 'function') {
+                    await setDoc(doc(null, 'artifacts', appId, 'public', 'data', 'family_events_rev16', newId), newEvent);
+                }
+            } catch(syncErr) { console.warn('Sync warning:', syncErr); }
+
+            showToast(`✅ Appuntamento duplicato: ${newDate} alle ${newTime}!`);
+        };
+
+        window.duplicateEvent = function(id, defaultDate = null) {
+            openDuplicateEventModal(id);
         };
 
         window.deleteEventWithSync = async function(id) {
@@ -11595,7 +12040,7 @@ function ghOpenSetup() {
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js').then(reg => {
-                    console.log('SW rev.24 registrato con successo.');
+                    console.log('SW rev.25 registrato con successo.');
                     reg.update();
                     reg.addEventListener('updatefound', () => {
                         const newWorker = reg.installing;
